@@ -23,7 +23,8 @@
     "jsx": "react-jsx",
     // For loading model JSON files.
     "resolveJsonModule": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "skipLibCheck": true
   },
   "include": ["**/*.ts", "**/*.tsx"],
   "exclude": ["**/*.test.ts", "node_modules"]

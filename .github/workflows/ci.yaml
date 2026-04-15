@@ -26,7 +26,7 @@ jobs:
 
       - name: Install dependencies
         id: install
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Typecheck
         id: typecheck
@@ -49,7 +49,7 @@ jobs:
 
       - name: Install dependencies
         id: install
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Run formatter
         id: format
@@ -72,7 +72,7 @@ jobs:
 
       - name: Install dependencies
         id: install
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Run linter
         id: lint
@@ -95,7 +95,7 @@ jobs:
 
       - name: Install dependencies
         id: install
-        run: npm ci
+        run: npm ci --legacy-peer-deps
 
       - name: Run tests
         id: test

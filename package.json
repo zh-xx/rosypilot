@@ -24,8 +24,6 @@
     "@types/node": "^16.11.6",
     "@types/react": "^18.2.73",
     "@types/react-dom": "^18.2.22",
-    "@typescript-eslint/eslint-plugin": "5.29.0",
-    "@typescript-eslint/parser": "5.29.0",
     "axios": "^1.6.8",
     "builtin-modules": "3.3.0",
     "cheerio": "^1.0.0-rc.12",
