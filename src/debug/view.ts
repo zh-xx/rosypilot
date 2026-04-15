@@ -1,3 +1,4 @@
+import { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 import { ItemView } from 'obsidian';
 
 export const DEBUG_VIEW_TYPE = 'rosypilot-debug';
@@ -5,8 +6,7 @@ export const DEBUG_VIEW_TYPE = 'rosypilot-debug';
 export interface DebugEntry {
 	context: string;
 	section?: string;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	prompt: any[];
+	prompt: ChatCompletionMessageParam[];
 	request: {
 		model: string;
 		max_tokens: number;
@@ -26,20 +26,21 @@ export class DebugView extends ItemView {
 	}
 
 	getDisplayText(): string {
-		return 'RosyPilot Debug';
+		return 'RosyPilot debug';
 	}
 
 	getIcon(): string {
 		return 'bug';
 	}
 
-	async onOpen(): Promise<void> {
+	onOpen(): Promise<void> {
 		this.container = this.contentEl.createDiv('rosypilot-debug-container');
 		this.container.setText('Waiting for completions...');
+		return Promise.resolve();
 	}
 
-	async onClose(): Promise<void> {
-		// Cleanup
+	onClose(): Promise<void> {
+		return Promise.resolve();
 	}
 
 	log(entry: DebugEntry): void {
@@ -81,7 +82,7 @@ export class DebugView extends ItemView {
 		copyBtn.addEventListener('click', (e) => {
 			e.stopPropagation();
 			const text = `Context: ${entry.context}\n\nRequest:\n${JSON.stringify(entry.request, null, 2)}\n\nPrompt:\n${entry.prompt.map((m) => `[${m.role}]\n${typeof m.content === 'string' ? m.content : JSON.stringify(m.content, null, 2)}`).join('\n\n')}\n\nRaw Response:\n${entry.rawResponse}\n\nParsed Result:\n${entry.parsedResult}`;
-			navigator.clipboard.writeText(text);
+			void navigator.clipboard.writeText(text);
 			copyBtn.setText('Copied!');
 			setTimeout(() => copyBtn.setText('Copy'), 1500);
 		});
@@ -93,12 +94,12 @@ export class DebugView extends ItemView {
 
 		// Expandable body — hidden by default
 		const body = card.createDiv('rosypilot-debug-card-body');
-		body.style.display = 'none';
+		body.classList.add('rosypilot-hidden');
 
 		// Toggle
 		header.addEventListener('click', () => {
-			const isOpen = body.style.display !== 'none';
-			body.style.display = isOpen ? 'none' : 'block';
+			const isOpen = !body.classList.contains('rosypilot-hidden');
+			body.classList.toggle('rosypilot-hidden', !isOpen);
 			toggleBtn.setText(isOpen ? '▸' : '▾');
 			card.classList.toggle('rosypilot-debug-card-open', !isOpen);
 		});
@@ -106,7 +107,7 @@ export class DebugView extends ItemView {
 		// Context info (section path, only for paragraph)
 		if (entry.section) {
 			const ctxSection = body.createDiv('rosypilot-debug-section');
-			ctxSection.createEl('strong', { text: 'Context Info' });
+			ctxSection.createEl('strong', { text: 'Context info' });
 			const ctxPre = ctxSection.createEl('pre');
 			ctxPre.setText(`Section:\n${entry.section}`);
 		}
@@ -133,13 +134,13 @@ export class DebugView extends ItemView {
 
 		// Raw response
 		const rawSection = body.createDiv('rosypilot-debug-section');
-		rawSection.createEl('strong', { text: 'Raw Response' });
+		rawSection.createEl('strong', { text: 'Raw response' });
 		const rawPre = rawSection.createEl('pre');
 		rawPre.setText(entry.rawResponse);
 
 		// Parsed result
 		const parsedSection = body.createDiv('rosypilot-debug-section');
-		parsedSection.createEl('strong', { text: 'Parsed Result' });
+		parsedSection.createEl('strong', { text: 'Parsed result' });
 		const parsedPre = parsedSection.createEl('pre');
 		parsedPre.setText(entry.parsedResult);
 	}

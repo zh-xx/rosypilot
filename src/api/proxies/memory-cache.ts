@@ -36,8 +36,8 @@ export class MemoryCacheProxy implements APIClient {
 			.update(`${compactPrefix} ${compactSuffix} `, 'utf8')
 			.digest('hex');
 
-		if (await this.store.has(hash)) {
-			const cache = await this.store.get(hash);
+		if (this.store.has(hash)) {
+			const cache = this.store.get(hash);
 			return cache;
 		}
 
@@ -45,7 +45,7 @@ export class MemoryCacheProxy implements APIClient {
 		if (completions === undefined) {
 			return undefined;
 		}
-		await this.store.set(hash, completions);
+		this.store.set(hash, completions);
 		return completions;
 	}
 

@@ -3,7 +3,7 @@ export const en: Record<string, string> = {
 	'providers.heading': 'Providers',
 	'providers.select': 'Provider',
 	'providers.select.desc': 'Select the model provider for inline completions.',
-	'providers.deepseek.apiKey': 'DeepSeek API Key',
+	'providers.deepseek.apiKey': 'DeepSeek API key',
 	'providers.deepseek.apiKey.desc': 'Enter your DeepSeek API key.',
 	'providers.deepseek.fetchModels': 'Fetch model list',
 	'providers.deepseek.fetchModels.desc':
@@ -14,7 +14,7 @@ export const en: Record<string, string> = {
 		'Please enter your API key first.',
 	'providers.deepseek.fetchModels.fail.invalid':
 		'Invalid API key or network error. Please check and try again.',
-	'providers.volcengine.apiKey': 'Volcengine API Key',
+	'providers.volcengine.apiKey': 'Volcengine API key',
 	'providers.volcengine.apiKey.desc': 'Enter your Volcengine API key.',
 	'providers.volcengine.fetchModels': 'Fetch model list',
 	'providers.volcengine.fetchModels.desc':
@@ -70,7 +70,7 @@ export const en: Record<string, string> = {
 	'usage.monthlyTokens': 'Monthly token usage',
 	'usage.monthlyTokens.desc':
 		'Below you can find the estimated token usage for inline completions this month.',
-	'usage.chartLabel': 'Token Usage',
+	'usage.chartLabel': 'Token usage',
 	'usage.limitReached.completions':
 		'Monthly token limit reached. Please increase the limit to keep using inline completions.',
 

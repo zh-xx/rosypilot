@@ -93,7 +93,7 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 		super(app, plugin);
 	}
 
-	async display() {
+	display() {
 		const { containerEl } = this;
 
 		containerEl.empty();

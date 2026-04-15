@@ -6,23 +6,30 @@ import { migrateVersion1_2_5_toVersion2_0_0 } from './migrators/1.2.5-2.0.0';
 import { migrateVersion2_0_0_toVersion2_1_0 } from './migrators/2.0.0-2.1.0';
 import { migrateVersion2_1_0_toVersion2_2_0 } from './migrators/2.1.0-2.2.0';
 import { migrateVersion2_2_0_toVersion2_3_0 } from './migrators/2.2.0-2.3.0';
+import { RosyPilotSettings } from '.';
+
+// Minimal shape shared by all versioned settings objects.
+interface VersionedSettings {
+	version?: string;
+}
+
+type AnyMigrator = SettingsMigrator<never, VersionedSettings>;
 
 export class SettingsMigrationsRunner {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	migrators: Record<string, SettingsMigrator<any, any>> = {
-		'1.1.0': migrateVersion1_1_0_toVersion1_2_0,
-		'1.2.0': migrateVersion1_2_0_toVersion1_2_5,
-		'1.2.5': migrateVersion1_2_5_toVersion2_0_0,
-		'2.0.0': migrateVersion2_0_0_toVersion2_1_0,
-		'2.1.0': migrateVersion2_1_0_toVersion2_2_0,
-		'2.2.0': migrateVersion2_2_0_toVersion2_3_0,
+	migrators: Record<string, AnyMigrator> = {
+		'1.1.0': migrateVersion1_1_0_toVersion1_2_0 as unknown as AnyMigrator,
+		'1.2.0': migrateVersion1_2_0_toVersion1_2_5 as unknown as AnyMigrator,
+		'1.2.5': migrateVersion1_2_5_toVersion2_0_0 as unknown as AnyMigrator,
+		'2.0.0': migrateVersion2_0_0_toVersion2_1_0 as unknown as AnyMigrator,
+		'2.1.0': migrateVersion2_1_0_toVersion2_2_0 as unknown as AnyMigrator,
+		'2.2.0': migrateVersion2_2_0_toVersion2_3_0 as unknown as AnyMigrator,
 	};
 
 	constructor(private plugin: RosyPilot) {}
 
 	async apply() {
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		let settings = this.plugin.settings as any;
+		let settings: VersionedSettings = this.plugin
+			.settings as unknown as VersionedSettings;
 
 		// NOTE:
 		// An infinite loop would also work because of the break statement
@@ -35,13 +42,13 @@ export class SettingsMigrationsRunner {
 			if (migrator === undefined) {
 				break;
 			}
-			settings = migrator(structuredClone(settings));
+			settings = migrator(structuredClone(settings) as never);
 			if (settings.version === version) {
 				throw new Error('Settings migration did not update the version');
 			}
 		}
 
-		this.plugin.settings = settings;
+		this.plugin.settings = settings as unknown as RosyPilotSettings;
 		await this.plugin.saveSettings();
 	}
 }

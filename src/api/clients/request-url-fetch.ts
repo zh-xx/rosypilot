@@ -45,7 +45,7 @@ export async function requestUrlFetch(
 	} else if (typeof init.body === 'string') {
 		body = init.body;
 	} else {
-		body = String(init.body);
+		body = JSON.stringify(init.body);
 	}
 
 	const result = await requestUrl({

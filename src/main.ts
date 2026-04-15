@@ -193,11 +193,11 @@ export default class RosyPilot extends Plugin {
 	}
 
 	debugLog(entry: DebugEntry) {
-		console.log('[RosyPilot] Context:', entry.context);
-		console.log('[RosyPilot] Prompt:', JSON.stringify(entry.prompt, null, 2));
-		console.log('[RosyPilot] Request:', entry.request);
-		console.log('[RosyPilot] Raw response:', entry.rawResponse);
-		console.log('[RosyPilot] Parsed result:', entry.parsedResult);
+		console.debug('[RosyPilot] Context:', entry.context);
+		console.debug('[RosyPilot] Prompt:', JSON.stringify(entry.prompt, null, 2));
+		console.debug('[RosyPilot] Request:', entry.request);
+		console.debug('[RosyPilot] Raw response:', entry.rawResponse);
+		console.debug('[RosyPilot] Parsed result:', entry.parsedResult);
 
 		if (this.settings.debug.enabled) {
 			this.debugView?.log(entry);
@@ -217,7 +217,7 @@ export default class RosyPilot extends Plugin {
 		await leaf?.setViewState({ type: DEBUG_VIEW_TYPE, active: true });
 	}
 
-	async deactivateDebugView() {
+	deactivateDebugView() {
 		const { workspace } = this.app;
 
 		const leaves = workspace.getLeavesOfType(DEBUG_VIEW_TYPE);

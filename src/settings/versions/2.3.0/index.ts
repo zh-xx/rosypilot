@@ -38,7 +38,7 @@ export interface RosyPilotSettings2_3_0 {
 	};
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- compile-time assertion type is intentionally unused at runtime
 type AssertEqualCurrentSettings = Expect<
 	Equal<RosyPilotSettings2_3_0, RosyPilotSettings>
 >;

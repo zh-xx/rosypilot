@@ -8,12 +8,11 @@ export function getObjectKeys<T extends Record<string, unknown>>(
 
 // Debounce an async function by waiting for `wait` milliseconds before resolving.
 // If a new request is made before the timeout, the previous request is cancelled.
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export function debounceAsyncFunc<T>(
-	func: (...args: any[]) => Promise<T>,
+export function debounceAsyncFunc<TArgs extends unknown[], TResult>(
+	func: (...args: TArgs) => Promise<TResult>,
 	wait: number,
 ): {
-	debounced: (...args: any[]) => Promise<T | undefined>;
+	debounced: (...args: TArgs) => Promise<TResult | undefined>;
 	cancel: () => void;
 	force: () => void;
 } {
@@ -24,17 +23,17 @@ export function debounceAsyncFunc<T>(
 		force: () => {},
 	};
 
-	function debounced(...args: any[]): Promise<T | undefined> {
+	function debounced(...args: TArgs): Promise<TResult | undefined> {
 		return new Promise((resolve) => {
 			previous.cancel();
-			const timer = setTimeout(() => func(...args).then(resolve), wait);
+			const timer = setTimeout(() => void func(...args).then(resolve), wait);
 			previous.cancel = () => {
 				clearTimeout(timer);
 				resolve(undefined);
 			};
 			previous.force = () => {
 				clearTimeout(timer);
-				func(...args).then(resolve);
+				void func(...args).then(resolve);
 			};
 		});
 	}
@@ -45,16 +44,14 @@ export function debounceAsyncFunc<T>(
 		force: () => previous.force(),
 	};
 }
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
 // Debounce an async generator by waiting for `wait` milliseconds before resolving.
 // If a new request is made before the timeout, the previous request is cancelled.
-/* eslint-disable @typescript-eslint/no-explicit-any */
-export function debounceAsyncGenerator<T>(
-	func: (...args: any[]) => AsyncGenerator<T>,
+export function debounceAsyncGenerator<TArgs extends unknown[], TResult>(
+	func: (...args: TArgs) => AsyncGenerator<TResult>,
 	wait: number,
 ): {
-	debounced: (...args: any[]) => AsyncGenerator<T | undefined>;
+	debounced: (...args: TArgs) => AsyncGenerator<TResult | undefined>;
 	cancel: () => void;
 	force: () => void;
 } {
@@ -65,7 +62,9 @@ export function debounceAsyncGenerator<T>(
 
 	let lastId = 0;
 
-	async function* debounced(...args: any[]): AsyncGenerator<T | undefined> {
+	async function* debounced(
+		...args: TArgs
+	): AsyncGenerator<TResult | undefined> {
 		previous.cancel();
 		const id = lastId; // Must be after `previous.cancel()`.
 		try {
@@ -74,7 +73,7 @@ export function debounceAsyncGenerator<T>(
 				previous.cancel = () => {
 					++lastId;
 					clearTimeout(timer);
-					reject();
+					reject(new Error('Debounce cancelled'));
 				};
 				previous.force = () => {
 					clearTimeout(timer);
@@ -96,7 +95,6 @@ export function debounceAsyncGenerator<T>(
 		force: () => previous.force(),
 	};
 }
-/* eslint-enable @typescript-eslint/no-explicit-any */
 
 // Utility function to validate the given string is a valid URL or not.
 export function validateURL(url: string): boolean {

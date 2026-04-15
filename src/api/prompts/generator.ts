@@ -31,15 +31,13 @@ export class PromptGenerator {
 		const { settings } = this.plugin;
 
 		const context = getContext(prefix, suffix);
-		console.log('[RosyPilot] generateCompletionsPrompt context:', context);
 		const prompt = COMPLETIONS_PROMPTS[context];
-		console.log(
-			'[RosyPilot] system prompt starts with:',
-			prompt.system.slice(0, 80),
-		);
 		const system =
 			context === 'code-block'
-				? prompt.system.replace('{{LANGUAGE}}', getLanguage(prefix, suffix)!)
+				? prompt.system.replace(
+						'{{LANGUAGE}}',
+						getLanguage(prefix, suffix) ?? '',
+					)
 				: prompt.system;
 
 		const windowSize = settings.completions.windowSize;
