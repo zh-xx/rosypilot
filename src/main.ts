@@ -209,7 +209,7 @@ export default class RosyPilot extends Plugin {
 
 		const leaves = workspace.getLeavesOfType(DEBUG_VIEW_TYPE);
 		if (leaves.length > 0) {
-			workspace.revealLeaf(leaves[0]);
+			void workspace.revealLeaf(leaves[0]);
 			return;
 		}
 
@@ -228,7 +228,7 @@ export default class RosyPilot extends Plugin {
 	}
 
 	async loadSettings() {
-		const data = await this.loadData();
+		const data = (await this.loadData()) as RosyPilotSettings | null;
 		if (data === null) {
 			this.settings = DEFAULT_SETTINGS;
 			return;

@@ -26,6 +26,7 @@ export class DebugView extends ItemView {
 	}
 
 	getDisplayText(): string {
+		// eslint-disable-next-line obsidianmd/ui/sentence-case -- "RosyPilot" is a brand name
 		return 'RosyPilot debug';
 	}
 
@@ -98,10 +99,10 @@ export class DebugView extends ItemView {
 
 		// Toggle
 		header.addEventListener('click', () => {
-			const isOpen = !body.classList.contains('rosypilot-hidden');
-			body.classList.toggle('rosypilot-hidden', !isOpen);
-			toggleBtn.setText(isOpen ? '▸' : '▾');
-			card.classList.toggle('rosypilot-debug-card-open', !isOpen);
+			const isHidden = body.classList.contains('rosypilot-hidden');
+			body.classList.toggle('rosypilot-hidden', !isHidden);
+			toggleBtn.setText(isHidden ? '▾' : '▸');
+			card.classList.toggle('rosypilot-debug-card-open', isHidden);
 		});
 
 		// Context info (section path, only for paragraph)

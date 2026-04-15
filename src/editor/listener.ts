@@ -52,7 +52,7 @@ function showCompletions(fetcher: CompletionsFetcher) {
 
 		// Fetch completions from the server.
 		const completions = await fetcher(prefix, suffix).catch((error) => {
-			new Notice('Failed to fetch completions: ', error);
+			new Notice(`Failed to fetch completions: ${String(error)}`);
 			return undefined;
 		});
 		// If fetch has failed, ignore and return.
