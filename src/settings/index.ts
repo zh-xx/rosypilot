@@ -49,7 +49,10 @@ export interface RosyPilotSettings {
 	};
 }
 
-const defaultProviders: Record<Provider, { apiKey: undefined; fetchedModels: [] }> = {} as Record<Provider, { apiKey: undefined; fetchedModels: [] }>;
+const defaultProviders: Record<
+	Provider,
+	{ apiKey: undefined; fetchedModels: [] }
+> = {} as Record<Provider, { apiKey: undefined; fetchedModels: [] }>;
 for (const provider of PROVIDERS) {
 	defaultProviders[provider] = { apiKey: undefined, fetchedModels: [] };
 }
@@ -150,7 +153,9 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 					.onClick(async () => {
 						const apiKey = settings.providers[currentProvider].apiKey;
 						if (!apiKey) {
-							new Notice(t(`providers.${currentProvider}.fetchModels.fail.noKey`));
+							new Notice(
+								t(`providers.${currentProvider}.fetchModels.fail.noKey`),
+							);
 							return;
 						}
 						try {
@@ -163,7 +168,9 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 							const response = await openai.models.list();
 							const models = response.data.map((m) => m.id).sort();
 							if (models.length === 0) {
-								new Notice(t(`providers.${currentProvider}.fetchModels.fail.invalid`));
+								new Notice(
+									t(`providers.${currentProvider}.fetchModels.fail.invalid`),
+								);
 								return;
 							}
 							settings.providers[currentProvider].fetchedModels = models;
@@ -174,7 +181,9 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 							new Notice(t(`providers.${currentProvider}.fetchModels.success`));
 							this.display();
 						} catch {
-							new Notice(t(`providers.${currentProvider}.fetchModels.fail.invalid`));
+							new Notice(
+								t(`providers.${currentProvider}.fetchModels.fail.invalid`),
+							);
 						}
 					}),
 			);
@@ -183,9 +192,7 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 		/*                   Inline completions                     */
 		/************************************************************/
 
-		new Setting(containerEl)
-			.setName(t('completions.heading'))
-			.setHeading();
+		new Setting(containerEl).setName(t('completions.heading')).setHeading();
 
 		new Setting(containerEl)
 			.setName(t('completions.enable'))
@@ -226,7 +233,9 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 		/*                    Advanced settings                     */
 		/************************************************************/
 
-		new Setting(containerEl).setName(t('completions.advanced.heading')).setHeading();
+		new Setting(containerEl)
+			.setName(t('completions.advanced.heading'))
+			.setHeading();
 
 		new Setting(containerEl)
 			.setName(t('completions.maxTokens'))
@@ -297,7 +306,9 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 		/*                        Shortcuts                         */
 		/************************************************************/
 
-		new Setting(containerEl).setName(t('completions.shortcuts.heading')).setHeading();
+		new Setting(containerEl)
+			.setName(t('completions.shortcuts.heading'))
+			.setHeading();
 
 		new Setting(containerEl)
 			.setName(t('completions.acceptKey'))
@@ -351,20 +362,18 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 			.setName(t('debug.enable'))
 			.setDesc(t('debug.enable.desc'))
 			.addToggle((toggle) =>
-				toggle
-					.setValue(settings.debug.enabled)
-					.onChange(async (value) => {
-						settings.debug.enabled = value;
-						await plugin.saveSettings();
-						// Defer view operations so the settings modal can close gracefully.
-						setTimeout(async () => {
-							if (value) {
-								await plugin.activateDebugView();
-							} else {
-								await plugin.deactivateDebugView();
-							}
-						}, 100);
-					}),
+				toggle.setValue(settings.debug.enabled).onChange(async (value) => {
+					settings.debug.enabled = value;
+					await plugin.saveSettings();
+					// Defer view operations so the settings modal can close gracefully.
+					setTimeout(async () => {
+						if (value) {
+							await plugin.activateDebugView();
+						} else {
+							await plugin.deactivateDebugView();
+						}
+					}, 100);
+				}),
 			);
 
 		/************************************************************/
@@ -406,8 +415,14 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 		const aboutEl = containerEl.createDiv('rosypilot-about');
 		const { name, version, author } = this.plugin.manifest;
 		aboutEl.createDiv('rosypilot-about-title').setText(`${name}  v${version}`);
-		aboutEl.createDiv('rosypilot-about-meta').setText(`${author} · zh-xx@foxmail.com`);
-		aboutEl.createDiv('rosypilot-about-copy').setText(`© ${new Date().getFullYear()} ${author}. All rights reserved.`);
+		aboutEl
+			.createDiv('rosypilot-about-meta')
+			.setText(`${author} · zh-xx@foxmail.com`);
+		aboutEl
+			.createDiv('rosypilot-about-copy')
+			.setText(
+				`© ${new Date().getFullYear()} ${author}. All rights reserved.`,
+			);
 	}
 
 	showUsageProgress() {
@@ -421,9 +436,11 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 		const wrap = containerEl.createDiv('rosypilot-usage-progress-wrap');
 		const bar = wrap.createDiv('rosypilot-usage-progress-bar');
 		bar.createDiv('rosypilot-usage-progress-fill').style.width = `${pct}%`;
-		wrap.createDiv('rosypilot-usage-progress-label').setText(
-			`${used.toLocaleString()} / ${limit.toLocaleString()} tokens  (${pct.toFixed(1)}%)`,
-		);
+		wrap
+			.createDiv('rosypilot-usage-progress-label')
+			.setText(
+				`${used.toLocaleString()} / ${limit.toLocaleString()} tokens  (${pct.toFixed(1)}%)`,
+			);
 	}
 
 	showMonthlyTokens() {
@@ -436,9 +453,7 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 		const data = dates.map((date) => ({ date, tokens: 0 }));
 		for (const [day, tokens] of Object.entries(settings.usage.dailyTokens)) {
 			const target = new Date(day + 'T00:00:00').toDateString();
-			const index = dates.findIndex(
-				(date) => date.toDateString() === target,
-			);
+			const index = dates.findIndex((date) => date.toDateString() === target);
 			if (index !== -1) {
 				data[index].tokens = tokens;
 			}
@@ -455,14 +470,15 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 				plugins: {
 					tooltip: {
 						callbacks: {
-							label: (item) =>
-								`${item.parsed.y.toLocaleString()} tokens`,
+							label: (item) => `${item.parsed.y.toLocaleString()} tokens`,
 						},
 					},
 				},
 			},
 			data: {
-				labels: data.map((row) => `${row.date.getMonth() + 1}/${row.date.getDate()}`),
+				labels: data.map(
+					(row) => `${row.date.getMonth() + 1}/${row.date.getDate()}`,
+				),
 				datasets: [
 					{
 						label: t('usage.chartLabel'),

@@ -33,7 +33,10 @@ export class PromptGenerator {
 		const context = getContext(prefix, suffix);
 		console.log('[RosyPilot] generateCompletionsPrompt context:', context);
 		const prompt = COMPLETIONS_PROMPTS[context];
-		console.log('[RosyPilot] system prompt starts with:', prompt.system.slice(0, 80));
+		console.log(
+			'[RosyPilot] system prompt starts with:',
+			prompt.system.slice(0, 80),
+		);
 		const system =
 			context === 'code-block'
 				? prompt.system.replace('{{LANGUAGE}}', getLanguage(prefix, suffix)!)
@@ -94,6 +97,9 @@ export class PromptGenerator {
 		// (the <INSERT>\n prefix was consumed by the prefill, not returned).
 		// Some models (e.g. Doubao) treat <INSERT> as an XML tag and append
 		// </INSERT> at the end — strip both variants.
-		return content.trim().replace(/<\/?INSERT>/g, '').trim();
+		return content
+			.trim()
+			.replace(/<\/?INSERT>/g, '')
+			.trim();
 	}
 }

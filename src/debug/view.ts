@@ -56,9 +56,17 @@ export class DebugView extends ItemView {
 		const header = card.createDiv('rosypilot-debug-card-header');
 		const time = new Date(entry.timestamp).toLocaleTimeString();
 		const contextLabel = entry.section
-			? `[${time}] ${entry.context}  §${entry.section.split('\n').pop()?.replace(/^#+\s*/, '') ?? ''}`
+			? `[${time}] ${entry.context}  §${
+					entry.section
+						.split('\n')
+						.pop()
+						?.replace(/^#+\s*/, '') ?? ''
+				}`
 			: `[${time}] ${entry.context}`;
-		header.createSpan({ text: contextLabel, cls: 'rosypilot-debug-card-context' });
+		header.createSpan({
+			text: contextLabel,
+			cls: 'rosypilot-debug-card-context',
+		});
 
 		// Preview: first line of parsed result
 		const preview = entry.parsedResult.split('\n')[0].slice(0, 50);
@@ -66,7 +74,10 @@ export class DebugView extends ItemView {
 
 		const actions = header.createDiv('rosypilot-debug-card-actions');
 
-		const copyBtn = actions.createEl('button', { text: 'Copy', cls: 'rosypilot-debug-copy-btn' });
+		const copyBtn = actions.createEl('button', {
+			text: 'Copy',
+			cls: 'rosypilot-debug-copy-btn',
+		});
 		copyBtn.addEventListener('click', (e) => {
 			e.stopPropagation();
 			const text = `Context: ${entry.context}\n\nRequest:\n${JSON.stringify(entry.request, null, 2)}\n\nPrompt:\n${entry.prompt.map((m) => `[${m.role}]\n${typeof m.content === 'string' ? m.content : JSON.stringify(m.content, null, 2)}`).join('\n\n')}\n\nRaw Response:\n${entry.rawResponse}\n\nParsed Result:\n${entry.parsedResult}`;
@@ -75,7 +86,10 @@ export class DebugView extends ItemView {
 			setTimeout(() => copyBtn.setText('Copy'), 1500);
 		});
 
-		const toggleBtn = actions.createEl('button', { text: '▸', cls: 'rosypilot-debug-toggle-btn' });
+		const toggleBtn = actions.createEl('button', {
+			text: '▸',
+			cls: 'rosypilot-debug-toggle-btn',
+		});
 
 		// Expandable body — hidden by default
 		const body = card.createDiv('rosypilot-debug-card-body');
@@ -110,7 +124,11 @@ export class DebugView extends ItemView {
 			const msgDiv = promptSection.createDiv('rosypilot-debug-message');
 			msgDiv.createEl('code', { text: msg.role });
 			const contentPre = msgDiv.createEl('pre');
-			contentPre.setText(typeof msg.content === 'string' ? msg.content : JSON.stringify(msg.content, null, 2));
+			contentPre.setText(
+				typeof msg.content === 'string'
+					? msg.content
+					: JSON.stringify(msg.content, null, 2),
+			);
 		}
 
 		// Raw response

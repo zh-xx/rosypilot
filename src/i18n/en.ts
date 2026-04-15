@@ -10,7 +10,8 @@ export const en: Record<string, string> = {
 		'After entering your API key, click to fetch the available models for your account.',
 	'providers.deepseek.fetchModels.btn': 'Fetch models',
 	'providers.deepseek.fetchModels.success': 'Model list updated.',
-	'providers.deepseek.fetchModels.fail.noKey': 'Please enter your API key first.',
+	'providers.deepseek.fetchModels.fail.noKey':
+		'Please enter your API key first.',
 	'providers.deepseek.fetchModels.fail.invalid':
 		'Invalid API key or network error. Please check and try again.',
 	'providers.volcengine.apiKey': 'Volcengine API Key',
@@ -20,7 +21,8 @@ export const en: Record<string, string> = {
 		'After entering your API key, click to fetch the available models for your account.',
 	'providers.volcengine.fetchModels.btn': 'Fetch models',
 	'providers.volcengine.fetchModels.success': 'Model list updated.',
-	'providers.volcengine.fetchModels.fail.noKey': 'Please enter your API key first.',
+	'providers.volcengine.fetchModels.fail.noKey':
+		'Please enter your API key first.',
 	'providers.volcengine.fetchModels.fail.invalid':
 		'Invalid API key or network error. Please check and try again.',
 
@@ -31,11 +33,10 @@ export const en: Record<string, string> = {
 	'completions.model': 'Model',
 	'completions.model.desc': 'Select the model for inline completions.',
 	'completions.model.empty': 'Fetch model list first',
-'completions.maxTokens': 'Max tokens',
+	'completions.maxTokens': 'Max tokens',
 	'completions.maxTokens.desc': 'Set the max tokens for inline completions.',
 	'completions.temperature': 'Temperature',
-	'completions.temperature.desc':
-		'Set the temperature for inline completions.',
+	'completions.temperature.desc': 'Set the temperature for inline completions.',
 	'completions.waitTime': 'Wait time',
 	'completions.waitTime.desc':
 		'Time in milliseconds to wait before fetching inline completions from the server.',

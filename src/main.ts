@@ -240,11 +240,31 @@ export default class RosyPilot extends Plugin {
 
 		// Merge default values for any missing fields (e.g. newly added settings).
 		this.settings = Object.assign({}, DEFAULT_SETTINGS, this.settings);
-		this.settings.debug = Object.assign({}, DEFAULT_SETTINGS.debug, this.settings.debug);
-		this.settings.providers = Object.assign({}, DEFAULT_SETTINGS.providers, this.settings.providers);
-		this.settings.completions = Object.assign({}, DEFAULT_SETTINGS.completions, this.settings.completions);
-		this.settings.cache = Object.assign({}, DEFAULT_SETTINGS.cache, this.settings.cache);
-		this.settings.usage = Object.assign({}, DEFAULT_SETTINGS.usage, this.settings.usage);
+		this.settings.debug = Object.assign(
+			{},
+			DEFAULT_SETTINGS.debug,
+			this.settings.debug,
+		);
+		this.settings.providers = Object.assign(
+			{},
+			DEFAULT_SETTINGS.providers,
+			this.settings.providers,
+		);
+		this.settings.completions = Object.assign(
+			{},
+			DEFAULT_SETTINGS.completions,
+			this.settings.completions,
+		);
+		this.settings.cache = Object.assign(
+			{},
+			DEFAULT_SETTINGS.cache,
+			this.settings.cache,
+		);
+		this.settings.usage = Object.assign(
+			{},
+			DEFAULT_SETTINGS.usage,
+			this.settings.usage,
+		);
 	}
 
 	async saveSettings() {

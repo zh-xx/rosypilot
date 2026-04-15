@@ -9,7 +9,8 @@ export const migrateVersion2_2_0_toVersion2_3_0: SettingsMigrator<
 	const backup = structuredClone(settings);
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const { fewShot: _removed, ...completionsWithoutFewShot } = settings.completions;
+	const { fewShot: _removed, ...completionsWithoutFewShot } =
+		settings.completions;
 
 	return {
 		version: '2.3.0',

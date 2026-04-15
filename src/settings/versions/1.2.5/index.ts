@@ -52,4 +52,3 @@ export interface RosyPilotSettings1_2_5 {
 		monthlyLimit: number;
 	};
 }
-

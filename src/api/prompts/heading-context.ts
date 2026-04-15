@@ -134,7 +134,10 @@ export function buildHeadingContext(prefix: string, suffix: string): string {
 	}
 
 	// Trim trailing empty lines from body
-	while (bodyLines.length > 0 && bodyLines[bodyLines.length - 1].trim() === '') {
+	while (
+		bodyLines.length > 0 &&
+		bodyLines[bodyLines.length - 1].trim() === ''
+	) {
 		bodyLines.pop();
 	}
 

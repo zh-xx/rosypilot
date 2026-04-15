@@ -11,7 +11,8 @@ export const zh: Record<string, string> = {
 	'providers.deepseek.fetchModels.btn': '获取模型',
 	'providers.deepseek.fetchModels.success': '模型列表已更新。',
 	'providers.deepseek.fetchModels.fail.noKey': '请先输入 API Key。',
-	'providers.deepseek.fetchModels.fail.invalid': 'API Key 无效或网络错误，请检查后重试。',
+	'providers.deepseek.fetchModels.fail.invalid':
+		'API Key 无效或网络错误，请检查后重试。',
 	'providers.volcengine.apiKey': '火山引擎 API 密钥',
 	'providers.volcengine.apiKey.desc': '输入你的火山引擎 API 密钥。',
 	'providers.volcengine.fetchModels': '获取模型列表',
@@ -20,7 +21,8 @@ export const zh: Record<string, string> = {
 	'providers.volcengine.fetchModels.btn': '获取模型',
 	'providers.volcengine.fetchModels.success': '模型列表已更新。',
 	'providers.volcengine.fetchModels.fail.noKey': '请先输入 API Key。',
-	'providers.volcengine.fetchModels.fail.invalid': 'API Key 无效或网络错误，请检查后重试。',
+	'providers.volcengine.fetchModels.fail.invalid':
+		'API Key 无效或网络错误，请检查后重试。',
 
 	// Inline completions
 	'completions.heading': '行内补全',
@@ -29,13 +31,12 @@ export const zh: Record<string, string> = {
 	'completions.model': '模型',
 	'completions.model.desc': '选择行内补全使用的模型。',
 	'completions.model.empty': '请先获取模型列表',
-'completions.maxTokens': '最大 Token 数',
+	'completions.maxTokens': '最大 Token 数',
 	'completions.maxTokens.desc': '设置行内补全的最大 token 数。',
 	'completions.temperature': '温度',
 	'completions.temperature.desc': '设置行内补全的温度参数。',
 	'completions.waitTime': '等待时间',
-	'completions.waitTime.desc':
-		'向服务器请求行内补全前的等待时间（毫秒）。',
+	'completions.waitTime.desc': '向服务器请求行内补全前的等待时间（毫秒）。',
 	'completions.windowSize': '窗口大小',
 	'completions.windowSize.desc':
 		'设置行内补全的窗口大小，即光标周围用于获取补全的字符数。',
@@ -49,8 +50,7 @@ export const zh: Record<string, string> = {
 	// Cache
 	'cache.heading': '缓存',
 	'cache.enable': '启用缓存',
-	'cache.enable.desc':
-		'开启后启用内存缓存。缓存数据将在重启后失效。',
+	'cache.enable.desc': '开启后启用内存缓存。缓存数据将在重启后失效。',
 
 	// Debug
 	'debug.heading': '调试',
@@ -64,8 +64,7 @@ export const zh: Record<string, string> = {
 	'usage.monthlyLimit.desc':
 		'设置每月 token 用量限额。达到限额后，插件将停止行内补全。',
 	'usage.monthlyTokens': '本月 Token 用量',
-	'usage.monthlyTokens.desc':
-		'以下是本月行内补全的估算 token 用量。',
+	'usage.monthlyTokens.desc': '以下是本月行内补全的估算 token 用量。',
 	'usage.chartLabel': 'Token 用量',
 	'usage.limitReached.completions':
 		'已达到每月 token 用量限额，请提高限额以继续使用行内补全。',

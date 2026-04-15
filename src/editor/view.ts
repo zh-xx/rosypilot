@@ -106,7 +106,10 @@ const completionsRenderPluginSpec: PluginSpec<CompletionsRenderPluginValue> = {
 	decorations: (value: CompletionsRenderPluginValue) => value.decorations,
 };
 
-export function createCompletionsRenderPlugin(acceptKey: string, rejectKey: string) {
+export function createCompletionsRenderPlugin(
+	acceptKey: string,
+	rejectKey: string,
+) {
 	return ViewPlugin.define(
 		() => new CompletionsRenderPluginValue(acceptKey, rejectKey),
 		completionsRenderPluginSpec,
