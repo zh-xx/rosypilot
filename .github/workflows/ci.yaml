@@ -26,11 +26,11 @@ jobs:
 
       - name: Install dependencies
         id: install
-        run: yarn install
+        run: npm ci
 
       - name: Typecheck
         id: typecheck
-        run: yarn typecheck
+        run: npm run typecheck
 
   format:
     name: Format
@@ -49,11 +49,11 @@ jobs:
 
       - name: Install dependencies
         id: install
-        run: yarn install
+        run: npm ci
 
       - name: Run formatter
         id: format
-        run: yarn format
+        run: npm run format
 
   lint:
     name: Lint
@@ -72,11 +72,11 @@ jobs:
 
       - name: Install dependencies
         id: install
-        run: yarn install
+        run: npm ci
 
       - name: Run linter
         id: lint
-        run: yarn lint
+        run: npm run lint
 
   test:
     name: Test
@@ -95,8 +95,8 @@ jobs:
 
       - name: Install dependencies
         id: install
-        run: yarn install
+        run: npm ci
 
       - name: Run tests
         id: test
-        run: yarn test
+        run: npm test

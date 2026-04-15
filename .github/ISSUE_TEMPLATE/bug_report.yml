@@ -1,0 +1,52 @@
+name: Bug Report
+description: Report a bug or unexpected behaviour
+labels: ["bug"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Plugin version
+      placeholder: e.g. 0.2.0
+    validations:
+      required: true
+
+  - type: input
+    id: obsidian_version
+    attributes:
+      label: Obsidian version
+      placeholder: e.g. 1.5.7
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+      description: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+      description: What actually happened?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Any other information, screenshots, or logs that may help.
