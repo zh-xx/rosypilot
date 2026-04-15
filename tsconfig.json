@@ -1,0 +1,30 @@
+{
+  "ts-node": {
+    // For scraping CLI scripts
+    "compilerOptions": {
+      "module": "CommonJS"
+    }
+  },
+  "compilerOptions": {
+    "paths": {
+      "src/*": ["./src/*"]
+    },
+    "inlineSourceMap": true,
+    "inlineSources": true,
+    "module": "ESNext",
+    "target": "ES2018",
+    "allowJs": true,
+    "noImplicitAny": true,
+    "moduleResolution": "bundler",
+    "importHelpers": true,
+    "isolatedModules": true,
+    "strictNullChecks": true,
+    "lib": ["DOM", "ES5", "ES6", "ES7"],
+    "jsx": "react-jsx",
+    // For loading model JSON files.
+    "resolveJsonModule": true,
+    "esModuleInterop": true
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["**/*.test.ts", "node_modules"]
+}

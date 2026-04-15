@@ -1,0 +1,214 @@
+/************************************************************/
+/*                   Inline completions                     */
+/************************************************************/
+
+/* Show inline completions text with less opacity */
+.rosypilot-completions {
+  opacity: 0.5;
+}
+
+/* Keyboard shortcut hint shown after ghost text */
+.rosypilot-completions-hint {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 0.75em;
+  opacity: 0.75;
+  vertical-align: middle;
+}
+
+.rosypilot-completions-hint-divider {
+  margin-right: 6px;
+  opacity: 0.4;
+}
+
+.rosypilot-completions-hint-accept {
+  color: var(--color-green);
+}
+
+.rosypilot-completions-hint-reject {
+  color: var(--color-red);
+}
+
+/************************************************************/
+/*                    Usage progress bar                    */
+/************************************************************/
+
+.rosypilot-usage-progress-wrap {
+  margin: 4px var(--size-4-3) 12px;
+}
+
+.rosypilot-usage-progress-bar {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--background-modifier-border);
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+
+.rosypilot-usage-progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--interactive-accent);
+  transition: width 0.3s ease;
+}
+
+.rosypilot-usage-progress-label {
+  font-size: 0.8em;
+  opacity: 0.65;
+}
+
+/************************************************************/
+/*                       About card                         */
+/************************************************************/
+
+.rosypilot-about {
+  margin: 4px var(--size-4-3) 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  background: var(--background-secondary);
+  line-height: 1.6;
+}
+
+.rosypilot-about-title {
+  font-weight: 600;
+  font-size: 0.95em;
+}
+
+.rosypilot-about-meta {
+  font-size: 0.85em;
+  opacity: 0.75;
+}
+
+.rosypilot-about-copy {
+  font-size: 0.8em;
+  opacity: 0.5;
+}
+
+/************************************************************/
+/*                      Debug panel                         */
+/************************************************************/
+
+.rosypilot-debug-container {
+  padding: 8px;
+  font-size: 12px;
+  overflow-y: auto;
+  height: 100%;
+}
+
+.rosypilot-debug-card {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.rosypilot-debug-card-open {
+  border-color: var(--interactive-accent);
+}
+
+.rosypilot-debug-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  cursor: pointer;
+  user-select: none;
+  background: var(--background-secondary);
+}
+
+.rosypilot-debug-card-header:hover {
+  background: var(--background-modifier-hover);
+}
+
+.rosypilot-debug-card-context {
+  font-weight: bold;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.rosypilot-debug-card-preview {
+  font-size: 11px;
+  opacity: 0.6;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.rosypilot-debug-card-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.rosypilot-debug-toggle-btn {
+  padding: 0 4px;
+  font-size: 12px;
+  cursor: pointer;
+  border: none;
+  background: none;
+  line-height: 1;
+}
+
+.rosypilot-debug-copy-btn {
+  padding: 2px 8px;
+  font-size: 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  border: 1px solid var(--background-modifier-border);
+  background: var(--background-secondary);
+}
+
+.rosypilot-debug-copy-btn:hover {
+  background: var(--background-modifier-hover);
+}
+
+.rosypilot-debug-card-body {
+  padding: 8px 10px;
+  border-top: 1px solid var(--background-modifier-border);
+}
+
+.rosypilot-debug-section {
+  margin-bottom: 8px;
+}
+
+.rosypilot-debug-section:last-child {
+  margin-bottom: 0;
+}
+
+.rosypilot-debug-section strong {
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+  opacity: 0.5;
+  margin-bottom: 2px;
+  letter-spacing: 0.5px;
+}
+
+.rosypilot-debug-section pre {
+  margin: 0;
+  padding: 4px 8px;
+  background-color: var(--background-secondary);
+  border-radius: 4px;
+  font-size: 11px;
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.rosypilot-debug-message {
+  margin-bottom: 4px;
+}
+
+.rosypilot-debug-message code {
+  font-size: 10px;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.rosypilot-debug-message pre {
+  margin: 2px 0 0 0;
+}
