@@ -3,7 +3,7 @@
 	"name": "RosyPilot",
 	"version": "0.2.0",
 	"minAppVersion": "1.5.7",
-	"description": "AI-powered inline completions for legal writing",
+	"description": "AI-powered inline completions for legal writing.",
 	"author": "JiCheng",
 	"authorUrl": "",
 	"isDesktopOnly": true
