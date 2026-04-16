@@ -26,8 +26,7 @@ export class DebugView extends ItemView {
 	}
 
 	getDisplayText(): string {
-		// eslint-disable-next-line obsidianmd/ui/sentence-case -- "RosyPilot" is a brand name
-		return 'RosyPilot debug';
+		return 'Completion debug';
 	}
 
 	getIcon(): string {
