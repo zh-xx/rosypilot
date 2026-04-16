@@ -1,5 +1,7 @@
 # RosyPilot
 
+[中文](README.zh.md) | English
+
 **AI-powered inline completions for legal writing in Obsidian**
 
 RosyPilot brings context-aware AI inline completions to Obsidian, optimised for Chinese legal document authoring. When drafting contracts, legal opinions, pleadings, and similar documents, the plugin detects the Markdown context at the cursor (heading, paragraph, list, block-quote, etc.), selects the most appropriate prompting strategy for each, and displays suggestions as ghost text.
