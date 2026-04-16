@@ -2,6 +2,12 @@
 
 All notable changes to RosyPilot will be documented in this file.
 
+## [0.2.2] - 2026-04-16
+
+### 修复
+
+- 修复调试面板标题违反 Obsidian sentence case 规范的问题（"RosyPilot debug" → "Completion debug"）
+
 ## [0.2.1] - 2026-04-16
 
 ### 修复
