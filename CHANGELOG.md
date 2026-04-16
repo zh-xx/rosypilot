@@ -2,6 +2,21 @@
 
 All notable changes to RosyPilot will be documented in this file.
 
+## [0.2.1] - 2026-04-16
+
+### 修复
+
+- 修复调试面板条目无法展开的问题（toggle 逻辑错误）
+- 修复内联样式改为 CSS class 后 toggle 方向反转的 bug
+- 修复 `loadData()` 返回值类型推断，消除潜在运行时错误
+- 修复 `setTimeout` 回调中 Promise 未正确处理的问题
+
+### 代码质量
+
+- 引入 `eslint-plugin-obsidianmd`，对齐 Obsidian 官方代码审查标准
+- 消除所有 `any` 类型，使用泛型和具体类型替代
+- 修复浮动 Promise、多余 `await`、`console.log` 等 lint 问题
+
 ## [0.2.0] - 2026-04-15
 
 ### 新增 / 改进
