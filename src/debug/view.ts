@@ -34,6 +34,16 @@ export class DebugView extends ItemView {
 	}
 
 	onOpen(): Promise<void> {
+		const toolbar = this.contentEl.createDiv('rosypilot-debug-toolbar');
+		const clearBtn = toolbar.createEl('button', {
+			text: 'Clear',
+			cls: 'rosypilot-debug-clear-btn',
+		});
+		clearBtn.addEventListener('click', () => {
+			this.container.empty();
+			this.container.setText('Waiting for completions...');
+		});
+
 		this.container = this.contentEl.createDiv('rosypilot-debug-container');
 		this.container.setText('Waiting for completions...');
 		return Promise.resolve();

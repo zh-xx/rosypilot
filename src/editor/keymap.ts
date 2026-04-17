@@ -1,15 +1,10 @@
 import { Prec } from '@codemirror/state';
 import { EditorView, keymap } from '@codemirror/view';
 import RosyPilot from 'src/main';
-import { CompletionsCancel, CompletionsForce } from './extension';
+import { CompletionsCancel } from './extension';
 import { completionsStateField, unsetCompletionsEffect } from './state';
 
-export function acceptCompletionsOnKeydown(
-	force: CompletionsForce,
-	plugin: RosyPilot,
-) {
-	let lastCompletionsTime = 0;
-
+export function acceptCompletionsOnKeydown(plugin: RosyPilot) {
 	function run(view: EditorView) {
 		const { state } = view;
 
@@ -45,15 +40,6 @@ export function acceptCompletionsOnKeydown(
 				}),
 			],
 		});
-
-		// If the completions are triggered within 500ms, force the previous one.
-		const previousCompletionsTime = lastCompletionsTime;
-		const currentCompletionsTime = Date.now();
-		lastCompletionsTime = Date.now();
-		if (currentCompletionsTime - previousCompletionsTime < 500) {
-			force();
-			return true;
-		}
 
 		return true;
 	}

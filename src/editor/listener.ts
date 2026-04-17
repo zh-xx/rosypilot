@@ -17,7 +17,7 @@ export const createImeCompositionExtension = (cancel: () => void) =>
 		},
 	});
 
-function showCompletions(fetcher: CompletionsFetcher) {
+function showCompletions(fetcher: CompletionsFetcher, cancel: () => void) {
 	let lastHead = -1;
 	let latestCompletionsId = 0;
 
@@ -41,6 +41,7 @@ function showCompletions(fetcher: CompletionsFetcher) {
 
 		// If there are multiple or non-empty selection, skip showing the completions.
 		if (state.selection.ranges.length > 1 || !state.selection.main.empty) {
+			cancel();
 			view.dispatch({ effects: [unsetCompletionsEffect.of(null)] });
 			return;
 		}
@@ -48,6 +49,7 @@ function showCompletions(fetcher: CompletionsFetcher) {
 		const head = state.selection.main.head;
 		const char = state.sliceDoc(head, head + 1);
 		if (char.length == 1 && !char.match(/^[\p{P}\s]/u)) {
+			cancel();
 			view.dispatch({ effects: [unsetCompletionsEffect.of(null)] });
 			return;
 		}
@@ -56,6 +58,7 @@ function showCompletions(fetcher: CompletionsFetcher) {
 		const prefix = state.sliceDoc(0, head);
 		const suffix = state.sliceDoc(head, state.doc.length);
 		if (prefix.trim() === '') {
+			cancel();
 			view.dispatch({ effects: [unsetCompletionsEffect.of(null)] });
 			return;
 		}
@@ -90,8 +93,9 @@ function showCompletions(fetcher: CompletionsFetcher) {
 
 export const showCompletionsOnUpdate = (
 	fetcher: CompletionsFetcher,
+	cancel: () => void,
 	plugin: RosyPilot,
 ) => {
-	const handler = showCompletions(fetcher);
+	const handler = showCompletions(fetcher, cancel);
 	return EditorView.updateListener.of((update) => void handler(update));
 };

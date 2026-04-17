@@ -16,12 +16,10 @@ export type CompletionsFetcher = (
 ) => Promise<string | undefined>;
 
 export type CompletionsCancel = () => void;
-export type CompletionsForce = () => void;
 
 export function inlineCompletionsExtension(
 	fetcher: CompletionsFetcher,
 	cancel: () => void,
-	force: () => void,
 	plugin: RosyPilot,
 ) {
 	return [
@@ -30,8 +28,8 @@ export function inlineCompletionsExtension(
 			plugin.settings.completions.acceptKey,
 			plugin.settings.completions.rejectKey,
 		),
-		showCompletionsOnUpdate(fetcher, plugin),
-		acceptCompletionsOnKeydown(force, plugin),
+		showCompletionsOnUpdate(fetcher, cancel, plugin),
+		acceptCompletionsOnKeydown(plugin),
 		rejectCompletionsOnKeydown(cancel, plugin),
 		createImeCompositionExtension(cancel),
 	];

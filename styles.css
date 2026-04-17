@@ -89,11 +89,34 @@
 /*                      Debug panel                         */
 /************************************************************/
 
+.rosypilot-debug-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  background: var(--background-secondary);
+  flex-shrink: 0;
+}
+
+.rosypilot-debug-clear-btn {
+  padding: 2px 10px;
+  font-size: 11px;
+  cursor: pointer;
+  border-radius: 4px;
+  border: 1px solid var(--background-modifier-border);
+  background: var(--background-secondary);
+}
+
+.rosypilot-debug-clear-btn:hover {
+  background: var(--background-modifier-hover);
+}
+
 .rosypilot-debug-container {
   padding: 8px;
   font-size: 12px;
   overflow-y: auto;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
 }
 
 .rosypilot-debug-card {

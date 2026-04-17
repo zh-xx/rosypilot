@@ -173,12 +173,12 @@ export default class RosyPilot extends Plugin {
 			}
 			return this.completionsClient.fetchCompletions(prefix, suffix);
 		};
-		const { debounced, cancel, force } = debounceAsyncFunc(
+		const { debounced, cancel } = debounceAsyncFunc(
 			fetcher,
 			settings.completions.waitTime,
 		);
 
-		return inlineCompletionsExtension(debounced, cancel, force, this);
+		return inlineCompletionsExtension(debounced, cancel, this);
 	}
 
 	updateEditorExtension() {
