@@ -3,7 +3,7 @@ import {
 	acceptCompletionsOnKeydown,
 	rejectCompletionsOnKeydown,
 } from './keymap';
-import { showCompletionsOnUpdate } from './listener';
+import { createImeCompositionExtension, showCompletionsOnUpdate } from './listener';
 import { completionsStateField } from './state';
 import { createCompletionsRenderPlugin } from './view';
 
@@ -30,5 +30,6 @@ export function inlineCompletionsExtension(
 		showCompletionsOnUpdate(fetcher, plugin),
 		acceptCompletionsOnKeydown(force, plugin),
 		rejectCompletionsOnKeydown(cancel, plugin),
+		createImeCompositionExtension(cancel),
 	];
 }

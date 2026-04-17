@@ -100,6 +100,7 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 
 		const { plugin } = this;
 		const { settings } = plugin;
+		console.debug('[RosyPilot] display temperature=', settings.completions.temperature, 'waitTime=', settings.completions.waitTime);
 
 		/************************************************************/
 		/*                       Providers                         */
@@ -213,8 +214,10 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 			.addDropdown((dropdown) => {
 				const models = settings.providers[currentProvider].fetchedModels;
 				if (models.length === 0) {
-					dropdown.addOption('', t('completions.model.empty'));
-					dropdown.setDisabled(true);
+					dropdown
+						.addOption('', t('completions.model.empty'))
+						.setValue('')
+						.setDisabled(true);
 				} else {
 					for (const option of models) {
 						dropdown.addOption(option, option);
@@ -260,8 +263,8 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 			.addSlider((slider) =>
 				slider
 					.setDisabled(!settings.completions.enabled)
-					.setValue(settings.completions.temperature)
 					.setLimits(0, 1, 0.01)
+					.setValue(settings.completions.temperature)
 					.setDynamicTooltip()
 					.onChange(async (value) => {
 						settings.completions.temperature = value;
@@ -275,8 +278,8 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 			.addSlider((slider) =>
 				slider
 					.setDisabled(!settings.completions.enabled)
-					.setValue(settings.completions.waitTime)
 					.setLimits(0, 1000, 100)
+					.setValue(settings.completions.waitTime)
 					.setDynamicTooltip()
 					.onChange(async (value) => {
 						settings.completions.waitTime = value;

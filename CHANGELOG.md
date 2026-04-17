@@ -2,6 +2,16 @@
 
 All notable changes to RosyPilot will be documented in this file.
 
+## [0.2.3] - 2026-04-17
+
+### 修复
+
+- 修复中文输入法（IME）组合期间触发补全请求的问题：`compositionstart` 到 `compositionend` 之间的文档变化不再触发补全，`compositionstart` 时同时取消已进入 debounce 队列的待发请求
+- 修复 temperature / waitTime 滑块因 `setValue` 在 `setLimits` 之前调用，导致值被 HTML range input 默认步长截断后写回设置（重开设置面板显示默认值）的问题
+- 修复首次安装时 `DEFAULT_SETTINGS` 被引用赋值污染的问题，现改用 `structuredClone` 复制
+- 修复 `loadSettings()` 对 `providers` 字段仅一层浅合并的问题：现对每个 provider 子对象进行二层合并，确保新增字段（如 `fetchedModels`）在旧数据中被正确补齐
+- 修复设置界面 model 下拉在无可用模型时未调用 `setValue` 的问题
+
 ## [0.2.2] - 2026-04-16
 
 ### 修复

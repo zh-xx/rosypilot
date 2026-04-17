@@ -3,7 +3,7 @@ import { addIcon, Notice, Plugin, setIcon } from 'obsidian';
 import { APIClient } from './api';
 import { OpenAICompatibleAPIClient } from './api/clients/openai-compatible';
 import { PromptGenerator } from './api/prompts/generator';
-import { Provider } from './api/providers';
+import { Provider, PROVIDERS } from './api/providers';
 import { TokenTracker } from './api/providers/tokens';
 import { MemoryCacheProxy } from './api/proxies/memory-cache';
 import { UsageMonitorProxy } from './api/proxies/usage-monitor';
@@ -230,7 +230,7 @@ export default class RosyPilot extends Plugin {
 	async loadSettings() {
 		const data = (await this.loadData()) as RosyPilotSettings | null;
 		if (data === null) {
-			this.settings = DEFAULT_SETTINGS;
+			this.settings = structuredClone(DEFAULT_SETTINGS);
 			return;
 		}
 
@@ -250,6 +250,13 @@ export default class RosyPilot extends Plugin {
 			DEFAULT_SETTINGS.providers,
 			this.settings.providers,
 		);
+		for (const p of PROVIDERS) {
+			this.settings.providers[p] = Object.assign(
+				{},
+				DEFAULT_SETTINGS.providers[p],
+				this.settings.providers[p] ?? {},
+			);
+		}
 		this.settings.completions = Object.assign(
 			{},
 			DEFAULT_SETTINGS.completions,
@@ -268,6 +275,7 @@ export default class RosyPilot extends Plugin {
 	}
 
 	async saveSettings() {
+		console.debug('[RosyPilot] saveSettings temperature=', this.settings.completions.temperature, 'waitTime=', this.settings.completions.waitTime);
 		await this.saveData(this.settings);
 	}
 }

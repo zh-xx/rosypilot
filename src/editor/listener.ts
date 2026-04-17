@@ -4,11 +4,28 @@ import RosyPilot from 'src/main';
 import { CompletionsFetcher } from './extension';
 import { setCompletionsEffect, unsetCompletionsEffect } from './state';
 
+let isComposing = false;
+
+export const createImeCompositionExtension = (cancel: () => void) =>
+	EditorView.domEventHandlers({
+		compositionstart: () => {
+			isComposing = true;
+			cancel();
+		},
+		compositionend: () => {
+			isComposing = false;
+		},
+	});
+
 function showCompletions(fetcher: CompletionsFetcher) {
 	let lastHead = -1;
 	let latestCompletionsId = 0;
 
 	return async (update: ViewUpdate) => {
+		if (isComposing) {
+			return;
+		}
+
 		const { state, view } = update;
 
 		// TODO:
