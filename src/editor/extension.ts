@@ -3,7 +3,10 @@ import {
 	acceptCompletionsOnKeydown,
 	rejectCompletionsOnKeydown,
 } from './keymap';
-import { createImeCompositionExtension, showCompletionsOnUpdate } from './listener';
+import {
+	createImeCompositionExtension,
+	showCompletionsOnUpdate,
+} from './listener';
 import { completionsStateField } from './state';
 import { createCompletionsRenderPlugin } from './view';
 

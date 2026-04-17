@@ -275,7 +275,12 @@ export default class RosyPilot extends Plugin {
 	}
 
 	async saveSettings() {
-		console.debug('[RosyPilot] saveSettings temperature=', this.settings.completions.temperature, 'waitTime=', this.settings.completions.waitTime);
+		console.debug(
+			'[RosyPilot] saveSettings temperature=',
+			this.settings.completions.temperature,
+			'waitTime=',
+			this.settings.completions.waitTime,
+		);
 		await this.saveData(this.settings);
 	}
 }

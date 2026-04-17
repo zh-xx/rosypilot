@@ -100,7 +100,12 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 
 		const { plugin } = this;
 		const { settings } = plugin;
-		console.debug('[RosyPilot] display temperature=', settings.completions.temperature, 'waitTime=', settings.completions.waitTime);
+		console.debug(
+			'[RosyPilot] display temperature=',
+			settings.completions.temperature,
+			'waitTime=',
+			settings.completions.waitTime,
+		);
 
 		/************************************************************/
 		/*                       Providers                         */
