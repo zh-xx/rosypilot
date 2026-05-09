@@ -1,12 +1,17 @@
 import { Notice } from 'obsidian';
 import OpenAI from 'openai';
+import type { ChatCompletion, ChatCompletionCreateParamsNonStreaming } from 'openai/resources/chat/completions';
 import { t } from 'src/i18n';
 import RosyPilot from 'src/main';
 import { APIClient } from '..';
 import { PromptGenerator } from '../prompts/generator';
-import { PROVIDERS_BASE_URLS, PROVIDERS_COMPLETIONS_URLS } from '../providers';
+import { PROVIDERS_COMPLETIONS_URLS } from '../providers';
 import { TokenTracker } from '../providers/tokens';
 import { requestUrlFetch } from './request-url-fetch';
+
+type DeepSeekCompletionParams = ChatCompletionCreateParamsNonStreaming & {
+	thinking?: { type: 'disabled' | 'enabled' };
+};
 
 export class OpenAICompatibleAPIClient implements APIClient {
 	constructor(
@@ -47,20 +52,22 @@ export class OpenAICompatibleAPIClient implements APIClient {
 					: undefined;
 			const prompt = this.generator.generateCompletionsPrompt(prefix, suffix);
 
-			const requestParams = {
+			const baseParams = {
 				model: settings.completions.model,
 				max_tokens: settings.completions.maxTokens,
 				temperature: settings.completions.temperature,
 				stop: ['\n\n\n'],
 			};
-
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			const completions = await (this.openai.chat.completions.create as any)({
+			const requestParams: DeepSeekCompletionParams = {
+				...baseParams,
 				messages: prompt,
-				...requestParams,
 				// DeepSeek-specific: disable chain-of-thought to keep responses clean
 				thinking: { type: 'disabled' },
-			});
+			};
+
+			const completions = await this.openai.chat.completions.create(
+				requestParams,
+			) as ChatCompletion;
 
 			const inputTokens = completions.usage?.prompt_tokens ?? 0;
 			const outputTokens = completions.usage?.completion_tokens ?? 0;
@@ -72,7 +79,7 @@ export class OpenAICompatibleAPIClient implements APIClient {
 					context,
 					section,
 					prompt,
-					request: requestParams,
+					request: baseParams,
 					rawResponse: 'null',
 					parsedResult: 'null',
 					timestamp: Date.now(),
@@ -92,7 +99,7 @@ export class OpenAICompatibleAPIClient implements APIClient {
 				context,
 				section,
 				prompt,
-				request: requestParams,
+				request: baseParams,
 				rawResponse: content,
 				parsedResult: parsed,
 				timestamp: Date.now(),
