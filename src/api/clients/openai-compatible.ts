@@ -4,7 +4,7 @@ import { t } from 'src/i18n';
 import RosyPilot from 'src/main';
 import { APIClient } from '..';
 import { PromptGenerator } from '../prompts/generator';
-import { PROVIDERS_BASE_URLS } from '../providers';
+import { PROVIDERS_BASE_URLS, PROVIDERS_COMPLETIONS_URLS } from '../providers';
 import { TokenTracker } from '../providers/tokens';
 import { requestUrlFetch } from './request-url-fetch';
 
@@ -27,7 +27,7 @@ export class OpenAICompatibleAPIClient implements APIClient {
 
 		return new OpenAI({
 			apiKey,
-			baseURL: PROVIDERS_BASE_URLS[provider],
+			baseURL: PROVIDERS_COMPLETIONS_URLS[provider],
 			dangerouslyAllowBrowser: true,
 			fetch: requestUrlFetch,
 		});
@@ -54,9 +54,12 @@ export class OpenAICompatibleAPIClient implements APIClient {
 				stop: ['\n\n\n'],
 			};
 
-			const completions = await this.openai.chat.completions.create({
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			const completions = await (this.openai.chat.completions.create as any)({
 				messages: prompt,
 				...requestParams,
+				// DeepSeek-specific: disable chain-of-thought to keep responses clean
+				thinking: { type: 'disabled' },
 			});
 
 			const inputTokens = completions.usage?.prompt_tokens ?? 0;

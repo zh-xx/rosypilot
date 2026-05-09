@@ -12,4 +12,10 @@ export const PROVIDERS_BASE_URLS: Record<Provider, string> = {
 	volcengine: 'https://ark.cn-beijing.volces.com/api/v3',
 };
 
+// DeepSeek prefix completion requires the /beta endpoint
+export const PROVIDERS_COMPLETIONS_URLS: Record<Provider, string> = {
+	deepseek: 'https://api.deepseek.com/beta',
+	volcengine: 'https://ark.cn-beijing.volces.com/api/v3',
+};
+
 export const DEFAULT_PROVIDER = 'deepseek' as Provider;

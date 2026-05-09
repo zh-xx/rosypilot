@@ -72,9 +72,11 @@ export class PromptGenerator {
 			},
 			// Prefill the assistant response with <INSERT> to force the model
 			// to start directly with the completion text, skipping any preamble.
+			// DeepSeek /beta endpoint requires prefix:true for assistant prefill to work.
 			{
 				role: 'assistant',
 				content: '<INSERT>\n',
+				prefix: true,
 			},
 		] as ChatCompletionMessageParam[];
 	}

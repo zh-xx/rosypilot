@@ -2,6 +2,14 @@
 
 All notable changes to RosyPilot will be documented in this file.
 
+## [0.2.5] - 2026-05-09
+
+### 修复
+
+- 修复 DeepSeek API 兼容性问题：补全请求切换至 `/beta` 端点，并为 assistant prefill 消息添加 `prefix: true` 参数，使前缀补全功能正常工作
+- 新增 `thinking: { type: 'disabled' }` 参数，显式关闭 DeepSeek 思维链模式，避免推理内容混入补全结果
+- 拆分 `PROVIDERS_BASE_URLS` 与 `PROVIDERS_COMPLETIONS_URLS`，解决模型列表获取与补全请求使用不同端点的冲突
+
 ## [0.2.4] - 2026-04-17
 
 ### 修复
