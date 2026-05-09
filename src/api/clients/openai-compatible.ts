@@ -1,6 +1,9 @@
 import { Notice } from 'obsidian';
 import OpenAI from 'openai';
-import type { ChatCompletion, ChatCompletionCreateParamsNonStreaming } from 'openai/resources/chat/completions';
+import type {
+	ChatCompletion,
+	ChatCompletionCreateParamsNonStreaming,
+} from 'openai/resources/chat/completions';
 import { t } from 'src/i18n';
 import RosyPilot from 'src/main';
 import { APIClient } from '..';
@@ -65,9 +68,9 @@ export class OpenAICompatibleAPIClient implements APIClient {
 				thinking: { type: 'disabled' },
 			};
 
-			const completions = await this.openai.chat.completions.create(
+			const completions = (await this.openai.chat.completions.create(
 				requestParams,
-			) as ChatCompletion;
+			)) as ChatCompletion;
 
 			const inputTokens = completions.usage?.prompt_tokens ?? 0;
 			const outputTokens = completions.usage?.completion_tokens ?? 0;
