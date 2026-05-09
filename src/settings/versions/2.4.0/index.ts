@@ -1,6 +1,10 @@
+// Check the settings type in this version matches the current settings type.
+
+import { RosyPilotSettings } from 'src/settings';
+import { Equal, Expect } from 'src/settings/utils';
 import { Provider } from '../../../api/providers';
 
-export interface RosyPilotSettings2_3_0 {
+export interface RosyPilotSettings2_4_0 {
 	version: string;
 	backups: Record<string, object>;
 	providers: Record<
@@ -32,4 +36,12 @@ export interface RosyPilotSettings2_3_0 {
 		monthlyTokens: Record<string, number>;
 		monthlyLimit: number;
 	};
+	legal: {
+		yuandianApiKey: string | undefined;
+	};
 }
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- compile-time assertion type is intentionally unused at runtime
+type AssertEqualCurrentSettings = Expect<
+	Equal<RosyPilotSettings2_4_0, RosyPilotSettings>
+>;

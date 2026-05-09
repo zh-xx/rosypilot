@@ -102,4 +102,28 @@ export const en: Record<string, string> = {
 
 	// About
 	'about.heading': 'About',
+
+	// Legal database
+	'settings.legal.title': 'Legal Database',
+	'settings.legal.apiKey': 'Yuandian API Key',
+	'settings.legal.apiKeyDesc':
+		'Used for legal provision lookup (1 credit per exact query, 10 credits per semantic search)',
+
+	// Legal slash command
+	'legal.slashCommand.label': 'Complete legal provision',
+
+	// Legal panel
+	'legal.panel.title': 'Legal Provisions',
+	'legal.panel.loading': 'Searching…',
+	'legal.panel.detecting': 'Analysing context…',
+	'legal.panel.fetching': 'Fetching provision…',
+	'legal.panel.adapting': 'Adapting…',
+	'legal.panel.insert.raw': 'Insert provision',
+	'legal.panel.insert.adapted': 'Adapted',
+	'legal.panel.empty': 'No results found',
+	'legal.panel.error': 'Query failed. Check your API key.',
+	'legal.panel.detail.label': 'Exact match',
+	'legal.panel.search.label': 'Semantic results',
+	'legal.notice.noApiKey':
+		'Please set your Yuandian API Key in settings first.',
 };

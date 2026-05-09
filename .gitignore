@@ -21,6 +21,9 @@ data.json
 # Exclude macOS Finder (System Explorer) View States
 .DS_Store
 
+# Secrets
+.env
+
 # Internal development files
 CLAUDE.md
 AGENTS.md

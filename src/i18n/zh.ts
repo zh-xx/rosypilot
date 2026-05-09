@@ -97,4 +97,27 @@ export const zh: Record<string, string> = {
 
 	// About
 	'about.heading': '关于',
+
+	// Legal database
+	'settings.legal.title': '法律数据库',
+	'settings.legal.apiKey': '元典 API Key',
+	'settings.legal.apiKeyDesc':
+		'用于法条查询（精确查条 1 积分/次，语义检索 10 积分/次）',
+
+	// Legal slash command
+	'legal.slashCommand.label': '补全法条',
+
+	// Legal panel
+	'legal.panel.title': '法条',
+	'legal.panel.loading': '查询中…',
+	'legal.panel.detecting': '正在分析上下文…',
+	'legal.panel.fetching': '正在查询法条…',
+	'legal.panel.adapting': '正在改写…',
+	'legal.panel.insert.raw': '插入法条',
+	'legal.panel.insert.adapted': '匹配原文',
+	'legal.panel.empty': '未找到相关法条',
+	'legal.panel.error': '查询失败，请检查 API 密钥',
+	'legal.panel.detail.label': '精确匹配',
+	'legal.panel.search.label': '语义相关',
+	'legal.notice.noApiKey': '请先在设置中填写元典 API Key',
 };

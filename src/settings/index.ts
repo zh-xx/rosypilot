@@ -47,6 +47,9 @@ export interface RosyPilotSettings {
 		monthlyTokens: Record<string, number>;
 		monthlyLimit: number;
 	};
+	legal: {
+		yuandianApiKey: string | undefined;
+	};
 }
 
 const defaultProviders: Record<
@@ -58,7 +61,7 @@ for (const provider of PROVIDERS) {
 }
 
 export const DEFAULT_SETTINGS: RosyPilotSettings = {
-	version: '2.3.0',
+	version: '2.4.0',
 	backups: {},
 	providers: defaultProviders,
 	completions: {
@@ -82,6 +85,9 @@ export const DEFAULT_SETTINGS: RosyPilotSettings = {
 		dailyTokens: {},
 		monthlyTokens: {},
 		monthlyLimit: 10_000_000,
+	},
+	legal: {
+		yuandianApiKey: undefined,
 	},
 };
 
@@ -413,6 +419,24 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 			.setDesc(t('usage.monthlyTokens.desc'));
 
 		this.showMonthlyTokens();
+
+		/************************************************************/
+		/*                    Legal database                        */
+		/************************************************************/
+
+		new Setting(containerEl).setName(t('settings.legal.title')).setHeading();
+
+		new Setting(containerEl)
+			.setName(t('settings.legal.apiKey'))
+			.setDesc(t('settings.legal.apiKeyDesc'))
+			.addText((text) =>
+				text
+					.setValue(settings.legal?.yuandianApiKey ?? '')
+					.onChange(async (value) => {
+						settings.legal.yuandianApiKey = value || undefined;
+						await plugin.saveSettings();
+					}),
+			);
 
 		/************************************************************/
 		/*                          About                           */

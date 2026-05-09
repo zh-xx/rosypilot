@@ -6,6 +6,7 @@ import { migrateVersion1_2_5_toVersion2_0_0 } from './migrators/1.2.5-2.0.0';
 import { migrateVersion2_0_0_toVersion2_1_0 } from './migrators/2.0.0-2.1.0';
 import { migrateVersion2_1_0_toVersion2_2_0 } from './migrators/2.1.0-2.2.0';
 import { migrateVersion2_2_0_toVersion2_3_0 } from './migrators/2.2.0-2.3.0';
+import { migrateVersion2_3_0_toVersion2_4_0 } from './migrators/2.3.0-2.4.0';
 import { RosyPilotSettings } from '.';
 
 // Minimal shape shared by all versioned settings objects.
@@ -23,6 +24,7 @@ export class SettingsMigrationsRunner {
 		'2.0.0': migrateVersion2_0_0_toVersion2_1_0 as unknown as AnyMigrator,
 		'2.1.0': migrateVersion2_1_0_toVersion2_2_0 as unknown as AnyMigrator,
 		'2.2.0': migrateVersion2_2_0_toVersion2_3_0 as unknown as AnyMigrator,
+		'2.3.0': migrateVersion2_3_0_toVersion2_4_0 as unknown as AnyMigrator,
 	};
 
 	constructor(private plugin: RosyPilot) {}

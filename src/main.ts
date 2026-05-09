@@ -9,6 +9,8 @@ import { MemoryCacheProxy } from './api/proxies/memory-cache';
 import { UsageMonitorProxy } from './api/proxies/usage-monitor';
 import { DEBUG_VIEW_TYPE, DebugEntry, DebugView } from './debug/view';
 import { inlineCompletionsExtension } from './editor/extension';
+import { LegalSlashCommand } from './legal/slash-command';
+import { LEGAL_PANEL_VIEW_TYPE, LegalPanelView } from './legal/view';
 import { t } from './i18n';
 import flowerOffIcon from './icons/flower-off.svg';
 import {
@@ -25,6 +27,7 @@ export default class RosyPilot extends Plugin {
 	extensions!: Extension[];
 	completionsClient!: APIClient;
 	debugView: DebugView | null = null;
+	legalPanelView: LegalPanelView | null = null;
 
 	async onload() {
 		await this.loadSettings();
@@ -42,6 +45,12 @@ export default class RosyPilot extends Plugin {
 		this.registerView(DEBUG_VIEW_TYPE, (leaf) => {
 			const view = new DebugView(leaf);
 			this.debugView = view;
+			return view;
+		});
+
+		this.registerView(LEGAL_PANEL_VIEW_TYPE, (leaf) => {
+			const view = new LegalPanelView(leaf);
+			this.legalPanelView = view;
 			return view;
 		});
 
@@ -78,75 +87,27 @@ export default class RosyPilot extends Plugin {
 
 	registerCommands() {
 		this.addCommand({
-			id: 'enable-completions',
-			name: t('command.enableCompletions'),
-			callback: async () => {
-				this.settings.completions.enabled = true;
-				await this.saveSettings();
-				new Notice(t('notice.completions.enabled'));
-			},
-		});
-
-		this.addCommand({
-			id: 'disable-completions',
-			name: t('command.disableCompletions'),
-			callback: async () => {
-				this.settings.completions.enabled = false;
-				await this.saveSettings();
-				new Notice(t('notice.completions.disabled'));
-			},
-		});
-
-		this.addCommand({
-			id: 'toggle-completions',
-			name: t('command.toggleCompletions'),
-			callback: async () => {
-				this.settings.completions.enabled = !this.settings.completions.enabled;
-				await this.saveSettings();
-				new Notice(
-					this.settings.completions.enabled
-						? t('notice.completions.enabled')
-						: t('notice.completions.disabled'),
-				);
-			},
-		});
-
-		this.addCommand({
-			id: 'enable-cache',
-			name: t('command.enableCache'),
-			callback: async () => {
-				this.settings.cache.enabled = true;
-				await this.saveSettings();
-				new Notice(t('notice.cache.enabled'));
-			},
-		});
-
-		this.addCommand({
-			id: 'disable-cache',
-			name: t('command.disableCache'),
-			callback: async () => {
-				this.settings.cache.enabled = false;
-				await this.saveSettings();
-				new Notice(t('notice.cache.disabled'));
-			},
-		});
-
-		this.addCommand({
-			id: 'toggle-cache',
-			name: t('command.toggleCache'),
-			callback: async () => {
-				this.settings.cache.enabled = !this.settings.cache.enabled;
-				await this.saveSettings();
-				new Notice(
-					this.settings.cache.enabled
-						? t('notice.cache.enabled')
-						: t('notice.cache.disabled'),
-				);
+			id: 'complete-legal-provision',
+			name: t('legal.slashCommand.label'),
+			editorCallback: (editor) => {
+				// Remove the trailing space that was typed before "/" to trigger
+				// Obsidian's slash command popup in non-empty lines.
+				const cursor = editor.getCursor();
+				const lineText = editor.getLine(cursor.line);
+				if (cursor.ch > 0 && lineText[cursor.ch - 1] === ' ') {
+					editor.replaceRange(
+						'',
+						{ line: cursor.line, ch: cursor.ch - 1 },
+						cursor,
+					);
+				}
+				const prefix = editor.getRange({ line: 0, ch: 0 }, editor.getCursor());
+				void new LegalSlashCommand(this).run(prefix, editor);
 			},
 		});
 	}
 
-	createAPIClient(provider: Provider) {
+	createAPIClient(_provider: Provider) {
 		const generator = new PromptGenerator(this);
 		const tracker = new TokenTracker(this);
 		const client = new OpenAICompatibleAPIClient(generator, tracker, this);
@@ -217,6 +178,20 @@ export default class RosyPilot extends Plugin {
 		await leaf?.setViewState({ type: DEBUG_VIEW_TYPE, active: true });
 	}
 
+	async openLegalPanel(): Promise<LegalPanelView> {
+		const { workspace } = this.app;
+
+		const leaves = workspace.getLeavesOfType(LEGAL_PANEL_VIEW_TYPE);
+		if (leaves.length > 0) {
+			await workspace.revealLeaf(leaves[0]);
+			return leaves[0].view as LegalPanelView;
+		}
+
+		const leaf = workspace.getRightLeaf(false);
+		await leaf?.setViewState({ type: LEGAL_PANEL_VIEW_TYPE, active: true });
+		return this.legalPanelView!;
+	}
+
 	deactivateDebugView() {
 		const { workspace } = this.app;
 
@@ -271,6 +246,11 @@ export default class RosyPilot extends Plugin {
 			{},
 			DEFAULT_SETTINGS.usage,
 			this.settings.usage,
+		);
+		this.settings.legal = Object.assign(
+			{},
+			DEFAULT_SETTINGS.legal,
+			this.settings.legal,
 		);
 	}
 
