@@ -2,6 +2,12 @@
 
 All notable changes to RosyPilot will be documented in this file.
 
+## [0.2.6] - 2026-05-09
+
+### 修复
+
+- 修复 CI lint/typecheck 错误：用 `DeepSeekCompletionParams` 类型扩展替代 `as any` 转换，消除 unsafe-any 警告；移除未使用的 `PROVIDERS_BASE_URLS` 导入
+
 ## [0.2.5] - 2026-05-09
 
 ### 修复
