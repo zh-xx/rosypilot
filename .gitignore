@@ -23,6 +23,9 @@ data.json
 
 # Internal development files
 CLAUDE.md
+AGENTS.md
 docs/
 yarn.lock
 src/scripts/
+.claude/
+obsidian-releases/
