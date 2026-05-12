@@ -4,7 +4,11 @@ import { t } from 'src/i18n';
 import { LegalApplicationResult } from './applicators/applicator';
 import { InsertAdaptedApplicator } from './applicators/insert-adapted';
 import { InsertRawApplicator, RawInsertFormat } from './applicators/insert-raw';
-import { LegalExecutorDebugStep } from './debug';
+import {
+	LegalApplicationDebugAction,
+	LegalCommandDebugEntry,
+	LegalExecutorDebugStep,
+} from './debug';
 import { WebExactExecutor } from './executors/web-exact';
 import { YuandianExactExecutor } from './executors/yuandian-exact';
 import { LegalExecutorRegistry } from './executors/registry';
@@ -20,6 +24,7 @@ export class LegalSlashCommand {
 	private executors = new LegalExecutorRegistry();
 	private insertRaw = new InsertRawApplicator();
 	private insertAdapted = new InsertAdaptedApplicator();
+	private currentDebugEntry?: LegalCommandDebugEntry;
 
 	constructor(private plugin: RosyPilot) {
 		this.executors.register(new YuandianExactExecutor());
@@ -50,7 +55,7 @@ export class LegalSlashCommand {
 		const route = await judge.judge(prefix);
 		if (route.kind === 'none') {
 			view.setError(t('legal.panel.empty'));
-			this.plugin.legalDebugLog({
+			this.logLegalDebug({
 				commandId: request.commandId,
 				prefix,
 				route,
@@ -79,7 +84,7 @@ export class LegalSlashCommand {
 			).run(request, route, plan, {
 				onStep: (step) => debugSteps.push(step),
 			});
-			this.plugin.legalDebugLog({
+			this.logLegalDebug({
 				commandId: request.commandId,
 				prefix,
 				route,
@@ -104,6 +109,13 @@ export class LegalSlashCommand {
 						this.plugin,
 						format,
 					);
+					this.logApplicationAction({
+						actionId: 'insert.raw',
+						resultId: result.id,
+						resultTitle: result.title,
+						format,
+						...toApplicationDebugStatus(application),
+					});
 					this.notifyApplicationResult(application, 'raw');
 				},
 				async (result) => {
@@ -113,21 +125,31 @@ export class LegalSlashCommand {
 							result,
 							this.plugin,
 						);
+						this.logApplicationAction({
+							actionId: 'insert.adapted',
+							resultId: result.id,
+							resultTitle: result.title,
+							...toApplicationDebugStatus(application),
+						});
 						this.notifyApplicationResult(application, 'adapted');
 					} catch (error) {
-						this.notifyApplicationResult(
-							{
-								status: 'failed',
-								reason: 'error',
-								message: error instanceof Error ? error.message : String(error),
-							},
-							'adapted',
-						);
+						const application: LegalApplicationResult = {
+							status: 'failed',
+							reason: 'error',
+							message: error instanceof Error ? error.message : String(error),
+						};
+						this.logApplicationAction({
+							actionId: 'insert.adapted',
+							resultId: result.id,
+							resultTitle: result.title,
+							...toApplicationDebugStatus(application),
+						});
+						this.notifyApplicationResult(application, 'adapted');
 					}
 				},
 			);
 		} catch (error) {
-			this.plugin.legalDebugLog({
+			this.logLegalDebug({
 				commandId: request.commandId,
 				prefix,
 				route,
@@ -147,6 +169,28 @@ export class LegalSlashCommand {
 			});
 			view.setError(t('legal.panel.error'));
 		}
+	}
+
+	private logLegalDebug(entry: LegalCommandDebugEntry): void {
+		this.currentDebugEntry = entry;
+		this.plugin.legalDebugLog(entry);
+	}
+
+	private logApplicationAction(
+		action: Omit<LegalApplicationDebugAction, 'timestamp'>,
+	): void {
+		if (!this.currentDebugEntry) return;
+		this.currentDebugEntry = {
+			...this.currentDebugEntry,
+			applications: [
+				...(this.currentDebugEntry.applications ?? []),
+				{
+					...action,
+					timestamp: Date.now(),
+				},
+			],
+		};
+		this.plugin.legalDebugLog(this.currentDebugEntry);
 	}
 
 	private notifyApplicationResult(
@@ -175,4 +219,17 @@ export class LegalSlashCommand {
 		const reason = result.message ? ` ${result.message}` : '';
 		new Notice(`${t('legal.notice.insert.failed')}${reason}`);
 	}
+}
+
+function toApplicationDebugStatus(
+	result: LegalApplicationResult,
+): Pick<LegalApplicationDebugAction, 'status' | 'reason' | 'message'> {
+	if (result.status === 'success') {
+		return { status: 'success' };
+	}
+	return {
+		status: 'failed',
+		reason: result.reason,
+		message: result.message,
+	};
 }

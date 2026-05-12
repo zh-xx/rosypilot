@@ -53,7 +53,7 @@ export class LegalCommandDebugView extends ItemView {
 			cls: 'rosypilot-debug-card-context',
 		});
 		header.createSpan({
-			text: `${entry.route.kind} · ${entry.plan.mode} · ${entry.results.length} result(s)`,
+			text: this.buildHeaderPreview(entry),
 			cls: 'rosypilot-debug-card-preview',
 		});
 
@@ -84,6 +84,7 @@ export class LegalCommandDebugView extends ItemView {
 			card.classList.toggle('rosypilot-debug-card-open', isHidden);
 		});
 
+		this.renderSummary(body, entry);
 		this.renderSection(body, 'Trigger', {
 			commandId: entry.commandId,
 			prefix: entry.prefix,
@@ -105,6 +106,95 @@ export class LegalCommandDebugView extends ItemView {
 				contentPreview: result.content.slice(0, 200),
 			})),
 		);
+		this.renderSection(body, 'Applications', entry.applications ?? []);
+		this.renderSection(body, 'Raw JSON', entry);
+	}
+
+	private buildHeaderPreview(entry: LegalCommandDebugEntry): string {
+		const ref =
+			entry.route.kind === 'exact-provision'
+				? ` · ${entry.route.ref.fgmc}${entry.route.ref.ftnum}`
+				: '';
+		const applicationCount = entry.applications?.length ?? 0;
+		return `${entry.route.kind}${ref} · ${entry.plan.mode} · ${entry.results.length} result(s) · ${applicationCount} action(s)`;
+	}
+
+	private renderSummary(
+		parent: HTMLElement,
+		entry: LegalCommandDebugEntry,
+	): void {
+		const summary = parent.createDiv('rosypilot-debug-summary');
+		summary.createEl('strong', { text: 'Summary' });
+		const rows = summary.createDiv('rosypilot-debug-summary-grid');
+		this.renderSummaryRow(rows, 'Trigger', entry.commandId);
+		this.renderSummaryRow(rows, 'Route', this.describeRoute(entry));
+		this.renderSummaryRow(
+			rows,
+			'Plan',
+			`${entry.plan.mode}: ${entry.plan.steps
+				.map((step) => step.executorId)
+				.join(' -> ')}`,
+		);
+		this.renderSummaryRow(rows, 'Steps', this.describeSteps(entry));
+		this.renderSummaryRow(rows, 'Results', this.describeResults(entry));
+		this.renderSummaryRow(
+			rows,
+			'Applications',
+			this.describeApplications(entry),
+		);
+	}
+
+	private renderSummaryRow(
+		parent: HTMLElement,
+		label: string,
+		value: string,
+	): void {
+		const row = parent.createDiv('rosypilot-debug-summary-row');
+		row.createSpan({
+			cls: 'rosypilot-debug-summary-label',
+			text: label,
+		});
+		row.createSpan({
+			cls: 'rosypilot-debug-summary-value',
+			text: value,
+		});
+	}
+
+	private describeRoute(entry: LegalCommandDebugEntry): string {
+		if (entry.route.kind === 'exact-provision') {
+			return `${entry.route.ref.fgmc} ${entry.route.ref.ftnum}`;
+		}
+		return entry.route.kind;
+	}
+
+	private describeSteps(entry: LegalCommandDebugEntry): string {
+		if (entry.steps.length === 0) return 'none';
+		return entry.steps
+			.map((step) => `${step.executorId}:${step.status}(${step.resultCount})`)
+			.join(' | ');
+	}
+
+	private describeResults(entry: LegalCommandDebugEntry): string {
+		if (entry.results.length === 0) return 'none';
+		return entry.results
+			.map((result) => {
+				const extraction = result.metadata.extractionKind
+					? `/${result.metadata.extractionKind}`
+					: '';
+				return `${result.source.name ?? result.source.provider}${extraction}`;
+			})
+			.join(' | ');
+	}
+
+	private describeApplications(entry: LegalCommandDebugEntry): string {
+		const applications = entry.applications ?? [];
+		if (applications.length === 0) return 'none';
+		return applications
+			.map((app) => {
+				const format = app.format ? `:${app.format}` : '';
+				return `${app.actionId}${format}:${app.status}`;
+			})
+			.join(' | ');
 	}
 
 	private renderSection(

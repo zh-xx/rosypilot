@@ -21,6 +21,17 @@ export interface LegalExecutorDebugStep {
 	error?: string;
 }
 
+export interface LegalApplicationDebugAction {
+	actionId: string;
+	resultId: string;
+	resultTitle: string;
+	format?: string;
+	status: 'success' | 'failed';
+	reason?: string;
+	message?: string;
+	timestamp: number;
+}
+
 export interface LegalCommandDebugEntry {
 	commandId: string;
 	prefix: string;
@@ -29,6 +40,7 @@ export interface LegalCommandDebugEntry {
 	judge?: LegalJudgeDebugInfo;
 	steps: LegalExecutorDebugStep[];
 	results: LegalResult[];
+	applications?: LegalApplicationDebugAction[];
 	timestamp: number;
 	durationMs: number;
 }

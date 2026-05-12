@@ -193,6 +193,41 @@
   border-top: 1px solid var(--background-modifier-border);
 }
 
+.rosypilot-debug-summary {
+  margin-bottom: 10px;
+}
+
+.rosypilot-debug-summary strong {
+  display: block;
+  font-size: 10px;
+  text-transform: uppercase;
+  opacity: 0.5;
+  margin-bottom: 4px;
+  letter-spacing: 0.5px;
+}
+
+.rosypilot-debug-summary-grid {
+  display: grid;
+  gap: 3px;
+  padding: 6px 8px;
+  background: var(--background-secondary);
+  border-radius: 4px;
+}
+
+.rosypilot-debug-summary-row {
+  display: grid;
+  grid-template-columns: 82px minmax(0, 1fr);
+  gap: 8px;
+}
+
+.rosypilot-debug-summary-label {
+  color: var(--text-muted);
+}
+
+.rosypilot-debug-summary-value {
+  word-break: break-word;
+}
+
 .rosypilot-debug-section {
   margin-bottom: 8px;
 }
