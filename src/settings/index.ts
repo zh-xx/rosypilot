@@ -11,6 +11,8 @@ import {
 import { DEFAULT_MODELS } from 'src/api/providers/models';
 import { requestUrlFetch } from 'src/api/clients/request-url-fetch';
 import { t } from 'src/i18n';
+import { TavilyClient } from 'src/legal/providers/tavily-client';
+import { YuandianClient } from 'src/legal/yuandian-client';
 
 import RosyPilot from '../main';
 import { getDaysInCurrentMonth, getThisMonthAsString } from '../utils';
@@ -206,6 +208,29 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 					}),
 			);
 
+		new Setting(containerEl)
+			.setName(t('completions.model'))
+			.setDesc(t('completions.model.desc'))
+			.addDropdown((dropdown) => {
+				const models = settings.providers[currentProvider].fetchedModels;
+				if (models.length === 0) {
+					dropdown
+						.addOption('', t('completions.model.empty'))
+						.setValue('')
+						.setDisabled(true);
+				} else {
+					for (const option of models) {
+						dropdown.addOption(option, option);
+					}
+					dropdown
+						.setValue(settings.completions.model)
+						.onChange(async (value) => {
+							settings.completions.model = value;
+							await plugin.saveSettings();
+						});
+				}
+			});
+
 		/************************************************************/
 		/*                   Inline completions                     */
 		/************************************************************/
@@ -225,32 +250,8 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 					}),
 			);
 
-		new Setting(containerEl)
-			.setName(t('completions.model'))
-			.setDesc(t('completions.model.desc'))
-			.addDropdown((dropdown) => {
-				const models = settings.providers[currentProvider].fetchedModels;
-				if (models.length === 0) {
-					dropdown
-						.addOption('', t('completions.model.empty'))
-						.setValue('')
-						.setDisabled(true);
-				} else {
-					for (const option of models) {
-						dropdown.addOption(option, option);
-					}
-					dropdown
-						.setDisabled(!settings.completions.enabled)
-						.setValue(settings.completions.model)
-						.onChange(async (value) => {
-							settings.completions.model = value;
-							await plugin.saveSettings();
-						});
-				}
-			});
-
 		/************************************************************/
-		/*                    Advanced settings                     */
+		/*                   Completion parameters                  */
 		/************************************************************/
 
 		new Setting(containerEl)
@@ -323,7 +324,7 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 			);
 
 		/************************************************************/
-		/*                        Shortcuts                         */
+		/*                   Completion shortcuts                   */
 		/************************************************************/
 
 		new Setting(containerEl)
@@ -359,10 +360,8 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 			);
 
 		/************************************************************/
-		/*                          Other                           */
+		/*                           Cache                          */
 		/************************************************************/
-
-		new Setting(containerEl).setName(t('misc.heading')).setHeading();
 
 		new Setting(containerEl)
 			.setName(t('cache.enable'))
@@ -377,6 +376,92 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 						this.display();
 					}),
 			);
+
+		/************************************************************/
+		/*                    Legal Command                         */
+		/************************************************************/
+
+		new Setting(containerEl).setName(t('settings.legal.title')).setHeading();
+
+		new Setting(containerEl)
+			.setName(t('settings.legal.apiKey'))
+			.setDesc(t('settings.legal.apiKeyDesc'))
+			.addText((text) =>
+				text
+					.setValue(settings.legal?.yuandianApiKey ?? '')
+					.onChange(async (value) => {
+						settings.legal.yuandianApiKey = value || undefined;
+						await plugin.saveSettings();
+					}),
+			)
+			.addButton((button) =>
+				button
+					.setButtonText(t('settings.legal.testConnection'))
+					.setDisabled(!settings.legal?.yuandianApiKey)
+					.onClick(async () => {
+						button.setDisabled(true);
+						button.setButtonText(t('settings.legal.testConnection.running'));
+						try {
+							await this.testYuandianConnection(settings.legal.yuandianApiKey);
+						} finally {
+							button.setButtonText(t('settings.legal.testConnection'));
+							button.setDisabled(!settings.legal?.yuandianApiKey);
+						}
+					}),
+			);
+
+		new Setting(containerEl)
+			.setName(t('settings.legal.tavilyApiKey'))
+			.setDesc(t('settings.legal.tavilyApiKeyDesc'))
+			.addText((text) =>
+				text
+					.setValue(settings.legal?.tavilyApiKey ?? '')
+					.onChange(async (value) => {
+						settings.legal.tavilyApiKey = value || undefined;
+						await plugin.saveSettings();
+					}),
+			)
+			.addButton((button) =>
+				button
+					.setButtonText(t('settings.legal.testConnection'))
+					.setDisabled(!settings.legal?.tavilyApiKey)
+					.onClick(async () => {
+						button.setDisabled(true);
+						button.setButtonText(t('settings.legal.testConnection.running'));
+						try {
+							await this.testTavilyConnection(settings.legal.tavilyApiKey);
+						} finally {
+							button.setButtonText(t('settings.legal.testConnection'));
+							button.setDisabled(!settings.legal?.tavilyApiKey);
+						}
+					}),
+			);
+
+		new Setting(containerEl)
+			.setName(t('settings.legal.exactProvisionStrategy'))
+			.setDesc(t('settings.legal.exactProvisionStrategyDesc'))
+			.addDropdown((dropdown) =>
+				dropdown
+					.addOption(
+						'yuandian',
+						t('settings.legal.exactProvisionStrategy.yuandian'),
+					)
+					.addOption('web', t('settings.legal.exactProvisionStrategy.web'))
+					.addOption('auto', t('settings.legal.exactProvisionStrategy.auto'))
+					.addOption('all', t('settings.legal.exactProvisionStrategy.all'))
+					.setValue(settings.legal.exactProvisionStrategy)
+					.onChange(async (value) => {
+						settings.legal.exactProvisionStrategy =
+							value as ExactProvisionStrategy;
+						await plugin.saveSettings();
+					}),
+			);
+
+		/************************************************************/
+		/*                    Debug and usage                       */
+		/************************************************************/
+
+		new Setting(containerEl).setName(t('misc.heading')).setHeading();
 
 		new Setting(containerEl)
 			.setName(t('debug.enable'))
@@ -427,56 +512,6 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 		this.showMonthlyTokens();
 
 		/************************************************************/
-		/*                    Legal database                        */
-		/************************************************************/
-
-		new Setting(containerEl).setName(t('settings.legal.title')).setHeading();
-
-		new Setting(containerEl)
-			.setName(t('settings.legal.apiKey'))
-			.setDesc(t('settings.legal.apiKeyDesc'))
-			.addText((text) =>
-				text
-					.setValue(settings.legal?.yuandianApiKey ?? '')
-					.onChange(async (value) => {
-						settings.legal.yuandianApiKey = value || undefined;
-						await plugin.saveSettings();
-					}),
-			);
-
-		new Setting(containerEl)
-			.setName(t('settings.legal.tavilyApiKey'))
-			.setDesc(t('settings.legal.tavilyApiKeyDesc'))
-			.addText((text) =>
-				text
-					.setValue(settings.legal?.tavilyApiKey ?? '')
-					.onChange(async (value) => {
-						settings.legal.tavilyApiKey = value || undefined;
-						await plugin.saveSettings();
-					}),
-			);
-
-		new Setting(containerEl)
-			.setName(t('settings.legal.exactProvisionStrategy'))
-			.setDesc(t('settings.legal.exactProvisionStrategyDesc'))
-			.addDropdown((dropdown) =>
-				dropdown
-					.addOption(
-						'yuandian',
-						t('settings.legal.exactProvisionStrategy.yuandian'),
-					)
-					.addOption('web', t('settings.legal.exactProvisionStrategy.web'))
-					.addOption('auto', t('settings.legal.exactProvisionStrategy.auto'))
-					.addOption('all', t('settings.legal.exactProvisionStrategy.all'))
-					.setValue(settings.legal.exactProvisionStrategy)
-					.onChange(async (value) => {
-						settings.legal.exactProvisionStrategy =
-							value as ExactProvisionStrategy;
-						await plugin.saveSettings();
-					}),
-			);
-
-		/************************************************************/
 		/*                          About                           */
 		/************************************************************/
 
@@ -493,6 +528,49 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 			.setText(
 				`© ${new Date().getFullYear()} ${author}. All rights reserved.`,
 			);
+	}
+
+	private async testYuandianConnection(apiKey: string | undefined) {
+		if (!apiKey) {
+			new Notice(t('settings.legal.testConnection.noKey'));
+			return;
+		}
+
+		try {
+			const client = new YuandianClient(apiKey);
+			const result = await client.fetchDetail(
+				'中华人民共和国民法典',
+				'第五百一十一条',
+			);
+			new Notice(
+				result
+					? t('settings.legal.testConnection.success')
+					: t('settings.legal.testConnection.empty'),
+			);
+		} catch (error) {
+			new Notice(this.getConnectionErrorMessage(error));
+		}
+	}
+
+	private async testTavilyConnection(apiKey: string | undefined) {
+		if (!apiKey) {
+			new Notice(t('settings.legal.testConnection.noKey'));
+			return;
+		}
+
+		try {
+			const client = new TavilyClient(apiKey);
+			await client.search('中华人民共和国民法典 第五百一十一条 法条 原文');
+			new Notice(t('settings.legal.testConnection.success'));
+		} catch (error) {
+			new Notice(this.getConnectionErrorMessage(error));
+		}
+	}
+
+	private getConnectionErrorMessage(error: unknown): string {
+		const reason =
+			error instanceof Error && error.message ? ` ${error.message}` : '';
+		return `${t('settings.legal.testConnection.fail')}${reason}`;
 	}
 
 	showUsageProgress() {

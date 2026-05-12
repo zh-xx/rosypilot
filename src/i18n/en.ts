@@ -1,7 +1,7 @@
 export const en: Record<string, string> = {
 	// Providers
-	'providers.heading': 'Providers',
-	'providers.select': 'Provider',
+	'providers.heading': 'LLM Settings',
+	'providers.select': 'LLM provider',
 	'providers.select.desc': 'Select the model provider for inline completions.',
 	'providers.deepseek.apiKey': 'DeepSeek API key',
 	'providers.deepseek.apiKey.desc': 'Enter your DeepSeek API key.',
@@ -27,7 +27,7 @@ export const en: Record<string, string> = {
 		'Invalid API key or network error. Please check and try again.',
 
 	// Inline completions
-	'completions.heading': 'Inline completions',
+	'completions.heading': 'Completion Settings',
 	'completions.enable': 'Enable inline completions',
 	'completions.enable.desc': 'Turn this on to enable inline completions.',
 	'completions.model': 'Model',
@@ -94,23 +94,23 @@ export const en: Record<string, string> = {
 	'ribbon.toggleCompletions': 'Toggle inline completions',
 
 	// Completions sub-headings
-	'completions.advanced.heading': 'Advanced',
-	'completions.shortcuts.heading': 'Shortcuts',
+	'completions.advanced.heading': 'Completion parameters',
+	'completions.shortcuts.heading': 'Completion shortcuts',
 
 	// Misc (cache + debug merged)
-	'misc.heading': 'Other',
+	'misc.heading': 'Debug and Usage',
 
 	// About
 	'about.heading': 'About',
 
 	// Legal database
-	'settings.legal.title': 'Legal Database',
+	'settings.legal.title': 'Legal Command Settings',
 	'settings.legal.apiKey': 'Yuandian API Key',
 	'settings.legal.apiKeyDesc':
 		'Used for legal provision lookup (1 credit per exact query, 10 credits per semantic search)',
 	'settings.legal.tavilyApiKey': 'Tavily API Key',
 	'settings.legal.tavilyApiKeyDesc':
-		'Used for exact legal provision lookup via web search. Tavily basic search usually costs 1 credit per request.',
+		'Used for web search across statutes, cases, and other legal materials.',
 	'settings.legal.exactProvisionStrategy': 'Exact provision strategy',
 	'settings.legal.exactProvisionStrategyDesc':
 		'Choose the default source for exact legal provision lookup.',
@@ -118,6 +118,13 @@ export const en: Record<string, string> = {
 	'settings.legal.exactProvisionStrategy.web': 'Web search (Tavily)',
 	'settings.legal.exactProvisionStrategy.auto': 'Auto fallback',
 	'settings.legal.exactProvisionStrategy.all': 'Compare multiple sources',
+	'settings.legal.testConnection': 'Test connection',
+	'settings.legal.testConnection.running': 'Testing...',
+	'settings.legal.testConnection.noKey': 'Enter an API key first.',
+	'settings.legal.testConnection.success': 'Connection test succeeded.',
+	'settings.legal.testConnection.empty':
+		'Connection succeeded, but the test query returned no data.',
+	'settings.legal.testConnection.fail': 'Connection test failed:',
 
 	// Legal slash command
 	'legal.slashCommand.label': 'Complete legal provision',

@@ -1,7 +1,7 @@
 export const zh: Record<string, string> = {
 	// Providers
-	'providers.heading': '服务提供商',
-	'providers.select': '模型供应商',
+	'providers.heading': 'LLM 设置',
+	'providers.select': 'LLM 服务商',
 	'providers.select.desc': '选择行内补全使用的模型供应商。',
 	'providers.deepseek.apiKey': 'DeepSeek API 密钥',
 	'providers.deepseek.apiKey.desc': '输入你的 DeepSeek API 密钥。',
@@ -25,7 +25,7 @@ export const zh: Record<string, string> = {
 		'API Key 无效或网络错误，请检查后重试。',
 
 	// Inline completions
-	'completions.heading': '行内补全',
+	'completions.heading': '补全设置',
 	'completions.enable': '启用行内补全',
 	'completions.enable.desc': '开启后启用行内补全功能。',
 	'completions.model': '模型',
@@ -89,23 +89,21 @@ export const zh: Record<string, string> = {
 	'ribbon.toggleCompletions': '切换行内补全',
 
 	// Completions sub-headings
-	'completions.advanced.heading': '高级设置',
-	'completions.shortcuts.heading': '快捷键',
+	'completions.advanced.heading': '补全参数',
+	'completions.shortcuts.heading': '补全快捷键',
 
 	// Misc (cache + debug merged)
-	'misc.heading': '其他',
+	'misc.heading': '调试与用量',
 
 	// About
 	'about.heading': '关于',
 
 	// Legal database
-	'settings.legal.title': '法律数据库',
+	'settings.legal.title': 'Legal Command 设置',
 	'settings.legal.apiKey': '元典 API Key',
-	'settings.legal.apiKeyDesc':
-		'用于法条查询（精确查条 1 积分/次，语义检索 10 积分/次）',
+	'settings.legal.apiKeyDesc': '用于检索规范和案例等。',
 	'settings.legal.tavilyApiKey': 'Tavily API Key',
-	'settings.legal.tavilyApiKeyDesc':
-		'用于联网检索精准法条引用。Tavily basic search 每次通常消耗 1 credit。',
+	'settings.legal.tavilyApiKeyDesc': '用于联网检索规范、案例和其他法律资料等。',
 	'settings.legal.exactProvisionStrategy': '精准法条补全策略',
 	'settings.legal.exactProvisionStrategyDesc':
 		'选择精准法条引用的默认查询来源。',
@@ -113,6 +111,12 @@ export const zh: Record<string, string> = {
 	'settings.legal.exactProvisionStrategy.web': '联网检索（Tavily）',
 	'settings.legal.exactProvisionStrategy.auto': '自动 fallback',
 	'settings.legal.exactProvisionStrategy.all': '多来源对照',
+	'settings.legal.testConnection': '测试连接',
+	'settings.legal.testConnection.running': '测试中...',
+	'settings.legal.testConnection.noKey': '请先填写 API Key。',
+	'settings.legal.testConnection.success': '连接测试成功。',
+	'settings.legal.testConnection.empty': '连接成功，但测试查询未返回数据。',
+	'settings.legal.testConnection.fail': '连接测试失败：',
 
 	// Legal slash command
 	'legal.slashCommand.label': '补全法条',
