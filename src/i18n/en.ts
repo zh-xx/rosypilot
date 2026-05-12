@@ -108,6 +108,16 @@ export const en: Record<string, string> = {
 	'settings.legal.apiKey': 'Yuandian API Key',
 	'settings.legal.apiKeyDesc':
 		'Used for legal provision lookup (1 credit per exact query, 10 credits per semantic search)',
+	'settings.legal.tavilyApiKey': 'Tavily API Key',
+	'settings.legal.tavilyApiKeyDesc':
+		'Used for exact legal provision lookup via web search. Tavily basic search usually costs 1 credit per request.',
+	'settings.legal.exactProvisionStrategy': 'Exact provision strategy',
+	'settings.legal.exactProvisionStrategyDesc':
+		'Choose the default source for exact legal provision lookup.',
+	'settings.legal.exactProvisionStrategy.yuandian': 'Yuandian',
+	'settings.legal.exactProvisionStrategy.web': 'Web search (Tavily)',
+	'settings.legal.exactProvisionStrategy.auto': 'Auto fallback',
+	'settings.legal.exactProvisionStrategy.all': 'Compare multiple sources',
 
 	// Legal slash command
 	'legal.slashCommand.label': 'Complete legal provision',
@@ -124,6 +134,7 @@ export const en: Record<string, string> = {
 	'legal.panel.error': 'Query failed. Check your API key.',
 	'legal.panel.detail.label': 'Exact match',
 	'legal.panel.search.label': 'Semantic results',
+	'legal.panel.source': 'Source',
 	'legal.notice.noApiKey':
 		'Please set your Yuandian API Key in settings first.',
 };

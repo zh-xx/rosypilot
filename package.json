@@ -13,6 +13,7 @@
     "lint": "eslint src --max-warnings 0",
     "lint:fix": "eslint src --max-warnings 0 --fix",
     "test": "jest",
+    "legal:api-smoke": "ts-node src/scripts/legal-api-smoke.ts",
     "scrape": "ts-node src/scripts/scrape.ts"
   },
   "keywords": [],

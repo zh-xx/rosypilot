@@ -15,6 +15,8 @@ import { t } from 'src/i18n';
 import RosyPilot from '../main';
 import { getDaysInCurrentMonth, getThisMonthAsString } from '../utils';
 
+export type ExactProvisionStrategy = 'yuandian' | 'web' | 'auto' | 'all';
+
 export interface RosyPilotSettings {
 	version: string;
 	backups: Record<string, object>;
@@ -49,6 +51,8 @@ export interface RosyPilotSettings {
 	};
 	legal: {
 		yuandianApiKey: string | undefined;
+		tavilyApiKey: string | undefined;
+		exactProvisionStrategy: ExactProvisionStrategy;
 	};
 }
 
@@ -61,7 +65,7 @@ for (const provider of PROVIDERS) {
 }
 
 export const DEFAULT_SETTINGS: RosyPilotSettings = {
-	version: '2.4.0',
+	version: '2.6.0',
 	backups: {},
 	providers: defaultProviders,
 	completions: {
@@ -88,6 +92,8 @@ export const DEFAULT_SETTINGS: RosyPilotSettings = {
 	},
 	legal: {
 		yuandianApiKey: undefined,
+		tavilyApiKey: undefined,
+		exactProvisionStrategy: 'yuandian',
 	},
 };
 
@@ -434,6 +440,38 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 					.setValue(settings.legal?.yuandianApiKey ?? '')
 					.onChange(async (value) => {
 						settings.legal.yuandianApiKey = value || undefined;
+						await plugin.saveSettings();
+					}),
+			);
+
+		new Setting(containerEl)
+			.setName(t('settings.legal.tavilyApiKey'))
+			.setDesc(t('settings.legal.tavilyApiKeyDesc'))
+			.addText((text) =>
+				text
+					.setValue(settings.legal?.tavilyApiKey ?? '')
+					.onChange(async (value) => {
+						settings.legal.tavilyApiKey = value || undefined;
+						await plugin.saveSettings();
+					}),
+			);
+
+		new Setting(containerEl)
+			.setName(t('settings.legal.exactProvisionStrategy'))
+			.setDesc(t('settings.legal.exactProvisionStrategyDesc'))
+			.addDropdown((dropdown) =>
+				dropdown
+					.addOption(
+						'yuandian',
+						t('settings.legal.exactProvisionStrategy.yuandian'),
+					)
+					.addOption('web', t('settings.legal.exactProvisionStrategy.web'))
+					.addOption('auto', t('settings.legal.exactProvisionStrategy.auto'))
+					.addOption('all', t('settings.legal.exactProvisionStrategy.all'))
+					.setValue(settings.legal.exactProvisionStrategy)
+					.onChange(async (value) => {
+						settings.legal.exactProvisionStrategy =
+							value as ExactProvisionStrategy;
 						await plugin.saveSettings();
 					}),
 			);

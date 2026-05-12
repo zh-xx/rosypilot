@@ -1,6 +1,7 @@
+import { ExactProvisionStrategy } from 'src/settings';
 import { Provider } from '../../../api/providers';
 
-export interface RosyPilotSettings2_4_0 {
+export interface RosyPilotSettings2_5_0 {
 	version: string;
 	backups: Record<string, object>;
 	providers: Record<
@@ -34,5 +35,6 @@ export interface RosyPilotSettings2_4_0 {
 	};
 	legal: {
 		yuandianApiKey: string | undefined;
+		exactProvisionStrategy: ExactProvisionStrategy;
 	};
 }

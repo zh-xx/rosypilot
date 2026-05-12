@@ -9,6 +9,11 @@ import { MemoryCacheProxy } from './api/proxies/memory-cache';
 import { UsageMonitorProxy } from './api/proxies/usage-monitor';
 import { DEBUG_VIEW_TYPE, DebugEntry, DebugView } from './debug/view';
 import { inlineCompletionsExtension } from './editor/extension';
+import { LegalCommandDebugEntry } from './legal/debug';
+import {
+	LEGAL_DEBUG_VIEW_TYPE,
+	LegalCommandDebugView,
+} from './legal/debug-view';
 import { LegalSlashCommand } from './legal/slash-command';
 import { LEGAL_PANEL_VIEW_TYPE, LegalPanelView } from './legal/view';
 import { t } from './i18n';
@@ -27,6 +32,7 @@ export default class RosyPilot extends Plugin {
 	extensions!: Extension[];
 	completionsClient!: APIClient;
 	debugView: DebugView | null = null;
+	legalDebugView: LegalCommandDebugView | null = null;
 	legalPanelView: LegalPanelView | null = null;
 
 	async onload() {
@@ -45,6 +51,12 @@ export default class RosyPilot extends Plugin {
 		this.registerView(DEBUG_VIEW_TYPE, (leaf) => {
 			const view = new DebugView(leaf);
 			this.debugView = view;
+			return view;
+		});
+
+		this.registerView(LEGAL_DEBUG_VIEW_TYPE, (leaf) => {
+			const view = new LegalCommandDebugView(leaf);
+			this.legalDebugView = view;
 			return view;
 		});
 
@@ -165,17 +177,36 @@ export default class RosyPilot extends Plugin {
 		}
 	}
 
+	legalDebugLog(entry: LegalCommandDebugEntry) {
+		console.debug('[RosyPilot Legal] Debug:', entry);
+
+		if (this.settings.debug.enabled) {
+			this.legalDebugView?.log(entry);
+		}
+	}
+
 	async activateDebugView() {
 		const { workspace } = this.app;
 
 		const leaves = workspace.getLeavesOfType(DEBUG_VIEW_TYPE);
 		if (leaves.length > 0) {
 			void workspace.revealLeaf(leaves[0]);
+		} else {
+			const leaf = workspace.getRightLeaf(false);
+			await leaf?.setViewState({ type: DEBUG_VIEW_TYPE, active: true });
+		}
+
+		const legalLeaves = workspace.getLeavesOfType(LEGAL_DEBUG_VIEW_TYPE);
+		if (legalLeaves.length > 0) {
+			void workspace.revealLeaf(legalLeaves[0]);
 			return;
 		}
 
-		const leaf = workspace.getRightLeaf(false);
-		await leaf?.setViewState({ type: DEBUG_VIEW_TYPE, active: true });
+		const legalLeaf = workspace.getRightLeaf(false);
+		await legalLeaf?.setViewState({
+			type: LEGAL_DEBUG_VIEW_TYPE,
+			active: true,
+		});
 	}
 
 	async openLegalPanel(): Promise<LegalPanelView> {
@@ -200,6 +231,12 @@ export default class RosyPilot extends Plugin {
 			leaf.detach();
 		}
 		this.debugView = null;
+
+		const legalLeaves = workspace.getLeavesOfType(LEGAL_DEBUG_VIEW_TYPE);
+		for (const leaf of legalLeaves) {
+			leaf.detach();
+		}
+		this.legalDebugView = null;
 	}
 
 	async loadSettings() {

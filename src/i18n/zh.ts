@@ -103,6 +103,16 @@ export const zh: Record<string, string> = {
 	'settings.legal.apiKey': '元典 API Key',
 	'settings.legal.apiKeyDesc':
 		'用于法条查询（精确查条 1 积分/次，语义检索 10 积分/次）',
+	'settings.legal.tavilyApiKey': 'Tavily API Key',
+	'settings.legal.tavilyApiKeyDesc':
+		'用于联网检索精准法条引用。Tavily basic search 每次通常消耗 1 credit。',
+	'settings.legal.exactProvisionStrategy': '精准法条补全策略',
+	'settings.legal.exactProvisionStrategyDesc':
+		'选择精准法条引用的默认查询来源。',
+	'settings.legal.exactProvisionStrategy.yuandian': '元典',
+	'settings.legal.exactProvisionStrategy.web': '联网检索（Tavily）',
+	'settings.legal.exactProvisionStrategy.auto': '自动 fallback',
+	'settings.legal.exactProvisionStrategy.all': '多来源对照',
 
 	// Legal slash command
 	'legal.slashCommand.label': '补全法条',
@@ -119,5 +129,6 @@ export const zh: Record<string, string> = {
 	'legal.panel.error': '查询失败，请检查 API 密钥',
 	'legal.panel.detail.label': '精确匹配',
 	'legal.panel.search.label': '语义相关',
+	'legal.panel.source': '来源',
 	'legal.notice.noApiKey': '请先在设置中填写元典 API Key',
 };

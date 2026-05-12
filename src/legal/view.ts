@@ -1,6 +1,7 @@
 import { ItemView, WorkspaceLeaf } from 'obsidian';
 import { t } from 'src/i18n';
-import { ArticleDetail, ArticleSearchItem } from './yuandian-client';
+import { LegalResult } from './runtime/result';
+import { ArticleSearchItem } from './yuandian-client';
 
 export const LEGAL_PANEL_VIEW_TYPE = 'rosypilot-legal-panel';
 
@@ -48,25 +49,48 @@ export class LegalPanelView extends ItemView {
 	}
 
 	setDetail(
-		article: ArticleDetail,
+		result: LegalResult,
 		callbacks?: { onRaw: () => void; onAdapted: () => Promise<void> },
 	): void {
+		this.setDetails([result], callbacks?.onRaw, callbacks?.onAdapted);
+	}
+
+	setDetails(
+		results: LegalResult[],
+		onRaw?: (result: LegalResult) => void,
+		onAdapted?: (result: LegalResult) => Promise<void>,
+	): void {
 		this.container.empty();
+
+		if (results.length === 0) {
+			this.container
+				.createDiv('rosypilot-legal-status')
+				.setText(t('legal.panel.empty'));
+			return;
+		}
 
 		const label = this.container.createDiv('rosypilot-legal-label');
 		label.setText(t('legal.panel.detail.label'));
 
-		this.renderItem(
-			this.container,
-			{
-				title: article.ftmc,
-				content: article.content,
-				meta: [article.fgmc, article.sxx, article.xljb_1]
-					.filter(Boolean)
-					.join('  ·  '),
-			},
-			callbacks,
-		);
+		for (const result of results) {
+			const callbacks =
+				onRaw && onAdapted
+					? {
+							onRaw: () => onRaw(result),
+							onAdapted: () => onAdapted(result),
+						}
+					: undefined;
+
+			this.renderItem(
+				this.container,
+				{
+					title: result.title,
+					content: result.content,
+					meta: this.buildResultMeta(result),
+				},
+				callbacks,
+			);
+		}
 	}
 
 	setSearchResults(items: ArticleSearchItem[]): void {
@@ -131,5 +155,20 @@ export class LegalPanelView extends ItemView {
 				});
 			});
 		}
+	}
+
+	private buildResultMeta(result: LegalResult): string {
+		const source = result.source.name ?? result.source.provider;
+		return [
+			`${t('legal.panel.source')}：${source}`,
+			result.metadata.lawName,
+			result.metadata.articleNo,
+			result.metadata.effectiveStatus,
+			result.metadata.category,
+			result.metadata.publishDate,
+			result.metadata.effectiveDate,
+		]
+			.filter(Boolean)
+			.join('  ·  ');
 	}
 }
