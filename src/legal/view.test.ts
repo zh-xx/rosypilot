@@ -21,7 +21,11 @@ jest.mock('src/i18n', () => ({
 			'legal.panel.empty': '未找到相关法条',
 			'legal.panel.detail.label': '精确匹配',
 			'legal.panel.insert.raw': '插入法条',
+			'legal.panel.insert.action': '插入',
 			'legal.panel.insert.adapted': '匹配原文',
+			'legal.panel.insert.format.content': '正文',
+			'legal.panel.insert.format.title-content': '标题+正文',
+			'legal.panel.insert.format.quote-block': '引用块',
 			'legal.panel.source': '来源',
 			'legal.panel.url': '网址',
 			'legal.panel.expand': '展开全文',
@@ -42,6 +46,7 @@ class FakeElement {
 	children: FakeElement[] = [];
 	textContent = '';
 	disabled = false;
+	value = '';
 	private listeners = new Map<string, (() => void)[]>();
 
 	constructor(
@@ -53,17 +58,23 @@ class FakeElement {
 		this.cls = this.cls ? `${this.cls} ${cls}` : cls;
 	}
 
+	setAttribute(_name: string, _value: string): void {}
+
 	createDiv(cls?: string): FakeElement {
 		return this.append(new FakeElement('div', cls ?? ''));
 	}
 
 	createEl(
 		tag: string,
-		options?: { cls?: string; text?: string },
+		options?: { cls?: string; text?: string; value?: string },
 	): FakeElement {
 		const child = this.append(new FakeElement(tag, options?.cls ?? ''));
 		if (options?.text) {
 			child.setText(options.text);
+		}
+		if (options?.value) {
+			child.value = options.value;
+			if (!this.value) this.value = options.value;
 		}
 		return child;
 	}
@@ -224,17 +235,21 @@ describe('LegalPanelView', () => {
 		const buttons = root.findAllByTag('button');
 
 		expect(buttons.map((button) => button.textContent)).toEqual([
-			'插入法条',
+			'正文',
+			'标题+正文',
+			'引用块',
 			'匹配原文',
-			'插入法条',
+			'正文',
+			'标题+正文',
+			'引用块',
 			'匹配原文',
 		]);
 
-		buttons[0].click();
-		buttons[3].click();
+		buttons[2].click();
+		buttons[7].click();
 		await Promise.resolve();
 
-		expect(onRaw).toHaveBeenCalledWith(results[0]);
+		expect(onRaw).toHaveBeenCalledWith(results[0], 'quote-block');
 		expect(onAdapted).toHaveBeenCalledWith(results[1]);
 	});
 });

@@ -21,8 +21,8 @@ export class LegalResultNormalizer {
 		return {
 			id: `yuandian:${article.id}`,
 			type: 'statute',
-			title: article.ftmc,
-			content: article.content,
+			title: article.ftmc.trim(),
+			content: cleanYuandianContent(article.content),
 			source: {
 				provider: 'yuandian',
 				name: '元典',
@@ -61,4 +61,15 @@ export class LegalResultNormalizer {
 			raw: input.raw,
 		};
 	}
+}
+
+function cleanYuandianContent(content: string): string {
+	return content
+		.split('\n')
+		.map((line) =>
+			line.replace(/^[\s\u3000]+/g, '').replace(/[ \t\u3000]+$/g, ''),
+		)
+		.join('\n')
+		.replace(/\n{3,}/g, '\n\n')
+		.trim();
 }

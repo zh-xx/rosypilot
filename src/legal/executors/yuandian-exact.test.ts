@@ -63,7 +63,8 @@ describe('YuandianExactExecutor', () => {
 					fgmc: '中华人民共和国民法典',
 					ft_num: '第五百一十一条',
 					ftmc: '第五百一十一条',
-					content: '当事人就有关合同内容约定不明确...',
+					content:
+						'\n　　当事人就有关合同内容约定不明确...\n\t第二行\n\n\n　　第三行　',
 					sxx: '现行有效',
 					xljb_1: '法律',
 					fbrq: '2020-05-28',
@@ -96,7 +97,7 @@ describe('YuandianExactExecutor', () => {
 				id: 'yuandian:article-1',
 				type: 'statute',
 				title: '第五百一十一条',
-				content: '当事人就有关合同内容约定不明确...',
+				content: '当事人就有关合同内容约定不明确...\n第二行\n\n第三行',
 				source: {
 					provider: 'yuandian',
 					name: '元典',

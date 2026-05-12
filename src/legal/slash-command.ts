@@ -3,7 +3,7 @@ import { EditorView } from '@codemirror/view';
 import { t } from 'src/i18n';
 import { LegalApplicationResult } from './applicators/applicator';
 import { InsertAdaptedApplicator } from './applicators/insert-adapted';
-import { InsertRawApplicator } from './applicators/insert-raw';
+import { InsertRawApplicator, RawInsertFormat } from './applicators/insert-raw';
 import { LegalExecutorDebugStep } from './debug';
 import { WebExactExecutor } from './executors/web-exact';
 import { YuandianExactExecutor } from './executors/yuandian-exact';
@@ -97,11 +97,12 @@ export class LegalSlashCommand {
 
 			view.setDetails(
 				results,
-				(result) => {
+				(result, format: RawInsertFormat) => {
 					const application = this.insertRaw.apply(
 						request,
 						result,
 						this.plugin,
+						format,
 					);
 					this.notifyApplicationResult(application, 'raw');
 				},

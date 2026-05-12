@@ -350,8 +350,23 @@
 
 .rosypilot-legal-item-actions {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 6px;
   margin-top: 8px;
+}
+
+.rosypilot-legal-insert-group {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.rosypilot-legal-action-label {
+  font-size: 0.8em;
+  color: var(--text-muted);
+  margin-right: 2px;
 }
 
 .rosypilot-legal-btn {
@@ -362,6 +377,22 @@
   color: var(--interactive-accent);
   background: transparent;
   cursor: pointer;
+}
+
+.rosypilot-legal-segment-btn {
+  font-size: 0.78em;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--background-modifier-border);
+  color: var(--text-normal);
+  background: var(--background-primary);
+  cursor: pointer;
+}
+
+.rosypilot-legal-segment-btn:hover {
+  border-color: var(--interactive-accent);
+  color: var(--interactive-accent);
+  background: var(--background-modifier-hover);
 }
 
 .rosypilot-legal-link-btn {

@@ -5,6 +5,7 @@ import {
 	LegalDisplayResult,
 	LegalResultPresenter,
 } from './presenter';
+import { RawInsertFormat } from './applicators/insert-raw';
 import { LegalResult } from './runtime/result';
 import { ArticleSearchItem } from './yuandian-client';
 
@@ -63,7 +64,7 @@ export class LegalPanelView extends ItemView {
 
 	setDetails(
 		results: LegalResult[],
-		onRaw?: (result: LegalResult) => void,
+		onRaw?: (result: LegalResult, format: RawInsertFormat) => void,
 		onAdapted?: (result: LegalResult) => Promise<void>,
 	): void {
 		this.container.empty();
@@ -82,7 +83,7 @@ export class LegalPanelView extends ItemView {
 			const callbacks =
 				onRaw && onAdapted
 					? {
-							onRaw: () => onRaw(result),
+							onRaw: (format: RawInsertFormat) => onRaw(result, format),
 							onAdapted: () => onAdapted(result),
 						}
 					: undefined;
@@ -134,7 +135,10 @@ export class LegalPanelView extends ItemView {
 	private renderItem(
 		parent: HTMLElement,
 		display: LegalDisplayResult,
-		callbacks?: { onRaw: () => void; onAdapted: () => Promise<void> },
+		callbacks?: {
+			onRaw: (format: RawInsertFormat) => void;
+			onAdapted: () => Promise<void>;
+		},
 	): void {
 		const card = parent.createDiv('rosypilot-legal-item');
 		card.addClass(`rosypilot-legal-item-${display.badgeKind}`);
@@ -187,11 +191,16 @@ export class LegalPanelView extends ItemView {
 		if (callbacks) {
 			const actions = card.createDiv('rosypilot-legal-item-actions');
 
-			const rawBtn = actions.createEl('button', {
-				cls: 'rosypilot-legal-btn',
-				text: t('legal.panel.insert.raw'),
-			});
-			rawBtn.addEventListener('click', callbacks.onRaw);
+			const rawGroup = actions.createDiv('rosypilot-legal-insert-group');
+			rawGroup
+				.createSpan({
+					cls: 'rosypilot-legal-action-label',
+					text: t('legal.panel.insert.raw'),
+				})
+				.setAttribute('aria-hidden', 'true');
+			this.createRawInsertButton(rawGroup, callbacks, 'content');
+			this.createRawInsertButton(rawGroup, callbacks, 'title-content');
+			this.createRawInsertButton(rawGroup, callbacks, 'quote-block');
 
 			const adaptedBtn = actions.createEl('button', {
 				cls: 'rosypilot-legal-btn',
@@ -209,5 +218,17 @@ export class LegalPanelView extends ItemView {
 				});
 			});
 		}
+	}
+
+	private createRawInsertButton(
+		parent: HTMLElement,
+		callbacks: { onRaw: (format: RawInsertFormat) => void },
+		format: RawInsertFormat,
+	): void {
+		const button = parent.createEl('button', {
+			cls: 'rosypilot-legal-segment-btn',
+			text: t(`legal.panel.insert.format.${format}`),
+		});
+		button.addEventListener('click', () => callbacks.onRaw(format));
 	}
 }
