@@ -1,7 +1,7 @@
 import RosyPilot from 'src/main';
 import { LegalCommandRequest } from '../runtime/request';
 import { LegalResult } from '../runtime/result';
-import { LegalApplicator } from './applicator';
+import { LegalApplicationResult, LegalApplicator } from './applicator';
 import { injectGhostText } from './ghost-text';
 
 export class InsertRawApplicator implements LegalApplicator {
@@ -12,7 +12,8 @@ export class InsertRawApplicator implements LegalApplicator {
 		request: LegalCommandRequest,
 		result: LegalResult,
 		_plugin: RosyPilot,
-	): void {
+	): LegalApplicationResult {
 		injectGhostText(request.editorView, `${result.title}\n${result.content}`);
+		return { status: 'success' };
 	}
 }

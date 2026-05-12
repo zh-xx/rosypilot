@@ -167,4 +167,11 @@ export const zh: Record<string, string> = {
 	'legal.panel.meta.publishDate': '发布日期',
 	'legal.panel.meta.effectiveDate': '施行日期',
 	'legal.notice.noApiKey': '请先在设置中填写元典 API Key',
+	'legal.notice.insertRaw.success': '已生成法条原文，按 Tab 插入。',
+	'legal.notice.insertAdapted.success':
+		'已生成匹配上下文的法条文本，按 Tab 插入。',
+	'legal.notice.insertAdapted.missingLlmConfig':
+		'请先在 LLM 设置中配置 API Key 和模型。',
+	'legal.notice.insertAdapted.empty': '匹配原文未生成可插入内容。',
+	'legal.notice.insert.failed': '应用法条结果失败：',
 };

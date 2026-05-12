@@ -35,7 +35,11 @@ describe('InsertRawApplicator', () => {
 	});
 
 	it('injects title and content as ghost text', () => {
-		new InsertRawApplicator().apply(request, result, {} as RosyPilot);
+		const application = new InsertRawApplicator().apply(
+			request,
+			result,
+			{} as RosyPilot,
+		);
 
 		const transaction = dispatch.mock.calls[0][0] as {
 			effects: {
@@ -49,5 +53,6 @@ describe('InsertRawApplicator', () => {
 		expect(effect.value.completions).toBe(
 			'第五百一十一条\n当事人就有关合同内容约定不明确...',
 		);
+		expect(application).toEqual({ status: 'success' });
 	});
 });

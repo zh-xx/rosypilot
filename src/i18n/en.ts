@@ -178,4 +178,12 @@ export const en: Record<string, string> = {
 	'legal.panel.meta.effectiveDate': 'Effective',
 	'legal.notice.noApiKey':
 		'Please set your Yuandian API Key in settings first.',
+	'legal.notice.insertRaw.success':
+		'Provision text is ready. Press Tab to insert it.',
+	'legal.notice.insertAdapted.success':
+		'Context-matched provision text is ready. Press Tab to insert it.',
+	'legal.notice.insertAdapted.missingLlmConfig':
+		'Configure an API key and model in LLM Settings first.',
+	'legal.notice.insertAdapted.empty': 'No context-matched text was generated.',
+	'legal.notice.insert.failed': 'Failed to apply legal result:',
 };

@@ -73,7 +73,7 @@ describe('InsertAdaptedApplicator', () => {
 			},
 		} as Awaited<ReturnType<typeof requestUrl>>);
 
-		await new InsertAdaptedApplicator().apply(
+		const application = await new InsertAdaptedApplicator().apply(
 			createRequest(
 				'关于履行地点约定不明的问题，《中华人民共和国民法典》第五百一十一条',
 			),
@@ -123,15 +123,16 @@ describe('InsertAdaptedApplicator', () => {
 		expect(effect.value.completions).toBe(
 			'规定："当事人就有关合同内容约定不明确..."',
 		);
+		expect(application).toEqual({ status: 'success' });
 	});
 
 	it('does not request LLM when api key or model is missing', async () => {
-		await new InsertAdaptedApplicator().apply(
+		const missingKey = await new InsertAdaptedApplicator().apply(
 			createRequest('prefix'),
 			result,
 			createPlugin(undefined, 'deepseek-chat'),
 		);
-		await new InsertAdaptedApplicator().apply(
+		const missingModel = await new InsertAdaptedApplicator().apply(
 			createRequest('prefix'),
 			result,
 			createPlugin('deepseek-key'),
@@ -139,6 +140,14 @@ describe('InsertAdaptedApplicator', () => {
 
 		expect(mockedRequestUrl).not.toHaveBeenCalled();
 		expect(dispatch).not.toHaveBeenCalled();
+		expect(missingKey).toEqual({
+			status: 'failed',
+			reason: 'missing-llm-config',
+		});
+		expect(missingModel).toEqual({
+			status: 'failed',
+			reason: 'missing-llm-config',
+		});
 	});
 
 	it('does not inject ghost text when LLM returns empty content', async () => {
@@ -149,12 +158,36 @@ describe('InsertAdaptedApplicator', () => {
 			},
 		} as Awaited<ReturnType<typeof requestUrl>>);
 
-		await new InsertAdaptedApplicator().apply(
+		const application = await new InsertAdaptedApplicator().apply(
 			createRequest('prefix'),
 			result,
 			createPlugin('deepseek-key', 'deepseek-chat'),
 		);
 
 		expect(dispatch).not.toHaveBeenCalled();
+		expect(application).toEqual({
+			status: 'failed',
+			reason: 'empty-result',
+		});
+	});
+
+	it('returns http error when LLM request fails', async () => {
+		mockedRequestUrl.mockResolvedValue({
+			status: 401,
+			json: {},
+		} as Awaited<ReturnType<typeof requestUrl>>);
+
+		const application = await new InsertAdaptedApplicator().apply(
+			createRequest('prefix'),
+			result,
+			createPlugin('deepseek-key', 'deepseek-chat'),
+		);
+
+		expect(dispatch).not.toHaveBeenCalled();
+		expect(application).toEqual({
+			status: 'failed',
+			reason: 'http-error',
+			message: 'HTTP 401',
+		});
 	});
 });

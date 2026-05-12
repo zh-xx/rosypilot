@@ -3,7 +3,7 @@ import { PROVIDERS_BASE_URLS } from 'src/api/providers';
 import RosyPilot from 'src/main';
 import { LegalCommandRequest } from '../runtime/request';
 import { LegalResult } from '../runtime/result';
-import { LegalApplicator } from './applicator';
+import { LegalApplicationResult, LegalApplicator } from './applicator';
 import { injectGhostText } from './ghost-text';
 
 const ADAPT_SYSTEM_PROMPT =
@@ -17,13 +17,14 @@ export class InsertAdaptedApplicator implements LegalApplicator {
 		request: LegalCommandRequest,
 		result: LegalResult,
 		plugin: RosyPilot,
-	): Promise<void> {
+	): Promise<LegalApplicationResult> {
 		const { settings } = plugin;
 		const provider = settings.completions.provider;
 		const apiKey = settings.providers[provider].apiKey;
 		const model = settings.completions.model;
 
-		if (!apiKey || !model) return;
+		if (!apiKey || !model)
+			return { status: 'failed', reason: 'missing-llm-config' };
 
 		const userMessage = `【当前文档光标前文本】\n${request.prefix.slice(-300)}\n\n【相关法条】\n${result.title}\n${result.content}`;
 
@@ -47,7 +48,13 @@ export class InsertAdaptedApplicator implements LegalApplicator {
 			throw: false,
 		});
 
-		if (res.status !== 200 && res.status !== 201) return;
+		if (res.status !== 200 && res.status !== 201) {
+			return {
+				status: 'failed',
+				reason: 'http-error',
+				message: `HTTP ${res.status}`,
+			};
+		}
 
 		const body = res.json as {
 			choices?: { message?: { content?: string | null } }[];
@@ -56,6 +63,9 @@ export class InsertAdaptedApplicator implements LegalApplicator {
 
 		if (adapted) {
 			injectGhostText(request.editorView, adapted);
+			return { status: 'success' };
 		}
+
+		return { status: 'failed', reason: 'empty-result' };
 	}
 }

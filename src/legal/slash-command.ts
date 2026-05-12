@@ -1,6 +1,7 @@
-import { Editor } from 'obsidian';
+import { Editor, Notice } from 'obsidian';
 import { EditorView } from '@codemirror/view';
 import { t } from 'src/i18n';
+import { LegalApplicationResult } from './applicators/applicator';
 import { InsertAdaptedApplicator } from './applicators/insert-adapted';
 import { InsertRawApplicator } from './applicators/insert-raw';
 import { LegalExecutorDebugStep } from './debug';
@@ -96,8 +97,33 @@ export class LegalSlashCommand {
 
 			view.setDetails(
 				results,
-				(result) => this.insertRaw.apply(request, result, this.plugin),
-				(result) => this.insertAdapted.apply(request, result, this.plugin),
+				(result) => {
+					const application = this.insertRaw.apply(
+						request,
+						result,
+						this.plugin,
+					);
+					this.notifyApplicationResult(application, 'raw');
+				},
+				async (result) => {
+					try {
+						const application = await this.insertAdapted.apply(
+							request,
+							result,
+							this.plugin,
+						);
+						this.notifyApplicationResult(application, 'adapted');
+					} catch (error) {
+						this.notifyApplicationResult(
+							{
+								status: 'failed',
+								reason: 'error',
+								message: error instanceof Error ? error.message : String(error),
+							},
+							'adapted',
+						);
+					}
+				},
 			);
 		} catch (error) {
 			this.plugin.legalDebugLog({
@@ -120,5 +146,32 @@ export class LegalSlashCommand {
 			});
 			view.setError(t('legal.panel.error'));
 		}
+	}
+
+	private notifyApplicationResult(
+		result: LegalApplicationResult,
+		mode: 'raw' | 'adapted',
+	): void {
+		if (result.status === 'success') {
+			new Notice(
+				mode === 'raw'
+					? t('legal.notice.insertRaw.success')
+					: t('legal.notice.insertAdapted.success'),
+			);
+			return;
+		}
+
+		if (result.reason === 'missing-llm-config') {
+			new Notice(t('legal.notice.insertAdapted.missingLlmConfig'));
+			return;
+		}
+
+		if (result.reason === 'empty-result') {
+			new Notice(t('legal.notice.insertAdapted.empty'));
+			return;
+		}
+
+		const reason = result.message ? ` ${result.message}` : '';
+		new Notice(`${t('legal.notice.insert.failed')}${reason}`);
 	}
 }
