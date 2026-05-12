@@ -12,12 +12,38 @@ import { DEFAULT_MODELS } from 'src/api/providers/models';
 import { requestUrlFetch } from 'src/api/clients/request-url-fetch';
 import { t } from 'src/i18n';
 import { TavilyClient } from 'src/legal/providers/tavily-client';
+import {
+	ExactProvisionStrategy,
+	LegalCommandRetrievalStrategyOverride,
+	LegalRetrievalStrategy,
+	mapExactProvisionStrategyToRetrievalStrategy,
+	resolveLegalRetrievalStrategy,
+} from 'src/legal/runtime/retrieval-strategy';
 import { YuandianClient } from 'src/legal/yuandian-client';
 
 import RosyPilot from '../main';
 import { getDaysInCurrentMonth, getThisMonthAsString } from '../utils';
 
-export type ExactProvisionStrategy = 'yuandian' | 'web' | 'auto' | 'all';
+export type {
+	ExactProvisionStrategy,
+	LegalCommandRetrievalStrategyOverride,
+	LegalRetrievalStrategy,
+};
+export { mapExactProvisionStrategyToRetrievalStrategy };
+
+export interface LegalCommandSettings {
+	yuandianApiKey: string | undefined;
+	tavilyApiKey: string | undefined;
+	defaultRetrievalStrategy: LegalRetrievalStrategy;
+	commandOverrides: {
+		completeLegalProvision: {
+			retrievalStrategy: LegalCommandRetrievalStrategyOverride;
+		};
+	};
+	// Kept for migrating existing local settings. New code should use
+	// defaultRetrievalStrategy and commandOverrides.
+	exactProvisionStrategy?: ExactProvisionStrategy;
+}
 
 export interface RosyPilotSettings {
 	version: string;
@@ -51,11 +77,7 @@ export interface RosyPilotSettings {
 		monthlyTokens: Record<string, number>;
 		monthlyLimit: number;
 	};
-	legal: {
-		yuandianApiKey: string | undefined;
-		tavilyApiKey: string | undefined;
-		exactProvisionStrategy: ExactProvisionStrategy;
-	};
+	legal: LegalCommandSettings;
 }
 
 const defaultProviders: Record<
@@ -95,6 +117,12 @@ export const DEFAULT_SETTINGS: RosyPilotSettings = {
 	legal: {
 		yuandianApiKey: undefined,
 		tavilyApiKey: undefined,
+		defaultRetrievalStrategy: 'structured-first',
+		commandOverrides: {
+			completeLegalProvision: {
+				retrievalStrategy: 'inherit',
+			},
+		},
 		exactProvisionStrategy: 'yuandian',
 	},
 };
@@ -444,21 +472,52 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 			);
 
 		new Setting(containerEl)
-			.setName(t('settings.legal.exactProvisionStrategy'))
-			.setDesc(t('settings.legal.exactProvisionStrategyDesc'))
+			.setName(t('settings.legal.defaultRetrievalStrategy'))
+			.setDesc(t('settings.legal.defaultRetrievalStrategyDesc'))
 			.addDropdown((dropdown) =>
 				dropdown
 					.addOption(
-						'yuandian',
-						t('settings.legal.exactProvisionStrategy.yuandian'),
+						'structured-first',
+						t('settings.legal.retrievalStrategy.structuredFirst'),
 					)
-					.addOption('web', t('settings.legal.exactProvisionStrategy.web'))
-					.addOption('auto', t('settings.legal.exactProvisionStrategy.auto'))
-					.addOption('all', t('settings.legal.exactProvisionStrategy.all'))
-					.setValue(settings.legal.exactProvisionStrategy)
+					.addOption(
+						'web-first',
+						t('settings.legal.retrievalStrategy.webFirst'),
+					)
+					.addOption('auto', t('settings.legal.retrievalStrategy.auto'))
+					.addOption('all', t('settings.legal.retrievalStrategy.all'))
+					.setValue(settings.legal.defaultRetrievalStrategy)
 					.onChange(async (value) => {
-						settings.legal.exactProvisionStrategy =
-							value as ExactProvisionStrategy;
+						settings.legal.defaultRetrievalStrategy =
+							value as LegalRetrievalStrategy;
+						await plugin.saveSettings();
+						refreshLegalStrategyStatus();
+					}),
+			);
+
+		new Setting(containerEl)
+			.setName(t('settings.legal.commandOverrides.completeLegalProvision'))
+			.setDesc(t('settings.legal.commandOverrides.completeLegalProvisionDesc'))
+			.addDropdown((dropdown) =>
+				dropdown
+					.addOption('inherit', t('settings.legal.retrievalStrategy.inherit'))
+					.addOption(
+						'structured-first',
+						t('settings.legal.retrievalStrategy.structuredFirst'),
+					)
+					.addOption(
+						'web-first',
+						t('settings.legal.retrievalStrategy.webFirst'),
+					)
+					.addOption('auto', t('settings.legal.retrievalStrategy.auto'))
+					.addOption('all', t('settings.legal.retrievalStrategy.all'))
+					.setValue(
+						settings.legal.commandOverrides.completeLegalProvision
+							.retrievalStrategy,
+					)
+					.onChange(async (value) => {
+						settings.legal.commandOverrides.completeLegalProvision.retrievalStrategy =
+							value as LegalCommandRetrievalStrategyOverride;
 						await plugin.saveSettings();
 						refreshLegalStrategyStatus();
 					}),
@@ -587,9 +646,14 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 		const { legal } = this.plugin.settings;
 		const hasYuandian = Boolean(legal?.yuandianApiKey);
 		const hasTavily = Boolean(legal?.tavilyApiKey);
-		const strategy = legal?.exactProvisionStrategy;
+		const strategy = resolveLegalRetrievalStrategy(
+			legal?.defaultRetrievalStrategy,
+			legal?.commandOverrides?.completeLegalProvision?.retrievalStrategy,
+			legal?.exactProvisionStrategy,
+			DEFAULT_SETTINGS.legal.defaultRetrievalStrategy,
+		);
 
-		if (strategy === 'yuandian') {
+		if (strategy === 'structured-first') {
 			return {
 				name: t('settings.legal.strategyStatus'),
 				desc: hasYuandian
@@ -598,7 +662,7 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 			};
 		}
 
-		if (strategy === 'web') {
+		if (strategy === 'web-first') {
 			return {
 				name: t('settings.legal.strategyStatus'),
 				desc: hasTavily

@@ -104,13 +104,17 @@ export const zh: Record<string, string> = {
 	'settings.legal.apiKeyDesc': '用于检索规范和案例等。',
 	'settings.legal.tavilyApiKey': 'Tavily API Key',
 	'settings.legal.tavilyApiKeyDesc': '用于联网检索规范、案例和其他法律资料等。',
-	'settings.legal.exactProvisionStrategy': '精准法条补全策略',
-	'settings.legal.exactProvisionStrategyDesc':
-		'选择精准法条引用的默认查询来源。',
-	'settings.legal.exactProvisionStrategy.yuandian': '元典',
-	'settings.legal.exactProvisionStrategy.web': '联网检索（Tavily）',
-	'settings.legal.exactProvisionStrategy.auto': '自动 fallback',
-	'settings.legal.exactProvisionStrategy.all': '多来源对照',
+	'settings.legal.defaultRetrievalStrategy': 'Legal Command 默认检索策略',
+	'settings.legal.defaultRetrievalStrategyDesc':
+		'用于法律命令的默认数据来源选择。具体命令可以在下方单独覆盖。',
+	'settings.legal.commandOverrides.completeLegalProvision': '/补全法条检索策略',
+	'settings.legal.commandOverrides.completeLegalProvisionDesc':
+		'默认继承 Legal Command 全局策略；仅在该命令需要特殊来源时单独修改。',
+	'settings.legal.retrievalStrategy.inherit': '继承全局策略',
+	'settings.legal.retrievalStrategy.structuredFirst': '元典优先',
+	'settings.legal.retrievalStrategy.webFirst': '联网检索优先',
+	'settings.legal.retrievalStrategy.auto': '自动 fallback',
+	'settings.legal.retrievalStrategy.all': '多来源对照',
 	'settings.legal.testConnection': '测试连接',
 	'settings.legal.testConnection.running': '测试中...',
 	'settings.legal.testConnection.noKey': '请先填写 API Key。',
@@ -131,7 +135,7 @@ export const zh: Record<string, string> = {
 	'settings.legal.strategyStatus.auto.yuandianOnly':
 		'将仅使用元典；Tavily 未配置，无法联网 fallback。',
 	'settings.legal.strategyStatus.auto.tavilyOnly':
-		'将使用 Tavily；元典未配置，无法优先查询结构化法库。',
+		'将使用 Tavily；元典未配置，无法优先查询元典。',
 	'settings.legal.strategyStatus.all.both':
 		'将同时使用元典和 Tavily 做多来源对照。',
 	'settings.legal.strategyStatus.all.yuandianOnly':

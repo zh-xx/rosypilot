@@ -20,6 +20,7 @@ import { t } from './i18n';
 import flowerOffIcon from './icons/flower-off.svg';
 import {
 	DEFAULT_SETTINGS,
+	mapExactProvisionStrategyToRetrievalStrategy,
 	RosyPilotSettings,
 	RosyPilotSettingTab,
 } from './settings';
@@ -288,6 +289,22 @@ export default class RosyPilot extends Plugin {
 			{},
 			DEFAULT_SETTINGS.legal,
 			this.settings.legal,
+		);
+		this.settings.legal.defaultRetrievalStrategy =
+			this.settings.legal.defaultRetrievalStrategy ??
+			mapExactProvisionStrategyToRetrievalStrategy(
+				this.settings.legal.exactProvisionStrategy,
+			) ??
+			DEFAULT_SETTINGS.legal.defaultRetrievalStrategy;
+		this.settings.legal.commandOverrides = Object.assign(
+			{},
+			DEFAULT_SETTINGS.legal.commandOverrides,
+			this.settings.legal.commandOverrides,
+		);
+		this.settings.legal.commandOverrides.completeLegalProvision = Object.assign(
+			{},
+			DEFAULT_SETTINGS.legal.commandOverrides.completeLegalProvision,
+			this.settings.legal.commandOverrides.completeLegalProvision,
 		);
 	}
 

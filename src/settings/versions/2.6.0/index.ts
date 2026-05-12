@@ -1,6 +1,6 @@
 // Check the settings type in this version matches the current settings type.
 
-import { ExactProvisionStrategy, RosyPilotSettings } from 'src/settings';
+import { LegalCommandSettings, RosyPilotSettings } from 'src/settings';
 import { Equal, Expect } from 'src/settings/utils';
 import { Provider } from '../../../api/providers';
 
@@ -36,11 +36,7 @@ export interface RosyPilotSettings2_6_0 {
 		monthlyTokens: Record<string, number>;
 		monthlyLimit: number;
 	};
-	legal: {
-		yuandianApiKey: string | undefined;
-		tavilyApiKey: string | undefined;
-		exactProvisionStrategy: ExactProvisionStrategy;
-	};
+	legal: LegalCommandSettings;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- compile-time assertion type is intentionally unused at runtime

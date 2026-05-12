@@ -3,6 +3,7 @@ import { LegalExecutorRegistry } from '../executors/registry';
 import { LegalCommandRequest } from './request';
 import { LegalCommandRoute } from './route';
 import { LegalExecutionPlan } from './plan';
+import { resolveLegalRetrievalStrategy } from './retrieval-strategy';
 
 export class LegalExecutionPlanner {
 	constructor(
@@ -19,11 +20,13 @@ export class LegalExecutionPlanner {
 		}
 
 		const mode =
-			route.kind === 'exact-provision' &&
-			this.plugin.settings.legal.exactProvisionStrategy === 'all'
+			this.getRetrievalStrategy(request.commandId) === 'all'
 				? 'collect-all'
 				: 'first-success';
-		const preferredExecutorIds = this.getPreferredExecutorIds(route);
+		const preferredExecutorIds = this.getPreferredExecutorIds(
+			request.commandId,
+			route,
+		);
 		const availableExecutorIds = this.registry
 			.all()
 			.filter((executor) => executor.canRun(request, route, this.plugin))
@@ -35,13 +38,16 @@ export class LegalExecutionPlanner {
 		return { mode, steps };
 	}
 
-	private getPreferredExecutorIds(route: LegalCommandRoute): string[] {
+	private getPreferredExecutorIds(
+		commandId: string,
+		route: LegalCommandRoute,
+	): string[] {
 		if (route.kind !== 'exact-provision') {
 			return this.registry.all().map((executor) => executor.id);
 		}
 
-		const strategy = this.plugin.settings.legal.exactProvisionStrategy;
-		if (strategy === 'web') {
+		const strategy = this.getRetrievalStrategy(commandId);
+		if (strategy === 'web-first') {
 			return ['web.exact'];
 		}
 		if (strategy === 'auto') {
@@ -51,5 +57,20 @@ export class LegalExecutionPlanner {
 			return ['yuandian.exact', 'web.exact'];
 		}
 		return ['yuandian.exact'];
+	}
+
+	private getRetrievalStrategy(commandId: string) {
+		const { legal } = this.plugin.settings;
+		const override =
+			commandId === 'complete-legal-provision'
+				? legal.commandOverrides?.completeLegalProvision?.retrievalStrategy
+				: undefined;
+
+		return resolveLegalRetrievalStrategy(
+			legal.defaultRetrievalStrategy,
+			override,
+			legal.exactProvisionStrategy,
+			'structured-first',
+		);
 	}
 }

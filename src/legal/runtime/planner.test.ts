@@ -31,8 +31,14 @@ function createExecutor(id: string, available = true): LegalExecutor {
 }
 
 function createPlanner(
-	strategy: 'yuandian' | 'web' | 'auto' | 'all',
+	strategy: 'structured-first' | 'web-first' | 'auto' | 'all',
 	executors: LegalExecutor[],
+	override:
+		| 'inherit'
+		| 'structured-first'
+		| 'web-first'
+		| 'auto'
+		| 'all' = 'inherit',
 ): LegalExecutionPlanner {
 	const registry = new LegalExecutorRegistry();
 	for (const executor of executors) {
@@ -42,7 +48,12 @@ function createPlanner(
 	return new LegalExecutionPlanner(registry, {
 		settings: {
 			legal: {
-				exactProvisionStrategy: strategy,
+				defaultRetrievalStrategy: strategy,
+				commandOverrides: {
+					completeLegalProvision: {
+						retrievalStrategy: override,
+					},
+				},
 			},
 		},
 	} as RosyPilot);
@@ -50,7 +61,7 @@ function createPlanner(
 
 describe('LegalExecutionPlanner', () => {
 	it('plans yuandian exact strategy', () => {
-		const planner = createPlanner('yuandian', [
+		const planner = createPlanner('structured-first', [
 			createExecutor('yuandian.exact'),
 			createExecutor('web.exact'),
 		]);
@@ -64,7 +75,7 @@ describe('LegalExecutionPlanner', () => {
 	});
 
 	it('plans web exact strategy', () => {
-		const planner = createPlanner('web', [
+		const planner = createPlanner('web-first', [
 			createExecutor('yuandian.exact'),
 			createExecutor('web.exact'),
 		]);
@@ -110,6 +121,21 @@ describe('LegalExecutionPlanner', () => {
 			createExecutor('yuandian.exact', false),
 			createExecutor('web.exact'),
 		]);
+
+		const plan = planner.plan(request, exactRoute);
+
+		expect(plan).toEqual({
+			mode: 'first-success',
+			steps: [{ executorId: 'web.exact' }],
+		});
+	});
+
+	it('uses command override when present', () => {
+		const planner = createPlanner(
+			'structured-first',
+			[createExecutor('yuandian.exact'), createExecutor('web.exact')],
+			'web-first',
+		);
 
 		const plan = planner.plan(request, exactRoute);
 

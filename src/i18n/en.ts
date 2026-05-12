@@ -111,13 +111,19 @@ export const en: Record<string, string> = {
 	'settings.legal.tavilyApiKey': 'Tavily API Key',
 	'settings.legal.tavilyApiKeyDesc':
 		'Used for web search across statutes, cases, and other legal materials.',
-	'settings.legal.exactProvisionStrategy': 'Exact provision strategy',
-	'settings.legal.exactProvisionStrategyDesc':
-		'Choose the default source for exact legal provision lookup.',
-	'settings.legal.exactProvisionStrategy.yuandian': 'Yuandian',
-	'settings.legal.exactProvisionStrategy.web': 'Web search (Tavily)',
-	'settings.legal.exactProvisionStrategy.auto': 'Auto fallback',
-	'settings.legal.exactProvisionStrategy.all': 'Compare multiple sources',
+	'settings.legal.defaultRetrievalStrategy':
+		'Default Legal Command retrieval strategy',
+	'settings.legal.defaultRetrievalStrategyDesc':
+		'Choose the default data source strategy for legal commands. Individual commands can override it below.',
+	'settings.legal.commandOverrides.completeLegalProvision':
+		'/Complete legal provision retrieval strategy',
+	'settings.legal.commandOverrides.completeLegalProvisionDesc':
+		'Inherits the global Legal Command strategy by default. Override only when this command needs a specific source.',
+	'settings.legal.retrievalStrategy.inherit': 'Inherit global strategy',
+	'settings.legal.retrievalStrategy.structuredFirst': 'Yuandian first',
+	'settings.legal.retrievalStrategy.webFirst': 'Web search first',
+	'settings.legal.retrievalStrategy.auto': 'Auto fallback',
+	'settings.legal.retrievalStrategy.all': 'Compare multiple sources',
 	'settings.legal.testConnection': 'Test connection',
 	'settings.legal.testConnection.running': 'Testing...',
 	'settings.legal.testConnection.noKey': 'Enter an API key first.',
@@ -141,7 +147,7 @@ export const en: Record<string, string> = {
 	'settings.legal.strategyStatus.auto.yuandianOnly':
 		'Only Yuandian is available; Tavily fallback is not configured.',
 	'settings.legal.strategyStatus.auto.tavilyOnly':
-		'Tavily is available; Yuandian is not configured for structured legal database lookup.',
+		'Tavily is available; Yuandian is not configured.',
 	'settings.legal.strategyStatus.all.both':
 		'Yuandian and Tavily will both run for multi-source comparison.',
 	'settings.legal.strategyStatus.all.yuandianOnly':
