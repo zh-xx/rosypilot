@@ -274,11 +274,49 @@
   background: var(--background-secondary);
 }
 
+.rosypilot-legal-item-trusted {
+  border-color: var(--interactive-accent);
+}
+
 .rosypilot-legal-item-title {
   font-weight: 600;
   font-size: 0.9em;
   margin-bottom: 6px;
   line-height: 1.4;
+}
+
+.rosypilot-legal-source-badge {
+  display: inline-block;
+  width: fit-content;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  line-height: 1.5;
+  margin-bottom: 6px;
+  border: 1px solid var(--background-modifier-border);
+  color: var(--text-muted);
+}
+
+.rosypilot-legal-source-badge-trusted {
+  color: var(--interactive-accent);
+  border-color: var(--interactive-accent);
+  background: var(--background-primary);
+}
+
+.rosypilot-legal-source-badge-web {
+  color: var(--text-muted);
+  background: var(--background-primary);
+}
+
+.rosypilot-legal-source-url {
+  font-size: 0.75em;
+  margin: -2px 0 6px;
+  opacity: 0.75;
+  word-break: break-all;
+}
+
+.rosypilot-legal-source-url a {
+  color: var(--text-accent);
 }
 
 .rosypilot-legal-item-content {
@@ -291,6 +329,23 @@
 .rosypilot-legal-item-meta {
   font-size: 0.75em;
   opacity: 0.55;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  line-height: 1.45;
+}
+
+.rosypilot-legal-meta-row {
+  display: inline-flex;
+  min-width: 0;
+}
+
+.rosypilot-legal-meta-label {
+  color: var(--text-muted);
+}
+
+.rosypilot-legal-meta-value {
+  word-break: break-word;
 }
 
 .rosypilot-legal-item-actions {
@@ -307,6 +362,23 @@
   color: var(--interactive-accent);
   background: transparent;
   cursor: pointer;
+}
+
+.rosypilot-legal-link-btn {
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 999px;
+  background: var(--background-primary);
+  color: var(--text-accent);
+  padding: 1px 8px;
+  font-size: 0.75em;
+  line-height: 1.6;
+  cursor: pointer;
+  margin: -2px 0 8px;
+}
+
+.rosypilot-legal-link-btn:hover {
+  background: var(--background-modifier-hover);
+  border-color: var(--text-accent);
 }
 
 .rosypilot-legal-btn:hover {

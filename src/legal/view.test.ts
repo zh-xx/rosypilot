@@ -23,6 +23,17 @@ jest.mock('src/i18n', () => ({
 			'legal.panel.insert.raw': '插入法条',
 			'legal.panel.insert.adapted': '匹配原文',
 			'legal.panel.source': '来源',
+			'legal.panel.url': '网址',
+			'legal.panel.expand': '展开全文',
+			'legal.panel.collapse': '收起全文',
+			'legal.panel.badge.yuandian': '元典',
+			'legal.panel.badge.web': 'Web Search',
+			'legal.panel.meta.lawName': '法规名称',
+			'legal.panel.meta.articleNo': '条文编号',
+			'legal.panel.meta.effectiveStatus': '效力状态',
+			'legal.panel.meta.category': '法规类型',
+			'legal.panel.meta.publishDate': '发布日期',
+			'legal.panel.meta.effectiveDate': '施行日期',
 			'legal.panel.title': '法条',
 		})[key] ?? key,
 }));
@@ -37,6 +48,10 @@ class FakeElement {
 		private tag: string,
 		private cls = '',
 	) {}
+
+	addClass(cls: string): void {
+		this.cls = this.cls ? `${this.cls} ${cls}` : cls;
+	}
 
 	createDiv(cls?: string): FakeElement {
 		return this.append(new FakeElement('div', cls ?? ''));
@@ -53,8 +68,12 @@ class FakeElement {
 		return child;
 	}
 
-	createSpan(options?: { cls?: string }): FakeElement {
-		return this.append(new FakeElement('span', options?.cls ?? ''));
+	createSpan(options?: { cls?: string; text?: string }): FakeElement {
+		const child = this.append(new FakeElement('span', options?.cls ?? ''));
+		if (options?.text) {
+			child.setText(options.text);
+		}
+		return child;
 	}
 
 	setText(text: string): void {
@@ -79,7 +98,7 @@ class FakeElement {
 	}
 
 	findAllByClass(cls: string): FakeElement[] {
-		const self = this.cls === cls ? [this] : [];
+		const self = this.cls.split(/\s+/).includes(cls) ? [this] : [];
 		return [
 			...self,
 			...this.children.flatMap((child) => child.findAllByClass(cls)),
@@ -164,10 +183,32 @@ describe('LegalPanelView', () => {
 		expect(text).toContain('精确匹配');
 		expect(text).toContain('元典标题');
 		expect(text).toContain('Tavily标题');
-		expect(text).toContain('来源：元典');
-		expect(text).toContain('来源：Tavily');
+		expect(text).toContain('元典');
+		expect(text).toContain('Tavily · Web Search');
+		expect(text).toContain('网址：');
+		expect(text).toContain('https://example.com');
 		expect(text).toContain('中华人民共和国民法典');
 		expect(text).toContain('第五百一十一条');
+	});
+
+	it('collapses and expands long web content', () => {
+		const { view, root } = createOpenedView();
+		const longContent = 'a'.repeat(250);
+		const result = {
+			...createResult('web:1', 'tavily', 'Tavily'),
+			content: longContent,
+		};
+
+		view.setDetails([result]);
+		const text = root.allText();
+		const buttons = root.findAllByTag('button');
+
+		expect(text).toContain('展开全文');
+		expect(text).not.toContain(longContent);
+
+		buttons[0].click();
+		expect(root.allText()).toContain(longContent);
+		expect(root.allText()).toContain('收起全文');
 	});
 
 	it('binds raw and adapted callbacks to each result card', async () => {

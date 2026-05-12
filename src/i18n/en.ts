@@ -135,6 +135,17 @@ export const en: Record<string, string> = {
 	'legal.panel.detail.label': 'Exact match',
 	'legal.panel.search.label': 'Semantic results',
 	'legal.panel.source': 'Source',
+	'legal.panel.url': 'URL',
+	'legal.panel.expand': 'Expand',
+	'legal.panel.collapse': 'Collapse',
+	'legal.panel.badge.yuandian': 'Yuandian',
+	'legal.panel.badge.web': 'Web Search',
+	'legal.panel.meta.lawName': 'Law',
+	'legal.panel.meta.articleNo': 'Article',
+	'legal.panel.meta.effectiveStatus': 'Status',
+	'legal.panel.meta.category': 'Category',
+	'legal.panel.meta.publishDate': 'Published',
+	'legal.panel.meta.effectiveDate': 'Effective',
 	'legal.notice.noApiKey':
 		'Please set your Yuandian API Key in settings first.',
 };

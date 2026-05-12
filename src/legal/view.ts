@@ -1,5 +1,10 @@
 import { ItemView, WorkspaceLeaf } from 'obsidian';
 import { t } from 'src/i18n';
+import {
+	LegalDisplayMetaRow,
+	LegalDisplayResult,
+	LegalResultPresenter,
+} from './presenter';
 import { LegalResult } from './runtime/result';
 import { ArticleSearchItem } from './yuandian-client';
 
@@ -7,6 +12,7 @@ export const LEGAL_PANEL_VIEW_TYPE = 'rosypilot-legal-panel';
 
 export class LegalPanelView extends ItemView {
 	private container!: HTMLElement;
+	private presenter = new LegalResultPresenter();
 
 	constructor(leaf: WorkspaceLeaf) {
 		super(leaf);
@@ -83,11 +89,7 @@ export class LegalPanelView extends ItemView {
 
 			this.renderItem(
 				this.container,
-				{
-					title: result.title,
-					content: result.content,
-					meta: this.buildResultMeta(result),
-				},
+				this.presenter.present(result),
 				callbacks,
 			);
 		}
@@ -112,23 +114,75 @@ export class LegalPanelView extends ItemView {
 				: item.fgtitle ?? '';
 			const title = fgtitle ? fgtitle + item.num : item.num;
 			this.renderItem(this.container, {
+				badge: t('legal.panel.badge.yuandian'),
+				badgeKind: 'trusted',
 				title,
 				content: item.content,
-				meta: [item.effect1, item.sxx].filter(Boolean).join('  ·  '),
+				previewContent: item.content,
+				collapsible: false,
+				metaRows: [
+					{ label: t('legal.panel.meta.category'), value: item.effect1 },
+					{
+						label: t('legal.panel.meta.effectiveStatus'),
+						value: item.sxx,
+					},
+				].filter((row): row is LegalDisplayMetaRow => Boolean(row.value)),
 			});
 		}
 	}
 
 	private renderItem(
 		parent: HTMLElement,
-		{ title, content, meta }: { title: string; content: string; meta: string },
+		display: LegalDisplayResult,
 		callbacks?: { onRaw: () => void; onAdapted: () => Promise<void> },
 	): void {
 		const card = parent.createDiv('rosypilot-legal-item');
-		card.createDiv('rosypilot-legal-item-title').setText(title);
-		card.createDiv('rosypilot-legal-item-content').setText(content);
-		if (meta) {
-			card.createDiv('rosypilot-legal-item-meta').setText(meta);
+		card.addClass(`rosypilot-legal-item-${display.badgeKind}`);
+		const badge = card.createDiv('rosypilot-legal-source-badge');
+		badge.addClass(`rosypilot-legal-source-badge-${display.badgeKind}`);
+		badge.setText(display.badge);
+		card.createDiv('rosypilot-legal-item-title').setText(display.title);
+		if (display.sourceUrl) {
+			const source = card.createDiv('rosypilot-legal-source-url');
+			source.createSpan({ text: `${t('legal.panel.url')}：` });
+			const link = source.createEl('a', {
+				text: display.sourceUrl,
+			});
+			link.href = display.sourceUrl;
+			link.target = '_blank';
+			link.rel = 'noopener noreferrer';
+		}
+
+		const content = card.createDiv('rosypilot-legal-item-content');
+		content.setText(display.previewContent);
+		if (display.collapsible) {
+			const toggle = card.createEl('button', {
+				cls: 'rosypilot-legal-link-btn',
+				text: t('legal.panel.expand'),
+			});
+			let expanded = false;
+			toggle.addEventListener('click', () => {
+				expanded = !expanded;
+				content.setText(expanded ? display.content : display.previewContent);
+				toggle.setText(
+					expanded ? t('legal.panel.collapse') : t('legal.panel.expand'),
+				);
+			});
+		}
+
+		if (display.metaRows.length > 0) {
+			const meta = card.createDiv('rosypilot-legal-item-meta');
+			for (const row of display.metaRows) {
+				const item = meta.createDiv('rosypilot-legal-meta-row');
+				item.createSpan({
+					cls: 'rosypilot-legal-meta-label',
+					text: `${row.label}：`,
+				});
+				item.createSpan({
+					cls: 'rosypilot-legal-meta-value',
+					text: row.value,
+				});
+			}
 		}
 		if (callbacks) {
 			const actions = card.createDiv('rosypilot-legal-item-actions');
@@ -155,20 +209,5 @@ export class LegalPanelView extends ItemView {
 				});
 			});
 		}
-	}
-
-	private buildResultMeta(result: LegalResult): string {
-		const source = result.source.name ?? result.source.provider;
-		return [
-			`${t('legal.panel.source')}：${source}`,
-			result.metadata.lawName,
-			result.metadata.articleNo,
-			result.metadata.effectiveStatus,
-			result.metadata.category,
-			result.metadata.publishDate,
-			result.metadata.effectiveDate,
-		]
-			.filter(Boolean)
-			.join('  ·  ');
 	}
 }
