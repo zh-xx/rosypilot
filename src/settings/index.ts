@@ -383,6 +383,12 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl).setName(t('settings.legal.title')).setHeading();
 
+		let legalStrategyStatus: Setting | undefined;
+		const refreshLegalStrategyStatus = () => {
+			const status = this.getLegalStrategyAvailability();
+			legalStrategyStatus?.setName(status.name).setDesc(status.desc);
+		};
+
 		new Setting(containerEl)
 			.setName(t('settings.legal.apiKey'))
 			.setDesc(t('settings.legal.apiKeyDesc'))
@@ -392,12 +398,12 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 					.onChange(async (value) => {
 						settings.legal.yuandianApiKey = value || undefined;
 						await plugin.saveSettings();
+						refreshLegalStrategyStatus();
 					}),
 			)
 			.addButton((button) =>
 				button
 					.setButtonText(t('settings.legal.testConnection'))
-					.setDisabled(!settings.legal?.yuandianApiKey)
 					.onClick(async () => {
 						button.setDisabled(true);
 						button.setButtonText(t('settings.legal.testConnection.running'));
@@ -405,7 +411,7 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 							await this.testYuandianConnection(settings.legal.yuandianApiKey);
 						} finally {
 							button.setButtonText(t('settings.legal.testConnection'));
-							button.setDisabled(!settings.legal?.yuandianApiKey);
+							button.setDisabled(false);
 						}
 					}),
 			);
@@ -419,12 +425,12 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 					.onChange(async (value) => {
 						settings.legal.tavilyApiKey = value || undefined;
 						await plugin.saveSettings();
+						refreshLegalStrategyStatus();
 					}),
 			)
 			.addButton((button) =>
 				button
 					.setButtonText(t('settings.legal.testConnection'))
-					.setDisabled(!settings.legal?.tavilyApiKey)
 					.onClick(async () => {
 						button.setDisabled(true);
 						button.setButtonText(t('settings.legal.testConnection.running'));
@@ -432,7 +438,7 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 							await this.testTavilyConnection(settings.legal.tavilyApiKey);
 						} finally {
 							button.setButtonText(t('settings.legal.testConnection'));
-							button.setDisabled(!settings.legal?.tavilyApiKey);
+							button.setDisabled(false);
 						}
 					}),
 			);
@@ -454,8 +460,12 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 						settings.legal.exactProvisionStrategy =
 							value as ExactProvisionStrategy;
 						await plugin.saveSettings();
+						refreshLegalStrategyStatus();
 					}),
 			);
+
+		legalStrategyStatus = new Setting(containerEl);
+		refreshLegalStrategyStatus();
 
 		/************************************************************/
 		/*                    Debug and usage                       */
@@ -571,6 +581,59 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 		const reason =
 			error instanceof Error && error.message ? ` ${error.message}` : '';
 		return `${t('settings.legal.testConnection.fail')}${reason}`;
+	}
+
+	private getLegalStrategyAvailability(): { name: string; desc: string } {
+		const { legal } = this.plugin.settings;
+		const hasYuandian = Boolean(legal?.yuandianApiKey);
+		const hasTavily = Boolean(legal?.tavilyApiKey);
+		const strategy = legal?.exactProvisionStrategy;
+
+		if (strategy === 'yuandian') {
+			return {
+				name: t('settings.legal.strategyStatus'),
+				desc: hasYuandian
+					? t('settings.legal.strategyStatus.yuandian.ready')
+					: t('settings.legal.strategyStatus.yuandian.missing'),
+			};
+		}
+
+		if (strategy === 'web') {
+			return {
+				name: t('settings.legal.strategyStatus'),
+				desc: hasTavily
+					? t('settings.legal.strategyStatus.web.ready')
+					: t('settings.legal.strategyStatus.web.missing'),
+			};
+		}
+
+		if (strategy === 'auto') {
+			let desc = t('settings.legal.strategyStatus.none');
+			if (hasYuandian && hasTavily) {
+				desc = t('settings.legal.strategyStatus.auto.both');
+			} else if (hasYuandian) {
+				desc = t('settings.legal.strategyStatus.auto.yuandianOnly');
+			} else if (hasTavily) {
+				desc = t('settings.legal.strategyStatus.auto.tavilyOnly');
+			}
+			return {
+				name: t('settings.legal.strategyStatus'),
+				desc,
+			};
+		}
+
+		let desc = t('settings.legal.strategyStatus.none');
+		if (hasYuandian && hasTavily) {
+			desc = t('settings.legal.strategyStatus.all.both');
+		} else if (hasYuandian) {
+			desc = t('settings.legal.strategyStatus.all.yuandianOnly');
+		} else if (hasTavily) {
+			desc = t('settings.legal.strategyStatus.all.tavilyOnly');
+		}
+		return {
+			name: t('settings.legal.strategyStatus'),
+			desc,
+		};
 	}
 
 	showUsageProgress() {

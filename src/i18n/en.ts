@@ -107,7 +107,7 @@ export const en: Record<string, string> = {
 	'settings.legal.title': 'Legal Command Settings',
 	'settings.legal.apiKey': 'Yuandian API Key',
 	'settings.legal.apiKeyDesc':
-		'Used for legal provision lookup (1 credit per exact query, 10 credits per semantic search)',
+		'Used to search statutes, cases, and other legal materials.',
 	'settings.legal.tavilyApiKey': 'Tavily API Key',
 	'settings.legal.tavilyApiKeyDesc':
 		'Used for web search across statutes, cases, and other legal materials.',
@@ -125,6 +125,29 @@ export const en: Record<string, string> = {
 	'settings.legal.testConnection.empty':
 		'Connection succeeded, but the test query returned no data.',
 	'settings.legal.testConnection.fail': 'Connection test failed:',
+	'settings.legal.strategyStatus': 'Strategy status',
+	'settings.legal.strategyStatus.none':
+		'No source is currently available. Configure at least one API key.',
+	'settings.legal.strategyStatus.yuandian.ready':
+		'Exact provision lookup will use Yuandian.',
+	'settings.legal.strategyStatus.yuandian.missing':
+		'This strategy requires a Yuandian API key.',
+	'settings.legal.strategyStatus.web.ready':
+		'Exact provision lookup will use Tavily web search.',
+	'settings.legal.strategyStatus.web.missing':
+		'This strategy requires a Tavily API key.',
+	'settings.legal.strategyStatus.auto.both':
+		'Yuandian will run first; Tavily will be used if Yuandian fails or returns no result.',
+	'settings.legal.strategyStatus.auto.yuandianOnly':
+		'Only Yuandian is available; Tavily fallback is not configured.',
+	'settings.legal.strategyStatus.auto.tavilyOnly':
+		'Tavily is available; Yuandian is not configured for structured legal database lookup.',
+	'settings.legal.strategyStatus.all.both':
+		'Yuandian and Tavily will both run for multi-source comparison.',
+	'settings.legal.strategyStatus.all.yuandianOnly':
+		'Only Yuandian results will be returned; Tavily is not configured.',
+	'settings.legal.strategyStatus.all.tavilyOnly':
+		'Only Tavily results will be returned; Yuandian is not configured.',
 
 	// Legal slash command
 	'legal.slashCommand.label': 'Complete legal provision',

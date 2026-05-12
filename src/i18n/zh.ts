@@ -117,6 +117,27 @@ export const zh: Record<string, string> = {
 	'settings.legal.testConnection.success': '连接测试成功。',
 	'settings.legal.testConnection.empty': '连接成功，但测试查询未返回数据。',
 	'settings.legal.testConnection.fail': '连接测试失败：',
+	'settings.legal.strategyStatus': '策略状态',
+	'settings.legal.strategyStatus.none':
+		'当前没有可用来源，请至少配置一个 API Key。',
+	'settings.legal.strategyStatus.yuandian.ready':
+		'当前将使用元典检索精准法条。',
+	'settings.legal.strategyStatus.yuandian.missing':
+		'当前策略需要元典 API Key。',
+	'settings.legal.strategyStatus.web.ready': '当前将使用 Tavily 进行联网检索。',
+	'settings.legal.strategyStatus.web.missing': '当前策略需要 Tavily API Key。',
+	'settings.legal.strategyStatus.auto.both':
+		'将优先使用元典；元典失败或无结果时 fallback 到 Tavily。',
+	'settings.legal.strategyStatus.auto.yuandianOnly':
+		'将仅使用元典；Tavily 未配置，无法联网 fallback。',
+	'settings.legal.strategyStatus.auto.tavilyOnly':
+		'将使用 Tavily；元典未配置，无法优先查询结构化法库。',
+	'settings.legal.strategyStatus.all.both':
+		'将同时使用元典和 Tavily 做多来源对照。',
+	'settings.legal.strategyStatus.all.yuandianOnly':
+		'将仅返回元典结果；Tavily 未配置。',
+	'settings.legal.strategyStatus.all.tavilyOnly':
+		'将仅返回 Tavily 结果；元典未配置。',
 
 	// Legal slash command
 	'legal.slashCommand.label': '补全法条',
