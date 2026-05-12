@@ -32,6 +32,8 @@ jest.mock('src/i18n', () => ({
 			'legal.panel.collapse': '收起全文',
 			'legal.panel.badge.yuandian': '元典',
 			'legal.panel.badge.web': 'Web Search',
+			'legal.panel.badge.webExtracted': '网页抽取',
+			'legal.panel.badge.webSnippet': '网页片段',
 			'legal.panel.meta.lawName': '法规名称',
 			'legal.panel.meta.articleNo': '条文编号',
 			'legal.panel.meta.effectiveStatus': '效力状态',
@@ -195,7 +197,7 @@ describe('LegalPanelView', () => {
 		expect(text).toContain('元典标题');
 		expect(text).toContain('Tavily标题');
 		expect(text).toContain('元典');
-		expect(text).toContain('Tavily · Web Search');
+		expect(text).toContain('Tavily · 网页片段');
 		expect(text).toContain('网址：');
 		expect(text).toContain('https://example.com');
 		expect(text).toContain('中华人民共和国民法典');

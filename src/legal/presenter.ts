@@ -46,7 +46,11 @@ export class LegalResultPresenter {
 		}
 		if (result.type === 'web') {
 			const name = result.source.name ?? result.source.provider;
-			return `${name} · ${t('legal.panel.badge.web')}`;
+			const webKind =
+				result.metadata.extractionKind === 'llm-extracted'
+					? t('legal.panel.badge.webExtracted')
+					: t('legal.panel.badge.webSnippet');
+			return `${name} · ${webKind}`;
 		}
 		return result.source.name ?? result.source.provider;
 	}

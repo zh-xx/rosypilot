@@ -6,6 +6,8 @@ jest.mock('src/i18n', () => ({
 		({
 			'legal.panel.badge.yuandian': '元典',
 			'legal.panel.badge.web': 'Web Search',
+			'legal.panel.badge.webExtracted': '网页抽取',
+			'legal.panel.badge.webSnippet': '网页片段',
 			'legal.panel.meta.lawName': '法规名称',
 			'legal.panel.meta.articleNo': '条文编号',
 			'legal.panel.meta.effectiveStatus': '效力状态',
@@ -56,7 +58,7 @@ describe('LegalResultPresenter', () => {
 		]);
 	});
 
-	it('collapses long web result and keeps source url', () => {
+	it('marks web snippet results and keeps source url', () => {
 		const longContent = 'a'.repeat(650);
 		const display = new LegalResultPresenter().present(
 			createResult({
@@ -75,10 +77,28 @@ describe('LegalResultPresenter', () => {
 			}),
 		);
 
-		expect(display.badge).toBe('Tavily · Web Search');
+		expect(display.badge).toBe('Tavily · 网页片段');
 		expect(display.badgeKind).toBe('web');
 		expect(display.collapsible).toBe(true);
 		expect(display.previewContent).toHaveLength(203);
 		expect(display.sourceUrl).toBe('https://example.com/legal');
+	});
+
+	it('marks LLM extracted web results', () => {
+		const display = new LegalResultPresenter().present(
+			createResult({
+				id: 'web:1',
+				type: 'web',
+				source: {
+					provider: 'tavily',
+					name: 'Tavily',
+				},
+				metadata: {
+					extractionKind: 'llm-extracted',
+				},
+			}),
+		);
+
+		expect(display.badge).toBe('Tavily · 网页抽取');
 	});
 });

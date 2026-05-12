@@ -13,6 +13,7 @@ export interface WebExactProvisionResultInput {
 	publishDate?: string;
 	effectiveDate?: string;
 	score?: number;
+	extractionKind?: 'llm-extracted' | 'web-snippet';
 	raw: unknown;
 }
 
@@ -57,6 +58,7 @@ export class LegalResultNormalizer {
 				publishDate: input.publishDate,
 				effectiveDate: input.effectiveDate,
 				score: input.score,
+				extractionKind: input.extractionKind ?? 'web-snippet',
 			},
 			raw: input.raw,
 		};

@@ -174,6 +174,8 @@ export const en: Record<string, string> = {
 	'legal.panel.collapse': 'Collapse',
 	'legal.panel.badge.yuandian': 'Yuandian',
 	'legal.panel.badge.web': 'Web Search',
+	'legal.panel.badge.webExtracted': 'Web extracted',
+	'legal.panel.badge.webSnippet': 'Web snippet',
 	'legal.panel.meta.lawName': 'Law',
 	'legal.panel.meta.articleNo': 'Article',
 	'legal.panel.meta.effectiveStatus': 'Status',

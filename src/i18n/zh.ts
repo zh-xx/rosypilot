@@ -164,6 +164,8 @@ export const zh: Record<string, string> = {
 	'legal.panel.collapse': '收起全文',
 	'legal.panel.badge.yuandian': '元典',
 	'legal.panel.badge.web': 'Web Search',
+	'legal.panel.badge.webExtracted': '网页抽取',
+	'legal.panel.badge.webSnippet': '网页片段',
 	'legal.panel.meta.lawName': '法规名称',
 	'legal.panel.meta.articleNo': '条文编号',
 	'legal.panel.meta.effectiveStatus': '效力状态',

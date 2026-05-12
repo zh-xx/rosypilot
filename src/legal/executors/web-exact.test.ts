@@ -1,8 +1,15 @@
+import { requestUrl } from 'obsidian';
 import { WebExactExecutor, WebExactSearchProvider } from './web-exact';
 import { LegalCommandRequest } from '../runtime/request';
 import { LegalCommandRoute } from '../runtime/route';
 
 import type RosyPilot from 'src/main';
+
+jest.mock('obsidian', () => ({ requestUrl: jest.fn() }), {
+	virtual: true,
+});
+
+const mockedRequestUrl = requestUrl as jest.MockedFunction<typeof requestUrl>;
 
 const exactRoute: LegalCommandRoute = {
 	kind: 'exact-provision',
@@ -19,7 +26,19 @@ const request = {
 	editorView: {},
 } as LegalCommandRequest;
 
-const plugin = {} as RosyPilot;
+const plugin = {
+	settings: {
+		completions: {
+			provider: 'deepseek',
+			model: 'deepseek-chat',
+		},
+		providers: {
+			deepseek: {
+				apiKey: undefined,
+			},
+		},
+	},
+} as RosyPilot;
 
 function createProvider(): WebExactSearchProvider {
 	return {
@@ -44,6 +63,10 @@ function createProvider(): WebExactSearchProvider {
 }
 
 describe('WebExactExecutor', () => {
+	beforeEach(() => {
+		mockedRequestUrl.mockReset();
+	});
+
 	it('requires exact route and a web search provider', () => {
 		const executor = new WebExactExecutor(createProvider());
 		const emptyExecutor = new WebExactExecutor();
@@ -80,8 +103,54 @@ describe('WebExactExecutor', () => {
 					publishDate: undefined,
 					effectiveDate: undefined,
 					score: 0.92,
+					extractionKind: 'web-snippet',
 				},
 			}),
 		]);
+	});
+
+	it('uses LLM extracted provision content when available', async () => {
+		mockedRequestUrl.mockResolvedValue({
+			status: 200,
+			json: {
+				choices: [
+					{
+						message: {
+							content:
+								'{"title":"中华人民共和国民法典第五百一十一条","content":"第五百一十一条 当事人就有关合同内容约定不明确..."}',
+						},
+					},
+				],
+			},
+		} as Awaited<ReturnType<typeof requestUrl>>);
+
+		const provider = createProvider();
+		const results = await new WebExactExecutor(provider).run(
+			request,
+			exactRoute,
+			{
+				settings: {
+					completions: {
+						provider: 'deepseek',
+						model: 'deepseek-chat',
+					},
+					providers: {
+						deepseek: {
+							apiKey: 'deepseek-key',
+						},
+					},
+				},
+			} as RosyPilot,
+		);
+
+		expect(results[0]).toEqual(
+			expect.objectContaining({
+				title: '中华人民共和国民法典第五百一十一条',
+				content: '第五百一十一条 当事人就有关合同内容约定不明确...',
+				metadata: expect.objectContaining({
+					extractionKind: 'llm-extracted',
+				}),
+			}),
+		);
 	});
 });

@@ -23,6 +23,7 @@ export interface LegalResult {
 		publishDate?: string;
 		effectiveDate?: string;
 		score?: number;
+		extractionKind?: 'llm-extracted' | 'web-snippet';
 	};
 	raw: unknown;
 }

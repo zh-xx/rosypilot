@@ -4,6 +4,7 @@ import {
 	LegalResultNormalizer,
 	WebExactProvisionResultInput,
 } from '../runtime/normalizer';
+import { WebProvisionExtractor } from '../extractors/web-provision-extractor';
 import { LegalCommandRequest } from '../runtime/request';
 import { LegalResult } from '../runtime/result';
 import { LegalCommandRoute } from '../runtime/route';
@@ -33,11 +34,24 @@ export class WebExactExecutor implements LegalExecutor {
 	async run(
 		_request: LegalCommandRequest,
 		route: LegalCommandRoute,
-		_plugin: RosyPilot,
+		plugin: RosyPilot,
 	): Promise<LegalResult[]> {
 		if (route.kind !== 'exact-provision' || !this.provider) return [];
 		const results = await this.provider.searchExactProvision(route.ref);
-		return results.map((result) =>
+		const extractor = new WebProvisionExtractor(plugin);
+		const refinedResults = await Promise.all(
+			results.map(async (result) => {
+				const extraction = await extractor.extract(route.ref, result);
+				if (!extraction) return result;
+				return {
+					...result,
+					title: extraction.title,
+					content: extraction.content,
+					extractionKind: 'llm-extracted',
+				} satisfies WebExactProvisionResultInput;
+			}),
+		);
+		return refinedResults.map((result) =>
 			this.normalizer.fromWebExactProvision(result),
 		);
 	}
