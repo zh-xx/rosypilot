@@ -66,7 +66,7 @@ export class LegalCommandDebugView extends ItemView {
 			e.stopPropagation();
 			void navigator.clipboard.writeText(JSON.stringify(entry, null, 2));
 			copyBtn.setText('Copied!');
-			setTimeout(() => copyBtn.setText('Copy'), 1500);
+			activeWindow.setTimeout(() => copyBtn.setText('Copy'), 1500);
 		});
 
 		const toggleBtn = actions.createEl('button', {

@@ -191,7 +191,7 @@ export default class RosyPilot extends Plugin {
 
 		const leaves = workspace.getLeavesOfType(DEBUG_VIEW_TYPE);
 		if (leaves.length > 0) {
-			void workspace.revealLeaf(leaves[0]);
+			workspace.setActiveLeaf(leaves[0], { focus: true });
 		} else {
 			const leaf = workspace.getRightLeaf(false);
 			await leaf?.setViewState({ type: DEBUG_VIEW_TYPE, active: true });
@@ -199,7 +199,7 @@ export default class RosyPilot extends Plugin {
 
 		const legalLeaves = workspace.getLeavesOfType(LEGAL_DEBUG_VIEW_TYPE);
 		if (legalLeaves.length > 0) {
-			void workspace.revealLeaf(legalLeaves[0]);
+			workspace.setActiveLeaf(legalLeaves[0], { focus: true });
 			return;
 		}
 
@@ -215,7 +215,7 @@ export default class RosyPilot extends Plugin {
 
 		const leaves = workspace.getLeavesOfType(LEGAL_PANEL_VIEW_TYPE);
 		if (leaves.length > 0) {
-			await workspace.revealLeaf(leaves[0]);
+			workspace.setActiveLeaf(leaves[0], { focus: true });
 			return leaves[0].view as LegalPanelView;
 		}
 

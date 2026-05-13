@@ -13,7 +13,7 @@ interface CompletionsState {
 export const completionsStateField = StateField.define<
 	CompletionsState | undefined
 >({
-	create(state) {
+	create(_state) {
 		return undefined;
 	},
 	update(value, transaction) {

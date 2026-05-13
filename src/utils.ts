@@ -26,13 +26,16 @@ export function debounceAsyncFunc<TArgs extends unknown[], TResult>(
 	function debounced(...args: TArgs): Promise<TResult | undefined> {
 		return new Promise((resolve) => {
 			previous.cancel();
-			const timer = setTimeout(() => void func(...args).then(resolve), wait);
+			const timer = activeWindow.setTimeout(
+				() => void func(...args).then(resolve),
+				wait,
+			);
 			previous.cancel = () => {
-				clearTimeout(timer);
+				activeWindow.clearTimeout(timer);
 				resolve(undefined);
 			};
 			previous.force = () => {
-				clearTimeout(timer);
+				activeWindow.clearTimeout(timer);
 				void func(...args).then(resolve);
 			};
 		});
@@ -69,14 +72,14 @@ export function debounceAsyncGenerator<TArgs extends unknown[], TResult>(
 		const id = lastId; // Must be after `previous.cancel()`.
 		try {
 			await new Promise<void>((resolve, reject) => {
-				const timer = setTimeout(() => resolve(), wait);
+				const timer = activeWindow.setTimeout(() => resolve(), wait);
 				previous.cancel = () => {
 					++lastId;
-					clearTimeout(timer);
+					activeWindow.clearTimeout(timer);
 					reject(new Error('Debounce cancelled'));
 				};
 				previous.force = () => {
-					clearTimeout(timer);
+					activeWindow.clearTimeout(timer);
 					resolve();
 				};
 			});

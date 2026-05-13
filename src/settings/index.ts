@@ -540,7 +540,7 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 					settings.debug.enabled = value;
 					await plugin.saveSettings();
 					// Defer view operations so the settings modal can close gracefully.
-					setTimeout(() => {
+					activeWindow.setTimeout(() => {
 						if (value) {
 							void plugin.activateDebugView();
 						} else {

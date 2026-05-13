@@ -32,27 +32,28 @@ class CompletionsWidget extends WidgetType {
 		return aliases[key] ?? key;
 	}
 
-	toDOM(view: EditorView) {
-		const wrapper = document.createElement('span');
+	toDOM(_view: EditorView) {
+		const doc = activeDocument;
+		const wrapper = doc.createElement('span');
 
-		const textEl = document.createElement('span');
+		const textEl = doc.createElement('span');
 		textEl.classList.add('rosypilot-completions');
 		textEl.textContent = this.completions;
 
-		const hintEl = document.createElement('span');
+		const hintEl = doc.createElement('span');
 		hintEl.classList.add('rosypilot-completions-hint');
 
-		const dividerEl = document.createElement('span');
+		const dividerEl = doc.createElement('span');
 		dividerEl.classList.add('rosypilot-completions-hint-divider');
 		dividerEl.textContent = '|';
 
-		const acceptEl = document.createElement('span');
+		const acceptEl = doc.createElement('span');
 		acceptEl.classList.add('rosypilot-completions-hint-accept');
 		acceptEl.textContent = `✓ ${this.formatKey(this.acceptKey)}`;
 
-		const dotEl = document.createTextNode(' · ');
+		const dotEl = doc.createTextNode(' · ');
 
-		const rejectEl = document.createElement('span');
+		const rejectEl = doc.createElement('span');
 		rejectEl.classList.add('rosypilot-completions-hint-reject');
 		rejectEl.textContent = `✕ ${this.formatKey(this.rejectKey)}`;
 

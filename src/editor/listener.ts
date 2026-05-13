@@ -94,7 +94,7 @@ function showCompletions(fetcher: CompletionsFetcher, cancel: () => void) {
 export const showCompletionsOnUpdate = (
 	fetcher: CompletionsFetcher,
 	cancel: () => void,
-	plugin: RosyPilot,
+	_plugin: RosyPilot,
 ) => {
 	const handler = showCompletions(fetcher, cancel);
 	return EditorView.updateListener.of((update) => void handler(update));

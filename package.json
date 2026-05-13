@@ -1,6 +1,6 @@
 {
   "name": "rosypilot",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "AI-powered inline completions for legal writing",
   "main": "main.js",
   "scripts": {
@@ -27,8 +27,6 @@
     "@types/react": "^18.2.73",
     "@types/react-dom": "^18.2.22",
     "@typescript-eslint/utils": "^8.58.2",
-    "axios": "^1.6.8",
-    "builtin-modules": "3.3.0",
     "cheerio": "^1.0.0-rc.12",
     "commander": "^12.0.0",
     "esbuild": "0.17.3",

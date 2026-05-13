@@ -2,6 +2,16 @@
 
 All notable changes to RosyPilot will be documented in this file.
 
+## [0.3.2] - 2026-05-13
+
+### 修复
+
+- 修复 Obsidian 社区插件自动检查错误：移除 `Workspace.revealLeaf` 用法，保持 `minAppVersion` 为 `1.5.7`
+- 修复 popout window 兼容性警告：改用 `activeWindow.setTimeout()` / `activeWindow.clearTimeout()` 和 `activeDocument`
+- 清理未使用参数警告
+- 移除 `axios` 与 `builtin-modules` 开发依赖，改用内置 `fetch` 与 Node `builtinModules`
+- 新增 GitHub Actions 发版流程，为 `main.js`、`manifest.json`、`styles.css` 生成 artifact attestations
+
 ## [0.3.1] - 2026-05-12
 
 ### 新增 / 改进
