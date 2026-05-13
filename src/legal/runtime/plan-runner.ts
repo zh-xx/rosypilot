@@ -37,7 +37,12 @@ export class LegalPlanRunner {
 
 			let stepResults: LegalResult[];
 			try {
-				stepResults = await executor.run(request, route, this.plugin);
+				const rawResults: unknown = await executor.run(
+					request,
+					route,
+					this.plugin,
+				);
+				stepResults = assertLegalResults(rawResults);
 			} catch (error) {
 				console.error('Legal command executor failed', {
 					executorId: step.executorId,
@@ -75,4 +80,28 @@ export class LegalPlanRunner {
 
 		return results;
 	}
+}
+
+function assertLegalResults(value: unknown): LegalResult[] {
+	if (!Array.isArray(value) || !value.every(isLegalResult)) {
+		throw new Error('Executor returned invalid legal results');
+	}
+	return value;
+}
+
+function isLegalResult(value: unknown): value is LegalResult {
+	if (typeof value !== 'object' || value === null) {
+		return false;
+	}
+	const candidate = value as Partial<LegalResult>;
+	return (
+		typeof candidate.id === 'string' &&
+		typeof candidate.type === 'string' &&
+		typeof candidate.title === 'string' &&
+		typeof candidate.content === 'string' &&
+		typeof candidate.source === 'object' &&
+		candidate.source !== null &&
+		typeof candidate.metadata === 'object' &&
+		candidate.metadata !== null
+	);
 }

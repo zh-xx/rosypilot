@@ -2,6 +2,13 @@
 
 All notable changes to RosyPilot will be documented in this file.
 
+## [0.3.3] - 2026-05-13
+
+### 修复
+
+- 根据 Obsidian 社区插件最新检查规则，将 timer 调用从 `activeWindow.setTimeout()` / `activeWindow.clearTimeout()` 改回 `window.setTimeout()` / `window.clearTimeout()`
+- 修复 Legal Command 执行结果汇总中的 unsafe any warning
+
 ## [0.3.2] - 2026-05-13
 
 ### 修复

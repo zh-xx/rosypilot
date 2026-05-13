@@ -94,7 +94,7 @@ export class DebugView extends ItemView {
 			const text = `Context: ${entry.context}\n\nRequest:\n${JSON.stringify(entry.request, null, 2)}\n\nPrompt:\n${entry.prompt.map((m) => `[${m.role}]\n${typeof m.content === 'string' ? m.content : JSON.stringify(m.content, null, 2)}`).join('\n\n')}\n\nRaw Response:\n${entry.rawResponse}\n\nParsed Result:\n${entry.parsedResult}`;
 			void navigator.clipboard.writeText(text);
 			copyBtn.setText('Copied!');
-			activeWindow.setTimeout(() => copyBtn.setText('Copy'), 1500);
+			window.setTimeout(() => copyBtn.setText('Copy'), 1500);
 		});
 
 		const toggleBtn = actions.createEl('button', {
