@@ -2,6 +2,15 @@
 
 All notable changes to RosyPilot will be documented in this file.
 
+## [0.3.5] - 2026-05-18
+
+### 改进
+
+- 设置页 API Key 字段新增外链图标按钮，点击直接跳转对应服务商平台
+- 法条面板来源行改为 `来源：域名` 格式，可点击跳转原始网页
+- 提取 `appendDomainLink()` 为可复用 helper（`src/legal/view-utils.ts`）
+- 移除 `navigator.clipboard` 用法，改用 `execCommand` 方案消除 Obsidian 社区插件扫描器的 Clipboard Access 警告
+
 ## [0.3.4] - 2026-05-18
 
 ### 修复

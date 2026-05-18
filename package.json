@@ -1,6 +1,6 @@
 {
   "name": "rosypilot",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "description": "AI-powered inline completions for legal writing",
   "main": "main.js",
   "scripts": {
