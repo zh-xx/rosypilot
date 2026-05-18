@@ -46,7 +46,7 @@ export class LegalPlanRunner {
 			} catch (error) {
 				console.error('Legal command executor failed', {
 					executorId: step.executorId,
-					error,
+					error: error instanceof Error ? error.message : String(error),
 				});
 				options.onStep?.({
 					executorId: step.executorId,

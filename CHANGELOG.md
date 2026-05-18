@@ -2,6 +2,13 @@
 
 All notable changes to RosyPilot will be documented in this file.
 
+## [0.3.4] - 2026-05-18
+
+### 修复
+
+- 修复 `plan-runner.ts` 中 `catch (error)` 的 `any` 类型值直接传入对象字面量导致 Obsidian 社区插件扫描器报告 `Unsafe assignment of an any value` 警告的问题，改为 `instanceof Error` 类型收窄后传字符串
+- 将 ESLint 配置从 `tseslint.configs.recommended` 升级为 `tseslint.configs.recommendedTypeChecked`，与 Obsidian 社区插件 CI 扫描器保持一致，使本地 `npm run lint` 能提前发现类型安全问题
+
 ## [0.3.3] - 2026-05-13
 
 ### 修复

@@ -5,7 +5,7 @@ import globals from 'globals';
 
 export default tseslint.config(
   js.configs.recommended,
-  ...tseslint.configs.recommended,
+  ...tseslint.configs.recommendedTypeChecked,
   ...obsidian.configs.recommended,
   {
     languageOptions: {
