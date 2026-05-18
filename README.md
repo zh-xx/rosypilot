@@ -1,6 +1,6 @@
 # RosyPilot
 
-[中文](README.zh.md) | English
+[中文](https://github.com/zh-xx/rosypilot/blob/main/README.zh.md) | English
 
 **AI-powered inline completions and legal workflow commands for Obsidian**
 
@@ -121,7 +121,7 @@ Check that inline completions are enabled, you have not hit the monthly token li
 
 ## Changelog
 
-See [CHANGELOG.md](CHANGELOG.md).
+See [CHANGELOG.md](https://github.com/zh-xx/rosypilot/blob/main/CHANGELOG.md).
 
 ## Acknowledgements
 
