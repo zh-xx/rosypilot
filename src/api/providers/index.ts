@@ -18,4 +18,9 @@ export const PROVIDERS_COMPLETIONS_URLS: Record<Provider, string> = {
 	volcengine: 'https://ark.cn-beijing.volces.com/api/v3',
 };
 
+export const PROVIDERS_PLATFORM_URLS: Record<Provider, string> = {
+	deepseek: 'https://platform.deepseek.com/',
+	volcengine: 'https://console.volcengine.com/ark',
+};
+
 export const DEFAULT_PROVIDER = 'deepseek' as Provider;

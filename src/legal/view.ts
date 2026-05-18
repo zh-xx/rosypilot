@@ -1,5 +1,6 @@
 import { ItemView, WorkspaceLeaf } from 'obsidian';
 import { t } from 'src/i18n';
+import { appendDomainLink } from './view-utils';
 import {
 	LegalDisplayMetaRow,
 	LegalDisplayResult,
@@ -145,17 +146,15 @@ export class LegalPanelView extends ItemView {
 		const badge = card.createDiv('rosypilot-legal-source-badge');
 		badge.addClass(`rosypilot-legal-source-badge-${display.badgeKind}`);
 		badge.setText(display.badge);
-		card.createDiv('rosypilot-legal-item-title').setText(display.title);
 		if (display.sourceUrl) {
-			const source = card.createDiv('rosypilot-legal-source-url');
-			source.createSpan({ text: `${t('legal.panel.url')}：` });
-			const link = source.createEl('a', {
-				text: display.sourceUrl,
+			const sourceRow = card.createDiv('rosypilot-legal-source-url');
+			sourceRow.createSpan({
+				cls: 'rosypilot-legal-source-label',
+				text: `${t('legal.panel.source')}：`,
 			});
-			link.href = display.sourceUrl;
-			link.target = '_blank';
-			link.rel = 'noopener noreferrer';
+			appendDomainLink(sourceRow, display.sourceUrl);
 		}
+		card.createDiv('rosypilot-legal-item-title').setText(display.title);
 
 		const content = card.createDiv('rosypilot-legal-item-content');
 		content.setText(display.previewContent);

@@ -1,5 +1,6 @@
 import { ChatCompletionMessageParam } from 'openai/resources/chat/completions';
 import { ItemView } from 'obsidian';
+import { copyText } from 'src/utils';
 
 export const DEBUG_VIEW_TYPE = 'rosypilot-debug';
 
@@ -92,7 +93,7 @@ export class DebugView extends ItemView {
 		copyBtn.addEventListener('click', (e) => {
 			e.stopPropagation();
 			const text = `Context: ${entry.context}\n\nRequest:\n${JSON.stringify(entry.request, null, 2)}\n\nPrompt:\n${entry.prompt.map((m) => `[${m.role}]\n${typeof m.content === 'string' ? m.content : JSON.stringify(m.content, null, 2)}`).join('\n\n')}\n\nRaw Response:\n${entry.rawResponse}\n\nParsed Result:\n${entry.parsedResult}`;
-			void navigator.clipboard.writeText(text);
+			copyText(text);
 			copyBtn.setText('Copied!');
 			window.setTimeout(() => copyBtn.setText('Copy'), 1500);
 		});

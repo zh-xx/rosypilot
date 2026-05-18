@@ -1,4 +1,14 @@
 /************************************************************/
+/*                      Utilities                           */
+/************************************************************/
+
+.rosypilot-clipboard-helper {
+  position: fixed;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/************************************************************/
 /*                   Inline completions                     */
 /************************************************************/
 
@@ -327,7 +337,7 @@
   border-radius: 4px;
   font-size: 10px;
   line-height: 1.5;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   border: 1px solid var(--background-modifier-border);
   color: var(--text-muted);
 }
@@ -345,13 +355,21 @@
 
 .rosypilot-legal-source-url {
   font-size: 0.75em;
-  margin: -2px 0 6px;
-  opacity: 0.75;
-  word-break: break-all;
+  margin-bottom: 6px;
+  opacity: 0.7;
 }
 
-.rosypilot-legal-source-url a {
+.rosypilot-legal-source-label {
+  color: var(--text-muted);
+}
+
+.rosypilot-legal-domain-link {
   color: var(--text-accent);
+  text-decoration: none;
+}
+
+.rosypilot-legal-domain-link:hover {
+  text-decoration: underline;
 }
 
 .rosypilot-legal-item-content {

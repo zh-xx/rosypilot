@@ -5,6 +5,7 @@ export const zh: Record<string, string> = {
 	'providers.select.desc': '选择行内补全使用的模型供应商。',
 	'providers.deepseek.apiKey': 'DeepSeek API 密钥',
 	'providers.deepseek.apiKey.desc': '输入你的 DeepSeek API 密钥。',
+	'providers.deepseek.platform': 'DeepSeek 开放平台',
 	'providers.deepseek.fetchModels': '获取模型列表',
 	'providers.deepseek.fetchModels.desc':
 		'输入 API 密钥后点击获取，自动拉取当前账号可用的模型列表。',
@@ -15,6 +16,7 @@ export const zh: Record<string, string> = {
 		'API Key 无效或网络错误，请检查后重试。',
 	'providers.volcengine.apiKey': '火山引擎 API 密钥',
 	'providers.volcengine.apiKey.desc': '输入你的火山引擎 API 密钥。',
+	'providers.volcengine.platform': '火山引擎控制台',
 	'providers.volcengine.fetchModels': '获取模型列表',
 	'providers.volcengine.fetchModels.desc':
 		'输入 API 密钥后点击获取，自动拉取当前账号可用的模型列表。',
@@ -102,8 +104,10 @@ export const zh: Record<string, string> = {
 	'settings.legal.title': 'Legal Command 设置',
 	'settings.legal.apiKey': '元典 API Key',
 	'settings.legal.apiKeyDesc': '用于检索规范和案例等。',
+	'settings.legal.yuandianPlatform': '元典开放平台',
 	'settings.legal.tavilyApiKey': 'Tavily API Key',
 	'settings.legal.tavilyApiKeyDesc': '用于联网检索规范、案例和其他法律资料等。',
+	'settings.legal.tavilyPlatform': 'Tavily',
 	'settings.legal.defaultRetrievalStrategy': 'Legal Command 默认检索策略',
 	'settings.legal.defaultRetrievalStrategyDesc':
 		'用于法律命令的默认数据来源选择。具体命令可以在下方单独覆盖。',
@@ -163,7 +167,7 @@ export const zh: Record<string, string> = {
 	'legal.panel.detail.label': '精确匹配',
 	'legal.panel.search.label': '语义相关',
 	'legal.panel.source': '来源',
-	'legal.panel.url': '网址',
+
 	'legal.panel.expand': '展开全文',
 	'legal.panel.collapse': '收起全文',
 	'legal.panel.badge.yuandian': '元典',

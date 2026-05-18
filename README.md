@@ -2,117 +2,120 @@
 
 [中文](README.zh.md) | English
 
-**AI-powered inline completions for legal writing in Obsidian**
+**AI-powered inline completions and legal workflow commands for Obsidian**
 
-RosyPilot brings context-aware AI inline completions to Obsidian, optimised for Chinese legal document authoring. When drafting contracts, legal opinions, pleadings, and similar documents, the plugin detects the Markdown context at the cursor (heading, paragraph, list, block-quote, etc.), selects the most appropriate prompting strategy for each, and displays suggestions as ghost text.
+RosyPilot helps you write Chinese legal documents faster in Obsidian. It offers two complementary capabilities:
+
+- **Inline completions** — ghost text that predicts your next sentence, tailored to the Markdown context at the cursor. Press `Tab` to accept.
+- **Legal commands** — on-demand tools that look up statute text, insert it at the cursor, and adapt it to your sentence.
 
 > Built on top of [Markpilot](https://github.com/taichimaeda/markpilot) (MIT License, Copyright © 2024 Taichi Maeda).
 
 ---
 
+## Installation
+
+**Community plugins (recommended):** Settings → Community plugins → Browse → search **RosyPilot** → Install → Enable.
+
+**Manual:** Download `main.js`, `manifest.json`, and `styles.css` from the [latest release](https://github.com/zh-xx/rosypilot/releases/latest), copy them into `<vault>/.obsidian/plugins/rosypilot/`, then enable the plugin.
+
+---
+
+## Quick Start
+
+1. Get an API key from [DeepSeek Open Platform](https://platform.deepseek.com/).
+2. Open **Settings → RosyPilot → Providers → DeepSeek**, paste your key, and click **Fetch Models**.
+3. Under **Inline completions**, set Provider to **DeepSeek** and Model to `deepseek-v4-flash`.
+4. Start writing — ghost text appears after a short pause. Press `Tab` to accept, `Esc` to dismiss.
+
+---
+
 ## Features
 
-### Context-Aware Completions
+### Inline Completions
 
 The plugin recognises 6 Markdown context types and applies a dedicated prompting strategy for each:
 
-| Context | Description |
-|---------|-------------|
-| `heading` | Completes heading content based on the document outline structure (outline / children / content) |
-| `paragraph` | Extracts the ancestor heading chain for section positioning; uses a sliding window for context |
-| `list-item` | Recognises the full list structure and continues only the current item — never generates new items |
-| `block-quote` | Continues the quoted text as-is |
-| `code-block` | Detects the programming language and generates code in that language |
-| `math-block` | Outputs LaTeX code only |
+| Context | Behaviour |
+|---------|-----------|
+| `heading` | Completes heading text based on document outline structure |
+| `paragraph` | Anchors to the ancestor heading chain; uses a sliding context window |
+| `list-item` | Continues only the current item — never generates new list items |
+| `block-quote` | Continues the quoted text in its own voice |
+| `code-block` | Detects the language and generates matching code |
+| `math-block` | Outputs LaTeX only |
 
-### Multiple Providers
+### Legal Commands
 
-- **DeepSeek** — `deepseek-chat`, `deepseek-reasoner`, and more
-- **Volcengine** — Doubao series models
-- Switch providers with one click; fetch available models automatically from the settings tab
+`/补全法条` (Complete Provision) is the first legal command. Trigger it when your cursor is after a provision reference like `《民法典》第五百一十一条`:
 
-### User Experience
+```
+ / → 补全法条   or   Cmd+P → Complete Provision
+```
 
-- Suggestions appear as ghost text; press `Tab` to accept, `Esc` to reject
-- Configurable trigger delay, context window size, and accept/reject keybindings
-- In-memory cache to avoid redundant requests (cleared on restart)
-- Monthly token usage tracking with a bar chart and configurable limit
+The plugin identifies the statute and article number, queries your configured data source, and shows the full article text in a side panel. From there:
 
----
+- **Insert provision** — injects the article heading and full text as ghost text
+- **Insert adapted** — asks the LLM to rewrite the provision to fit your sentence, then injects it
 
-## Getting Started
+The retrieval strategy controls which sources are used:
 
-### Using DeepSeek
-
-1. Obtain an API key from the [DeepSeek Open Platform](https://platform.deepseek.com/).
-2. Install RosyPilot in Obsidian.
-3. Open the plugin settings:
-   - **Providers > DeepSeek > API Key**: enter your API key, then click **Fetch Models**.
-   - **Inline completions > Provider**: select DeepSeek.
-   - **Inline completions > Model**: choose a model (recommended: `deepseek-chat`).
-4. Start writing — ghost text will appear after a short delay. Press `Tab` to accept.
-
-### Using Volcengine (Doubao)
-
-1. Obtain an API key from the [Volcengine console](https://console.volcengine.com/ark) and create an inference endpoint.
-2. Open the plugin settings:
-   - **Providers > Volcengine > API Key**: enter your API key, then click **Fetch Models**.
-   - **Inline completions > Provider**: select Volcengine.
-   - **Inline completions > Model**: choose the endpoint ID you created.
+| Strategy | Behaviour |
+|----------|-----------|
+| `auto` *(default)* | Yuandian first; falls back to web search (Tavily) if no result |
+| `structured-first` | Yuandian only |
+| `web-first` | Web search (Tavily) only |
+| `all` | Both sources; all results shown in the panel |
 
 ---
 
-## Settings Reference
+## Configuration
 
-### Inline Completions — Core
+### Inline Completions
 
-| Setting | Description | Default |
-|---------|-------------|---------|
-| Enable inline completions | Master toggle | On |
-| Provider | AI service provider | DeepSeek |
-| Model | Model to use | `deepseek-chat` |
-| Max tokens | Maximum output length per completion | 64 |
-| Temperature | Lower = more conservative output | 0 |
+| Setting | Default | Notes |
+|---------|---------|-------|
+| Provider | DeepSeek | DeepSeek or Volcengine (Doubao) |
+| Model | `deepseek-v4-flash` | Fetched automatically after entering an API key |
+| Max tokens | 64 | Length of each suggestion |
+| Wait time | 500 ms | Delay after typing stops |
+| Context window | 512 chars | Characters captured before and after the cursor |
+| Accept key | `Tab` | Configurable |
+| Monthly token limit | 10,000,000 | Completions stop when reached |
 
-### Inline Completions — Advanced
+**Volcengine (Doubao):** get an API key from the [Volcengine console](https://console.volcengine.com/ark), create an inference endpoint, then enter the key under **Providers → Volcengine** and choose your endpoint ID as the model.
 
-| Setting | Description | Default |
-|---------|-------------|---------|
-| Wait time | Delay after typing stops before triggering a completion (ms), adjustable in steps of 100 | 500 |
-| Context window | Number of characters taken before and after the cursor | 512 |
+### Legal Commands
 
-### Inline Completions — Keybindings
+| Setting | Notes |
+|---------|-------|
+| Yuandian API Key | Structured Chinese legal database ([open.chineselaw.com](https://open.chineselaw.com/)); used for exact provision lookup |
+| Tavily API Key | Web search fallback; get a key at [tavily.com](https://tavily.com) |
+| Default retrieval strategy | `auto` / `structured-first` / `web-first` / `all` |
+| Per-command override | Override the default strategy for a specific command |
 
-| Setting | Default |
-|---------|---------|
-| Accept completion | `Tab` |
-| Reject completion | `Escape` |
-
-### Usage
-
-| Setting | Description | Default |
-|---------|-------------|---------|
-| Monthly limit | Completions are automatically disabled when this token limit is reached | 10,000,000 |
+Without a Yuandian key, `/补全法条` falls back to Tavily. Without either key, the command cannot retrieve results.
 
 ---
 
 ## Caveats
 
-- This plugin is **desktop only** and does not support mobile.
-- Portions of your document are sent to the selected AI provider to generate completions. Avoid using the plugin with documents containing confidential information, and review the data handling policy of your chosen provider.
-- API costs are your own responsibility. The monthly limit feature helps control spending, but you should also monitor usage directly on the provider's platform.
+- **Desktop only** — mobile is not supported.
+- Portions of your document are sent to the AI provider to generate completions. Avoid using the plugin with confidential documents and review your provider's data policy.
+- API costs are your responsibility. Use the monthly token limit and monitor usage on your provider's platform.
 
 ---
 
 ## FAQ
 
-### I can't accept completions by pressing `Tab`
+**`Tab` does not accept the completion.**
+Another plugin (e.g. Obsidian Outliner) may be capturing the key first. Change the accept keybinding in settings, or enable RosyPilot after the conflicting plugin.
 
-Some plugins (e.g. Obsidian Outliner) capture the `Tab` key for their own use, which conflicts with RosyPilot. You can either change the accept keybinding in the plugin settings, or adjust the plugin enable order (the plugin enabled last gets higher keybinding priority).
+**Strange `</INSERT>` tags appear in my document.**
+Fixed in v0.2.0. Update to the latest version.
 
-### Strange tags are appearing in my document
-
-Some models (e.g. Doubao) treat `<INSERT>` as an XML tag and append a closing `</INSERT>` to their response, which can bleed into the document. This was fixed in v0.2.0 — please make sure you are on the latest version.
+**Completions are not triggering.**
+Check that inline completions are enabled, you have not hit the monthly token limit, and the file does not match an ignored glob pattern.
 
 ---
 
@@ -120,12 +123,10 @@ Some models (e.g. Doubao) treat `<INSERT>` as an XML tag and append a closing `<
 
 See [CHANGELOG.md](CHANGELOG.md).
 
----
-
 ## Acknowledgements
 
-- [Markpilot](https://github.com/taichimaeda/markpilot) — this plugin is a fork of Markpilot; thanks to the original author Taichi Maeda.
-- [codemirror-copilot](https://github.com/asadm/codemirror-copilot) — reference for the CodeMirror extension implementation.
+- [Markpilot](https://github.com/taichimaeda/markpilot) — original plugin by Taichi Maeda
+- [codemirror-copilot](https://github.com/asadm/codemirror-copilot) — CodeMirror extension reference
 
 ## License
 

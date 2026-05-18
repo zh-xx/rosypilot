@@ -1,132 +1,83 @@
 # RosyPilot
 
-[English](README.md) | 中文
+[English](https://github.com/zh-xx/rosypilot/blob/main/README.md) | 中文
 
-**为 Obsidian 法律写作场景打造的 AI 行内补全插件**
+为 Obsidian 法律写作场景打造的 AI 辅助插件。在起草合同、法律意见书、诉状时提供智能行内补全，并支持一键查询法条原文并插入文档。
 
-RosyPilot 为 Obsidian 带来上下文感知的 AI 行内补全能力，专为中文法律文书写作优化。在起草合同、法律意见书、诉状等文件时，插件会自动识别光标处的 Markdown 上下文类型（标题、段落、列表、引用块等），针对每种类型选用最合适的提示策略，并以幽灵文字形式呈现建议。
-
-> 基于 [Markpilot](https://github.com/taichimaeda/markpilot) 开发（MIT 协议，Copyright © 2024 Taichi Maeda）。
+> 基于 [Markpilot](https://github.com/taichimaeda/markpilot) 开发（MIT，Copyright © 2024 Taichi Maeda）。
 
 ---
 
-## 功能特性
+## 安装
 
-### 上下文感知补全
+设置 → 第三方插件 → 浏览 → 搜索 **RosyPilot** → 安装并启用。
 
-插件识别 6 种 Markdown 上下文类型，并为每种类型应用专属提示策略：
-
-| 上下文 | 说明 |
-|--------|------|
-| `heading` | 基于文档大纲结构（outline / children / content 三段式）补全标题内容 |
-| `paragraph` | 提取祖先标题链作为章节定位；用滑动窗口截取上下文 |
-| `list-item` | 识别完整列表结构，仅续写当前列表项，不生成新项 |
-| `block-quote` | 续写引用块原文，不加入自己论述 |
-| `code-block` | 识别编程语言，生成对应语言代码 |
-| `math-block` | 仅输出 LaTeX 代码 |
-
-### 多模型服务商
-
-- **DeepSeek** — `deepseek-chat`、`deepseek-reasoner` 等
-- **火山引擎（Volcengine）** — 豆包系列模型
-- 一键切换服务商；在设置页面自动拉取可用模型列表
-
-### 使用体验
-
-- 建议以幽灵文字显示，按 `Tab` 接受，按 `Esc` 拒绝
-- 触发延迟、上下文窗口大小、接受/拒绝快捷键均可配置
-- 内存缓存避免重复请求（重启后清空）
-- 月度 Token 用量追踪，支持柱状图展示和用量上限配置
+手动安装：从[最新 Release](https://github.com/zh-xx/rosypilot/releases/latest) 下载 `main.js`、`manifest.json`、`styles.css`，复制到 `<Vault>/.obsidian/plugins/rosypilot/`，然后在设置中启用。
 
 ---
 
 ## 快速开始
 
-### 使用 DeepSeek
-
 1. 前往 [DeepSeek 开放平台](https://platform.deepseek.com/) 获取 API Key。
-2. 在 Obsidian 中安装 RosyPilot。
-3. 打开插件设置：
-   - **服务商 > DeepSeek > API Key**：填入 API Key，然后点击**获取模型列表**。
-   - **行内补全 > 服务商**：选择 DeepSeek。
-   - **行内补全 > 模型**：选择模型（推荐 `deepseek-chat`）。
-4. 开始写作，稍等片刻后幽灵文字出现，按 `Tab` 接受。
-
-### 使用火山引擎（豆包）
-
-1. 前往[火山引擎控制台](https://console.volcengine.com/ark)获取 API Key，并创建推理接入点。
-2. 打开插件设置：
-   - **服务商 > 火山引擎 > API Key**：填入 API Key，然后点击**获取模型列表**。
-   - **行内补全 > 服务商**：选择 Volcengine。
-   - **行内补全 > 模型**：选择你创建的接入点 ID。
+2. 打开 **设置 → RosyPilot → 服务商 → DeepSeek**，填入 Key，点击**获取模型列表**。
+3. 在**行内补全**中，服务商选 **DeepSeek**，模型选 `deepseek-v4-flash`。
+4. 开始写作，幽灵文字出现后按 `Tab` 接受，`Esc` 忽略。
 
 ---
 
-## 设置说明
+## 功能
 
-### 行内补全 — 基础
+### 行内补全
 
-| 设置项 | 说明 | 默认值 |
-|--------|------|--------|
-| 启用行内补全 | 总开关 | 开 |
-| 服务商 | AI 服务商 | DeepSeek |
-| 模型 | 使用的模型 | `deepseek-chat` |
-| 最大 Token 数 | 每次补全的最大输出长度 | 64 |
-| 温度 | 越低输出越保守 | 0 |
+停止输入片刻后，插件自动根据光标处的 Markdown 上下文生成续写建议，以幽灵文字展示：
 
-### 行内补全 — 高级
+| 上下文 | 补全策略 |
+|--------|----------|
+| `heading` | 基于文档大纲结构（章节层级）补全标题 |
+| `paragraph` | 提取祖先标题链定位章节，滑动窗口截取上下文 |
+| `list-item` | 识别完整列表结构，仅续写当前项，不生成新项 |
+| `block-quote` | 续写引用块原文，不加入新论述 |
+| `code-block` | 识别编程语言，生成对应代码 |
+| `math-block` | 仅输出 LaTeX |
 
-| 设置项 | 说明 | 默认值 |
-|--------|------|--------|
-| 等待时间 | 停止输入后触发补全前的延迟（毫秒），步长 100 | 500 |
-| 上下文窗口 | 光标前后截取的字符数 | 512 |
+支持 DeepSeek 和火山引擎（豆包），在设置中一键切换，模型列表自动拉取。
 
-### 行内补全 — 快捷键
+### `/补全法条`
 
-| 设置项 | 默认值 |
-|--------|--------|
-| 接受补全 | `Tab` |
-| 拒绝补全 | `Escape` |
+将光标置于法条引用之后（如 `《民法典》第五百一十一条`），通过斜杠菜单（` /`）或命令面板（`Cmd+P`）触发。插件识别法规名称和条文编号，查询数据源，在右侧面板展示原文；可选**直接插入**原文或**匹配上下文改写后插入**。
 
-### 用量
-
-| 设置项 | 说明 | 默认值 |
-|--------|------|--------|
-| 月度上限 | 达到此 Token 上限后自动停止补全 | 10,000,000 |
+数据源支持元典（结构化法律数据库）和 Tavily（联网检索），默认策略为 `auto`——元典优先，不可用时自动回退到联网检索，也可手动切换为仅用其中一种或同时展示两者结果。
 
 ---
 
-## 注意事项
+## 配置速查
 
-- 本插件**仅支持桌面端**，不支持移动端。
-- 生成补全时，文档片段会发送至所选 AI 服务商。请避免在含有保密信息的文件中使用，并注意查阅所选服务商的数据处理政策。
-- API 费用由用户自行承担。月度上限功能可辅助控制支出，但建议同时在服务商平台直接监控用量。
+| 设置项 | 默认值 | 说明 |
+|--------|--------|------|
+| 服务商 | DeepSeek | 支持 DeepSeek、火山引擎（豆包） |
+| 模型 | `deepseek-v4-flash` | 填入 API Key 后自动拉取 |
+| 等待时间 | 500 ms | 停止输入后触发补全的延迟 |
+| 上下文窗口 | 512 字符 | 光标前后截取的字符数 |
+| 接受快捷键 | `Tab` | 可自定义 |
+| 月度 Token 上限 | 10,000,000 | 达到上限后自动停止 |
+| 元典 API Key | — | 精确法条查询数据源（[open.chineselaw.com](https://open.chineselaw.com/)） |
+| Tavily API Key | — | 联网检索数据源（[tavily.com](https://tavily.com)） |
+| 默认检索策略 | `auto` | `auto` / `structured-first` / `web-first` / `all` |
+
+**火山引擎配置：** 在[控制台](https://console.volcengine.com/ark)创建推理接入点，填入 API Key 后将接入点 ID 作为模型名使用。
 
 ---
 
 ## 常见问题
 
-### 按 `Tab` 无法接受补全
+**按 `Tab` 无法接受补全** — 其他插件（如 Outliner）可能优先捕获了 `Tab` 键。可在设置中更改接受快捷键，或将 RosyPilot 设为最后启用的插件。
 
-部分插件（如 Obsidian Outliner）会优先捕获 `Tab` 键，与 RosyPilot 产生冲突。可在插件设置中更改接受快捷键，或调整插件启用顺序（后启用的插件快捷键优先级更高）。
+**文档中出现 `</INSERT>` 标签** — 已在 v0.2.0 修复，请更新至最新版本。
 
-### 文档中出现奇怪的标签
-
-部分模型（如豆包）会将 `<INSERT>` 识别为 XML 标签，并在回复中自动补全 `</INSERT>`，导致内容渗入文档。此问题已在 v0.2.0 中修复，请确保使用最新版本。
+**补全没有触发** — 检查行内补全总开关是否开启、月度 Token 是否达到上限，以及当前文件是否匹配了忽略规则。
 
 ---
 
-## 更新日志
+仅支持桌面端。文档片段会发送至所选服务商，请勿在保密文件中使用。API 费用自理。
 
-详见 [CHANGELOG.md](CHANGELOG.md)。
-
----
-
-## 致谢
-
-- [Markpilot](https://github.com/taichimaeda/markpilot) — 本插件基于 Markpilot fork 开发，感谢原作者 Taichi Maeda。
-- [codemirror-copilot](https://github.com/asadm/codemirror-copilot) — CodeMirror 扩展实现的参考来源。
-
-## 许可证
-
-MIT License — Copyright © 2026 JiCheng
+[CHANGELOG.md](https://github.com/zh-xx/rosypilot/blob/main/CHANGELOG.md) · MIT License — Copyright © 2026 JiCheng

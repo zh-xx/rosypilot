@@ -1,5 +1,6 @@
 import { ItemView } from 'obsidian';
 import { LegalCommandDebugEntry } from './debug';
+import { copyText } from 'src/utils';
 
 export const LEGAL_DEBUG_VIEW_TYPE = 'rosypilot-legal-debug';
 
@@ -64,7 +65,7 @@ export class LegalCommandDebugView extends ItemView {
 		});
 		copyBtn.addEventListener('click', (e) => {
 			e.stopPropagation();
-			void navigator.clipboard.writeText(JSON.stringify(entry, null, 2));
+			copyText(JSON.stringify(entry, null, 2));
 			copyBtn.setText('Copied!');
 			window.setTimeout(() => copyBtn.setText('Copy'), 1500);
 		});

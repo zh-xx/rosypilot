@@ -5,6 +5,7 @@ export const en: Record<string, string> = {
 	'providers.select.desc': 'Select the model provider for inline completions.',
 	'providers.deepseek.apiKey': 'DeepSeek API key',
 	'providers.deepseek.apiKey.desc': 'Enter your DeepSeek API key.',
+	'providers.deepseek.platform': 'DeepSeek Open Platform',
 	'providers.deepseek.fetchModels': 'Fetch model list',
 	'providers.deepseek.fetchModels.desc':
 		'After entering your API key, click to fetch the available models for your account.',
@@ -16,6 +17,7 @@ export const en: Record<string, string> = {
 		'Invalid API key or network error. Please check and try again.',
 	'providers.volcengine.apiKey': 'Volcengine API key',
 	'providers.volcengine.apiKey.desc': 'Enter your Volcengine API key.',
+	'providers.volcengine.platform': 'Volcengine Console',
 	'providers.volcengine.fetchModels': 'Fetch model list',
 	'providers.volcengine.fetchModels.desc':
 		'After entering your API key, click to fetch the available models for your account.',
@@ -108,9 +110,11 @@ export const en: Record<string, string> = {
 	'settings.legal.apiKey': 'Yuandian API Key',
 	'settings.legal.apiKeyDesc':
 		'Used to search statutes, cases, and other legal materials.',
+	'settings.legal.yuandianPlatform': 'Yuandian Open Platform',
 	'settings.legal.tavilyApiKey': 'Tavily API Key',
 	'settings.legal.tavilyApiKeyDesc':
 		'Used for web search across statutes, cases, and other legal materials.',
+	'settings.legal.tavilyPlatform': 'Tavily',
 	'settings.legal.defaultRetrievalStrategy':
 		'Default Legal Command retrieval strategy',
 	'settings.legal.defaultRetrievalStrategyDesc':
@@ -175,7 +179,7 @@ export const en: Record<string, string> = {
 	'legal.panel.detail.label': 'Exact match',
 	'legal.panel.search.label': 'Semantic results',
 	'legal.panel.source': 'Source',
-	'legal.panel.url': 'URL',
+
 	'legal.panel.expand': 'Expand',
 	'legal.panel.collapse': 'Collapse',
 	'legal.panel.badge.yuandian': 'Yuandian',

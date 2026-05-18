@@ -7,6 +7,7 @@ import {
 	PROVIDERS,
 	PROVIDERS_BASE_URLS,
 	PROVIDERS_NAMES,
+	PROVIDERS_PLATFORM_URLS,
 } from 'src/api/providers';
 import { DEFAULT_MODELS } from 'src/api/providers/models';
 import { requestUrlFetch } from 'src/api/clients/request-url-fetch';
@@ -178,18 +179,26 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 		const currentProvider = settings.completions.provider;
 
 		// API key field for current provider
-		new Setting(containerEl)
+		const providerApiKeySetting = new Setting(containerEl)
 			.setName(t(`providers.${currentProvider}.apiKey`))
 			.setDesc(t(`providers.${currentProvider}.apiKey.desc`))
-			.addText((text) =>
-				text
-					.setValue(settings.providers[currentProvider].apiKey ?? '')
-					.onChange(async (value) => {
-						settings.providers[currentProvider].apiKey = value;
-						await plugin.saveSettings();
-						plugin.updateAPIClient();
-					}),
+			.addExtraButton((btn) =>
+				btn
+					.setIcon('external-link')
+					.setTooltip(t(`providers.${currentProvider}.platform`))
+					.onClick(() =>
+						window.open(PROVIDERS_PLATFORM_URLS[currentProvider], '_blank'),
+					),
 			);
+		providerApiKeySetting.addText((text) =>
+			text
+				.setValue(settings.providers[currentProvider].apiKey ?? '')
+				.onChange(async (value) => {
+					settings.providers[currentProvider].apiKey = value;
+					await plugin.saveSettings();
+					plugin.updateAPIClient();
+				}),
+		);
 
 		// Fetch models button for current provider
 		new Setting(containerEl)
@@ -417,9 +426,16 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 			legalStrategyStatus?.setName(status.name).setDesc(status.desc);
 		};
 
-		new Setting(containerEl)
+		const yuandianApiKeySetting = new Setting(containerEl)
 			.setName(t('settings.legal.apiKey'))
 			.setDesc(t('settings.legal.apiKeyDesc'))
+			.addExtraButton((btn) =>
+				btn
+					.setIcon('external-link')
+					.setTooltip(t('settings.legal.yuandianPlatform'))
+					.onClick(() => window.open('https://open.chineselaw.com/', '_blank')),
+			);
+		yuandianApiKeySetting
 			.addText((text) =>
 				text
 					.setValue(settings.legal?.yuandianApiKey ?? '')
@@ -444,9 +460,16 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 					}),
 			);
 
-		new Setting(containerEl)
+		const tavilyApiKeySetting = new Setting(containerEl)
 			.setName(t('settings.legal.tavilyApiKey'))
 			.setDesc(t('settings.legal.tavilyApiKeyDesc'))
+			.addExtraButton((btn) =>
+				btn
+					.setIcon('external-link')
+					.setTooltip(t('settings.legal.tavilyPlatform'))
+					.onClick(() => window.open('https://tavily.com', '_blank')),
+			);
+		tavilyApiKeySetting
 			.addText((text) =>
 				text
 					.setValue(settings.legal?.tavilyApiKey ?? '')

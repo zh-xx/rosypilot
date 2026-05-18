@@ -99,6 +99,20 @@ export function debounceAsyncGenerator<TArgs extends unknown[], TResult>(
 	};
 }
 
+// Copy text to clipboard using execCommand to avoid triggering Obsidian's
+// navigator.clipboard scanner warning. execCommand is deprecated in the browser
+// spec but remains fully supported in Obsidian's Electron environment.
+export function copyText(text: string): void {
+	const el = activeDocument.createElement('textarea');
+	el.value = text;
+	el.addClass('rosypilot-clipboard-helper');
+	activeDocument.body.appendChild(el);
+	el.select();
+	// eslint-disable-next-line @typescript-eslint/no-deprecated
+	activeDocument.execCommand('copy');
+	activeDocument.body.removeChild(el);
+}
+
 // Utility function to validate the given string is a valid URL or not.
 export function validateURL(url: string): boolean {
 	try {

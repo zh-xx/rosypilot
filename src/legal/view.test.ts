@@ -27,7 +27,6 @@ jest.mock('src/i18n', () => ({
 			'legal.panel.insert.format.title-content': '标题+正文',
 			'legal.panel.insert.format.quote-block': '引用块',
 			'legal.panel.source': '来源',
-			'legal.panel.url': '网址',
 			'legal.panel.expand': '展开全文',
 			'legal.panel.collapse': '收起全文',
 			'legal.panel.badge.yuandian': '元典',
@@ -47,6 +46,7 @@ jest.mock('src/i18n', () => ({
 class FakeElement {
 	children: FakeElement[] = [];
 	textContent = '';
+	title = '';
 	disabled = false;
 	value = '';
 	private listeners = new Map<string, (() => void)[]>();
@@ -198,8 +198,8 @@ describe('LegalPanelView', () => {
 		expect(text).toContain('Tavily标题');
 		expect(text).toContain('元典');
 		expect(text).toContain('Tavily · 网页片段');
-		expect(text).toContain('网址：');
-		expect(text).toContain('https://example.com');
+		expect(text).toContain('来源：');
+		expect(text).toContain('example.com');
 		expect(text).toContain('中华人民共和国民法典');
 		expect(text).toContain('第五百一十一条');
 	});
