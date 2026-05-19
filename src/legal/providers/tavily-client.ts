@@ -2,6 +2,7 @@ import { requestUrl } from 'obsidian';
 import { LegalRef } from '../detector';
 import { WebExactProvisionResultInput } from '../runtime/normalizer';
 import { WebExactSearchProvider } from '../executors/web-exact';
+import { WebFuzzySearchProvider } from '../executors/web-fuzzy';
 
 const BASE_URL = 'https://api.tavily.com/search';
 
@@ -69,6 +70,30 @@ export class TavilyExactProvider implements WebExactSearchProvider {
 				content: result.raw_content ?? result.content ?? '',
 				lawName: ref.fgmc,
 				articleNo: ref.ftnum,
+				score: result.score,
+				raw: result,
+			}));
+	}
+}
+
+export class TavilyFuzzyProvider implements WebFuzzySearchProvider {
+	id = 'tavily';
+	label = 'Tavily';
+
+	constructor(private client: TavilyClient) {}
+
+	async searchFuzzyProvisions(
+		query: string,
+	): Promise<WebExactProvisionResultInput[]> {
+		const results = await this.client.search(`${query} 相关法条 原文`);
+		return results
+			.filter((result) => result.title || result.content || result.raw_content)
+			.map((result) => ({
+				providerId: this.id,
+				providerName: this.label,
+				url: result.url,
+				title: result.title ?? query,
+				content: result.raw_content ?? result.content ?? '',
 				score: result.score,
 				raw: result,
 			}));

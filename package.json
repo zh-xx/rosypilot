@@ -1,6 +1,6 @@
 {
   "name": "rosypilot",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "description": "AI-powered inline completions for legal writing",
   "main": "main.js",
   "scripts": {
@@ -38,7 +38,7 @@
     "ts-jest": "^29.1.2",
     "ts-node": "^10.9.2",
     "tslib": "2.4.0",
-    "typescript": "^6.0.2",
+    "typescript": "^5.9.3",
     "typescript-eslint": "^8.58.1"
   },
   "dependencies": {

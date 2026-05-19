@@ -204,6 +204,20 @@ describe('LegalPanelView', () => {
 		expect(text).toContain('第五百一十一条');
 	});
 
+	it('renders semantic result label when provided', () => {
+		const { view, root } = createOpenedView();
+
+		view.setDetails(
+			[createResult('yuandian:1', 'yuandian', '元典')],
+			undefined,
+			undefined,
+			'语义相关',
+		);
+
+		expect(root.allText()).toContain('语义相关');
+		expect(root.allText()).not.toContain('精确匹配');
+	});
+
 	it('collapses and expands long web content', () => {
 		const { view, root } = createOpenedView();
 		const longContent = 'a'.repeat(250);

@@ -10,10 +10,16 @@ import {
 	LegalExecutorDebugStep,
 } from './debug';
 import { WebExactExecutor } from './executors/web-exact';
+import { WebFuzzyExecutor } from './executors/web-fuzzy';
 import { YuandianExactExecutor } from './executors/yuandian-exact';
+import { YuandianSemanticExecutor } from './executors/yuandian-semantic';
 import { LegalExecutorRegistry } from './executors/registry';
 import { ProvisionRefJudge } from './judges/provision-ref-judge';
-import { TavilyClient, TavilyExactProvider } from './providers/tavily-client';
+import {
+	TavilyClient,
+	TavilyExactProvider,
+	TavilyFuzzyProvider,
+} from './providers/tavily-client';
 import { LegalExecutionPlanner } from './runtime/planner';
 import { LegalCommandRequest } from './runtime/request';
 import { LegalPlanRunner } from './runtime/plan-runner';
@@ -28,12 +34,19 @@ export class LegalSlashCommand {
 
 	constructor(private plugin: RosyPilot) {
 		this.executors.register(new YuandianExactExecutor());
+		this.executors.register(new YuandianSemanticExecutor());
 		const tavilyApiKey = this.plugin.settings.legal.tavilyApiKey;
+		const tavilyClient = tavilyApiKey
+			? new TavilyClient(tavilyApiKey)
+			: undefined;
 		this.executors.register(
 			new WebExactExecutor(
-				tavilyApiKey
-					? new TavilyExactProvider(new TavilyClient(tavilyApiKey))
-					: undefined,
+				tavilyClient ? new TavilyExactProvider(tavilyClient) : undefined,
+			),
+		);
+		this.executors.register(
+			new WebFuzzyExecutor(
+				tavilyClient ? new TavilyFuzzyProvider(tavilyClient) : undefined,
 			),
 		);
 	}
@@ -147,6 +160,9 @@ export class LegalSlashCommand {
 						this.notifyApplicationResult(application, 'adapted');
 					}
 				},
+				route.kind === 'fuzzy-provision'
+					? t('legal.panel.search.label')
+					: t('legal.panel.detail.label'),
 			);
 		} catch (error) {
 			this.logLegalDebug({

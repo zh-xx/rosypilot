@@ -17,11 +17,13 @@ export interface ArticleDetail {
 export interface ArticleSearchItem {
 	ftid: string;
 	fgid: string;
-	fgtitle: string[];
+	fgtitle: string[] | string;
 	num: string;
 	content: string;
 	sxx: string;
 	effect1: string;
+	start?: number;
+	end?: number;
 	score: number;
 }
 

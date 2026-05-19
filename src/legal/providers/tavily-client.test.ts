@@ -1,4 +1,8 @@
-import { TavilyClient, TavilyExactProvider } from './tavily-client';
+import {
+	TavilyClient,
+	TavilyExactProvider,
+	TavilyFuzzyProvider,
+} from './tavily-client';
 
 jest.mock('obsidian', () => ({ requestUrl: jest.fn() }), {
 	virtual: true,
@@ -61,6 +65,46 @@ describe('TavilyExactProvider', () => {
 				raw: {
 					url: 'https://example.com/no-title',
 					content: '备用摘要',
+				},
+			},
+		]);
+	});
+});
+
+describe('TavilyFuzzyProvider', () => {
+	it('builds fuzzy provision query and converts Tavily results', async () => {
+		const client = {
+			search: jest.fn().mockResolvedValue([
+				{
+					title: '民法典第511条',
+					url: 'https://example.com/civil-code-511',
+					content: '履行地点约定不明时...',
+					score: 0.98,
+				},
+				{},
+			]),
+		} as unknown as TavilyClient;
+
+		const results = await new TavilyFuzzyProvider(client).searchFuzzyProvisions(
+			'履行地点约定不明',
+		);
+
+		expect(client.search).toHaveBeenCalledWith(
+			'履行地点约定不明 相关法条 原文',
+		);
+		expect(results).toEqual([
+			{
+				providerId: 'tavily',
+				providerName: 'Tavily',
+				url: 'https://example.com/civil-code-511',
+				title: '民法典第511条',
+				content: '履行地点约定不明时...',
+				score: 0.98,
+				raw: {
+					title: '民法典第511条',
+					url: 'https://example.com/civil-code-511',
+					content: '履行地点约定不明时...',
+					score: 0.98,
 				},
 			},
 		]);

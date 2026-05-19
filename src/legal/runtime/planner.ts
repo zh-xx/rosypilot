@@ -42,11 +42,24 @@ export class LegalExecutionPlanner {
 		commandId: string,
 		route: LegalCommandRoute,
 	): string[] {
-		if (route.kind !== 'exact-provision') {
+		if (route.kind === 'none') {
 			return this.registry.all().map((executor) => executor.id);
 		}
 
 		const strategy = this.getRetrievalStrategy(commandId);
+		if (route.kind === 'fuzzy-provision') {
+			if (strategy === 'web-first') {
+				return ['web.fuzzy'];
+			}
+			if (strategy === 'auto') {
+				return ['yuandian.semantic', 'web.fuzzy'];
+			}
+			if (strategy === 'all') {
+				return ['yuandian.semantic', 'web.fuzzy'];
+			}
+			return ['yuandian.semantic'];
+		}
+
 		if (strategy === 'web-first') {
 			return ['web.exact'];
 		}

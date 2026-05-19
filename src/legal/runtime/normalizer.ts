@@ -1,4 +1,4 @@
-import { ArticleDetail } from '../yuandian-client';
+import { ArticleDetail, ArticleSearchItem } from '../yuandian-client';
 import { LegalResult } from './result';
 
 export interface WebExactProvisionResultInput {
@@ -40,6 +40,33 @@ export class LegalResultNormalizer {
 		};
 	}
 
+	fromYuandianArticleSearchItem(item: ArticleSearchItem): LegalResult {
+		const lawName = Array.isArray(item.fgtitle)
+			? item.fgtitle.join('')
+			: item.fgtitle;
+		const articleNo = item.num;
+
+		return {
+			id: `yuandian:${item.ftid || `${item.fgid}:${articleNo}`}`,
+			type: 'statute',
+			title: `${lawName}${articleNo}`,
+			content: cleanYuandianContent(item.content),
+			source: {
+				provider: 'yuandian',
+				name: '元典',
+			},
+			metadata: {
+				lawName,
+				articleNo,
+				effectiveStatus: item.sxx,
+				category: item.effect1,
+				effectiveDate: formatYuandianDate(item.start),
+				score: item.score,
+			},
+			raw: item,
+		};
+	}
+
 	fromWebExactProvision(input: WebExactProvisionResultInput): LegalResult {
 		return {
 			id: `web:${input.providerId}:${input.url ?? input.title}`,
@@ -74,4 +101,14 @@ function cleanYuandianContent(content: string): string {
 		.join('\n')
 		.replace(/\n{3,}/g, '\n\n')
 		.trim();
+}
+
+function formatYuandianDate(
+	value: number | string | undefined,
+): string | undefined {
+	const raw = String(value ?? '');
+	if (!/^\d{8}$/.test(raw) || raw === '99999999') {
+		return undefined;
+	}
+	return `${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}`;
 }

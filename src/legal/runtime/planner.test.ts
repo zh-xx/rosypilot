@@ -14,6 +14,11 @@ const exactRoute: LegalCommandRoute = {
 	},
 };
 
+const fuzzyRoute: LegalCommandRoute = {
+	kind: 'fuzzy-provision',
+	query: '合同违约责任的认定与赔偿',
+};
+
 const request = {
 	commandId: 'complete-legal-provision',
 	prefix: '',
@@ -142,6 +147,62 @@ describe('LegalExecutionPlanner', () => {
 		expect(plan).toEqual({
 			mode: 'first-success',
 			steps: [{ executorId: 'web.exact' }],
+		});
+	});
+
+	it('plans yuandian semantic strategy for fuzzy provisions', () => {
+		const planner = createPlanner('structured-first', [
+			createExecutor('yuandian.semantic'),
+			createExecutor('web.fuzzy'),
+		]);
+
+		const plan = planner.plan(request, fuzzyRoute);
+
+		expect(plan).toEqual({
+			mode: 'first-success',
+			steps: [{ executorId: 'yuandian.semantic' }],
+		});
+	});
+
+	it('plans web fuzzy strategy for fuzzy provisions', () => {
+		const planner = createPlanner('web-first', [
+			createExecutor('yuandian.semantic'),
+			createExecutor('web.fuzzy'),
+		]);
+
+		const plan = planner.plan(request, fuzzyRoute);
+
+		expect(plan).toEqual({
+			mode: 'first-success',
+			steps: [{ executorId: 'web.fuzzy' }],
+		});
+	});
+
+	it('plans fuzzy auto strategy as semantic-to-web fallback', () => {
+		const planner = createPlanner('auto', [
+			createExecutor('yuandian.semantic'),
+			createExecutor('web.fuzzy'),
+		]);
+
+		const plan = planner.plan(request, fuzzyRoute);
+
+		expect(plan).toEqual({
+			mode: 'first-success',
+			steps: [{ executorId: 'yuandian.semantic' }, { executorId: 'web.fuzzy' }],
+		});
+	});
+
+	it('plans fuzzy all strategy as collect-all', () => {
+		const planner = createPlanner('all', [
+			createExecutor('yuandian.semantic'),
+			createExecutor('web.fuzzy'),
+		]);
+
+		const plan = planner.plan(request, fuzzyRoute);
+
+		expect(plan).toEqual({
+			mode: 'collect-all',
+			steps: [{ executorId: 'yuandian.semantic' }, { executorId: 'web.fuzzy' }],
 		});
 	});
 });

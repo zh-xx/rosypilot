@@ -6,7 +6,7 @@ import { LegalRef } from '../detector';
 import { LegalCommandRoute } from '../runtime/route';
 
 const EXTRACT_SYSTEM_PROMPT =
-	'从用户文本中提取距离光标最近的一处具体法条引用。只有同时存在法规名称和具体条文编号时，才返回单个JSON对象：{"fgmc":"法规名称","ftnum":"第X条"}。如果存在多处具体法条引用，只返回最后一处/最近一处，禁止返回数组。无具体引用时返回 null。不要解释。';
+	'判断用户文本中距离光标最近的法律检索对象。若存在具体法条引用（同时有法规名称和具体条文编号），返回单个JSON对象：{"kind":"exact-provision","fgmc":"法规名称","ftnum":"第X条"}。若没有具体条文编号，但存在可检索的法律议题、请求权问题、争议焦点或“相关规定”类表达，返回：{"kind":"fuzzy-provision","query":"压缩后的法律检索问题"}。若不是法律问题或无法形成检索问题，返回 null。不要解释。';
 
 const CONTEXT_WINDOW_SIZE = 800;
 const CURRENT_SEGMENT_SIZE = 240;
@@ -28,26 +28,65 @@ export function findLastExactLegalRef(text: string): LegalRef | null {
 }
 
 export function parseLegalRefResponse(content: string): LegalRef | null {
+	const route = parseLegalRouteResponse(content);
+	return route.kind === 'exact-provision' ? route.ref : null;
+}
+
+export function parseLegalRouteResponse(content: string): LegalCommandRoute {
 	const normalized = content.trim();
-	if (!normalized || normalized.toLowerCase() === 'null') return null;
+	if (!normalized || normalized.toLowerCase() === 'null')
+		return { kind: 'none' };
 
 	const jsonText = extractJsonText(normalized);
-	if (!jsonText || jsonText.toLowerCase() === 'null') return null;
+	if (!jsonText || jsonText.toLowerCase() === 'null') return { kind: 'none' };
 
 	try {
 		const parsed = JSON.parse(jsonText) as
-			| Partial<LegalRef>
-			| Partial<LegalRef>[]
+			| Partial<LegalRef & { kind: string; query: string }>
+			| Partial<LegalRef & { kind: string; query: string }>[]
 			| null;
-		const ref = normalizeParsedLegalRef(parsed);
-		if (ref) {
-			return ref;
+		const route = normalizeParsedLegalRoute(parsed);
+		if (route.kind !== 'none') {
+			return route;
 		}
 	} catch {
-		// Malformed JSON means no exact legal reference was detected.
+		// Malformed JSON means no legal route was detected.
 	}
 
-	return parseLastEmbeddedLegalRef(normalized);
+	return parseLastEmbeddedLegalRoute(normalized);
+}
+
+function normalizeParsedLegalRoute(
+	parsed:
+		| Partial<LegalRef & { kind: string; query: string }>
+		| Partial<LegalRef & { kind: string; query: string }>[]
+		| null,
+): LegalCommandRoute {
+	if (Array.isArray(parsed)) {
+		for (let i = parsed.length - 1; i >= 0; i--) {
+			const route = normalizeParsedLegalRoute(parsed[i]);
+			if (route.kind !== 'none') return route;
+		}
+		return { kind: 'none' };
+	}
+
+	const ref = normalizeParsedLegalRef(parsed);
+	if (ref) {
+		return { kind: 'exact-provision', ref };
+	}
+
+	if (
+		parsed &&
+		parsed.kind === 'fuzzy-provision' &&
+		typeof parsed.query === 'string'
+	) {
+		const query = normalizeFuzzyQuery(parsed.query);
+		if (query) {
+			return { kind: 'fuzzy-provision', query };
+		}
+	}
+
+	return { kind: 'none' };
 }
 
 function normalizeParsedLegalRef(
@@ -109,21 +148,38 @@ function isPlaceholderLegalRef(fgmc: string, ftnum: string): boolean {
 	);
 }
 
-function parseLastEmbeddedLegalRef(content: string): LegalRef | null {
-	const objectMatches = content.match(/\{[^{}]*"fgmc"[^{}]*"ftnum"[^{}]*\}/g);
-	if (!objectMatches) return null;
+function normalizeFuzzyQuery(value: string): string | null {
+	const query = value.replace(/\s+/g, ' ').trim();
+	if (
+		query.length < 2 ||
+		query === '法律检索问题' ||
+		query === '检索问题' ||
+		query === '相关规定'
+	) {
+		return null;
+	}
+	return query.slice(0, 120);
+}
+
+function parseLastEmbeddedLegalRoute(content: string): LegalCommandRoute {
+	const objectMatches = content.match(
+		/\{[^{}]*(?:"kind"|"fgmc"|"query")[^{}]*\}/g,
+	);
+	if (!objectMatches) return { kind: 'none' };
 
 	for (let i = objectMatches.length - 1; i >= 0; i--) {
 		try {
-			const ref = normalizeParsedLegalRef(
-				JSON.parse(objectMatches[i]) as Partial<LegalRef>,
+			const route = normalizeParsedLegalRoute(
+				JSON.parse(objectMatches[i]) as Partial<
+					LegalRef & { kind: string; query: string }
+				>,
 			);
-			if (ref) return ref;
+			if (route.kind !== 'none') return route;
 		} catch {
 			// Keep scanning earlier object-shaped candidates.
 		}
 	}
-	return null;
+	return { kind: 'none' };
 }
 
 function extractJsonText(content: string): string | null {
@@ -153,13 +209,12 @@ export class ProvisionRefJudge {
 	async judge(prefix: string): Promise<LegalCommandRoute> {
 		const context = this.buildContext(prefix);
 		const localRef = findLastExactLegalRef(prefix.slice(-CONTEXT_WINDOW_SIZE));
-		const ref = localRef ?? (await this.detectLegalRef(context));
-		const route: LegalCommandRoute = ref
+		const route: LegalCommandRoute = localRef
 			? {
 					kind: 'exact-provision',
-					ref,
+					ref: localRef,
 				}
-			: { kind: 'none' };
+			: await this.detectLegalRoute(context);
 		this.debugInfo = {
 			...this.debugInfo,
 			...(localRef
@@ -181,8 +236,8 @@ export class ProvisionRefJudge {
 
 		return [
 			'【任务】',
-			'判断光标前文本中最近一次法条引用是否为精准法条引用。',
-			'精准法条引用必须同时包含法规名称和具体条文编号。',
+			'判断光标前文本中最近一次法律检索对象。',
+			'精准法条引用必须同时包含法规名称和具体条文编号；非精准引用是没有具体条文编号但可以检索相关法条的法律问题。',
 			'',
 			'【当前句/段】',
 			currentSegment,
@@ -197,7 +252,7 @@ export class ProvisionRefJudge {
 		return paragraphs[paragraphs.length - 1] ?? prefix;
 	}
 
-	private async detectLegalRef(text: string): Promise<LegalRef | null> {
+	private async detectLegalRoute(text: string): Promise<LegalCommandRoute> {
 		const { settings } = this.plugin;
 		const provider = settings.completions.provider;
 		const apiKey = settings.providers[provider].apiKey;
@@ -208,7 +263,7 @@ export class ProvisionRefJudge {
 				prompt: text,
 				skippedReason: 'missing api key or model',
 			};
-			return null;
+			return { kind: 'none' };
 		}
 
 		const baseURL = PROVIDERS_BASE_URLS[provider];
@@ -246,7 +301,7 @@ export class ProvisionRefJudge {
 				...this.debugInfo,
 				rawResponse: `HTTP ${res.status}`,
 			};
-			return null;
+			return { kind: 'none' };
 		}
 
 		const body = res.json as {
@@ -261,6 +316,6 @@ export class ProvisionRefJudge {
 			...this.debugInfo,
 			rawResponse: content,
 		};
-		return parseLegalRefResponse(content);
+		return parseLegalRouteResponse(content);
 	}
 }

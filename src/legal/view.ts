@@ -67,6 +67,7 @@ export class LegalPanelView extends ItemView {
 		results: LegalResult[],
 		onRaw?: (result: LegalResult, format: RawInsertFormat) => void,
 		onAdapted?: (result: LegalResult) => Promise<void>,
+		labelText: string = t('legal.panel.detail.label'),
 	): void {
 		this.container.empty();
 
@@ -78,7 +79,7 @@ export class LegalPanelView extends ItemView {
 		}
 
 		const label = this.container.createDiv('rosypilot-legal-label');
-		label.setText(t('legal.panel.detail.label'));
+		label.setText(labelText);
 
 		for (const result of results) {
 			const callbacks =

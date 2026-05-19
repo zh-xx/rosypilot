@@ -2,6 +2,7 @@ import { requestUrl } from 'obsidian';
 import {
 	findLastExactLegalRef,
 	parseLegalRefResponse,
+	parseLegalRouteResponse,
 	ProvisionRefJudge,
 } from './provision-ref-judge';
 
@@ -109,6 +110,33 @@ describe('parseLegalRefResponse', () => {
 		).toEqual({
 			fgmc: '中华人民共和国民法典',
 			ftnum: '第五百一十一条',
+		});
+	});
+});
+
+describe('parseLegalRouteResponse', () => {
+	it('parses fuzzy provision route', () => {
+		expect(
+			parseLegalRouteResponse(
+				'{ "kind": "fuzzy-provision", "query": "合同违约责任的认定与赔偿" }',
+			),
+		).toEqual({
+			kind: 'fuzzy-provision',
+			query: '合同违约责任的认定与赔偿',
+		});
+	});
+
+	it('keeps backward-compatible exact provision JSON', () => {
+		expect(
+			parseLegalRouteResponse(
+				'{ "fgmc": "中华人民共和国民法典", "ftnum": "第五百一十一条" }',
+			),
+		).toEqual({
+			kind: 'exact-provision',
+			ref: {
+				fgmc: '中华人民共和国民法典',
+				ftnum: '第五百一十一条',
+			},
 		});
 	});
 });
@@ -250,6 +278,31 @@ describe('ProvisionRefJudge', () => {
 		).judge('根据合同编相关规定，');
 
 		expect(route).toEqual({ kind: 'none' });
+	});
+
+	it('returns fuzzy-provision route from LLM content when no exact ref exists', async () => {
+		mockedRequestUrl.mockResolvedValue({
+			status: 200,
+			json: {
+				choices: [
+					{
+						message: {
+							content:
+								'{ "kind": "fuzzy-provision", "query": "合同编相关规定" }',
+						},
+					},
+				],
+			},
+		} as Awaited<ReturnType<typeof requestUrl>>);
+
+		const route = await new ProvisionRefJudge(
+			createPlugin('deepseek-key', 'deepseek-chat'),
+		).judge('根据合同编相关规定，');
+
+		expect(route).toEqual({
+			kind: 'fuzzy-provision',
+			query: '合同编相关规定',
+		});
 	});
 
 	it('uses reasoning content when message content is empty', async () => {
