@@ -40,6 +40,9 @@ export interface LegalCommandSettings {
 		completeLegalProvision: {
 			retrievalStrategy: LegalCommandRetrievalStrategyOverride;
 		};
+		completeLegalCase: {
+			retrievalStrategy: LegalCommandRetrievalStrategyOverride;
+		};
 	};
 	// Kept for migrating existing local settings. New code should use
 	// defaultRetrievalStrategy and commandOverrides.
@@ -121,6 +124,9 @@ export const DEFAULT_SETTINGS: RosyPilotSettings = {
 		defaultRetrievalStrategy: 'structured-first',
 		commandOverrides: {
 			completeLegalProvision: {
+				retrievalStrategy: 'inherit',
+			},
+			completeLegalCase: {
 				retrievalStrategy: 'inherit',
 			},
 		},
@@ -541,6 +547,35 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 					.onChange(async (value) => {
 						settings.legal.commandOverrides.completeLegalProvision.retrievalStrategy =
 							value as LegalCommandRetrievalStrategyOverride;
+						await plugin.saveSettings();
+						refreshLegalStrategyStatus();
+					}),
+			);
+
+		new Setting(containerEl)
+			.setName(t('settings.legal.commandOverrides.completeLegalCase'))
+			.setDesc(t('settings.legal.commandOverrides.completeLegalCaseDesc'))
+			.addDropdown((dropdown) =>
+				dropdown
+					.addOption('inherit', t('settings.legal.retrievalStrategy.inherit'))
+					.addOption(
+						'structured-first',
+						t('settings.legal.retrievalStrategy.structuredFirst'),
+					)
+					.addOption(
+						'web-first',
+						t('settings.legal.retrievalStrategy.webFirst'),
+					)
+					.addOption('auto', t('settings.legal.retrievalStrategy.auto'))
+					.addOption('all', t('settings.legal.retrievalStrategy.all'))
+					.setValue(
+						settings.legal.commandOverrides.completeLegalCase
+							?.retrievalStrategy ?? 'inherit',
+					)
+					.onChange(async (value) => {
+						settings.legal.commandOverrides.completeLegalCase = {
+							retrievalStrategy: value as LegalCommandRetrievalStrategyOverride,
+						};
 						await plugin.saveSettings();
 						refreshLegalStrategyStatus();
 					}),

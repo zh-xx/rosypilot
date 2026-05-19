@@ -99,9 +99,23 @@ export default class RosyPilot extends Plugin {
 	}
 
 	registerCommands() {
+		this.registerLegalCommand(
+			'complete-legal-provision',
+			t('legal.slashCommand.label'),
+		);
+		this.registerLegalCommand(
+			'complete-legal-case',
+			t('legal.slashCommand.caseLabel'),
+		);
+	}
+
+	private registerLegalCommand(
+		id: 'complete-legal-provision' | 'complete-legal-case',
+		name: string,
+	) {
 		this.addCommand({
-			id: 'complete-legal-provision',
-			name: t('legal.slashCommand.label'),
+			id,
+			name,
 			editorCallback: (editor) => {
 				// Remove the trailing space that was typed before "/" to trigger
 				// Obsidian's slash command popup in non-empty lines.
@@ -115,7 +129,7 @@ export default class RosyPilot extends Plugin {
 					);
 				}
 				const prefix = editor.getRange({ line: 0, ch: 0 }, editor.getCursor());
-				void new LegalSlashCommand(this).run(prefix, editor);
+				void new LegalSlashCommand(this, id).run(prefix, editor);
 			},
 		});
 	}
@@ -258,6 +272,14 @@ export default class RosyPilot extends Plugin {
 			DEFAULT_SETTINGS.debug,
 			this.settings.debug,
 		);
+		this.settings.legal = {
+			...DEFAULT_SETTINGS.legal,
+			...this.settings.legal,
+			commandOverrides: {
+				...DEFAULT_SETTINGS.legal.commandOverrides,
+				...this.settings.legal?.commandOverrides,
+			},
+		};
 		this.settings.providers = Object.assign(
 			{},
 			DEFAULT_SETTINGS.providers,

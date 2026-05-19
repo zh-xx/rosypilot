@@ -36,6 +36,23 @@ const result: LegalResult = {
 	raw: {},
 };
 
+const caseResult: LegalResult = {
+	id: 'yuandian:case-1',
+	type: 'case',
+	title: '信用卡纠纷一审民事判决书',
+	content: '本院认为，被告与原告形成合同关系。',
+	source: {
+		provider: 'yuandian',
+		name: '元典',
+	},
+	metadata: {
+		caseNo: '（2023）京0101民初123号',
+		court: '北京市东城区人民法院',
+		judgmentDate: '2023年03月22日',
+	},
+	raw: {},
+};
+
 describe('InsertRawApplicator', () => {
 	beforeEach(() => {
 		dispatch.mockReset();
@@ -106,6 +123,23 @@ describe('InsertRawApplicator', () => {
 
 		expect(transaction.effects[0].value.completions).toBe(
 			'\n> 第五百一十一条\n> 当事人就有关合同内容约定不明确...',
+		);
+	});
+
+	it('includes case metadata when inserting case results', () => {
+		new InsertRawApplicator().apply(
+			{ ...request, commandId: 'complete-legal-case' },
+			caseResult,
+			{} as RosyPilot,
+			'title-content',
+		);
+
+		const transaction = dispatch.mock.calls[0][0] as {
+			effects: { value: { completions: string } }[];
+		};
+
+		expect(transaction.effects[0].value.completions).toBe(
+			'信用卡纠纷一审民事判决书\n（2023）京0101民初123号 · 北京市东城区人民法院 · 2023年03月22日\n\n本院认为，被告与原告形成合同关系。',
 		);
 	});
 });

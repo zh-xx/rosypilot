@@ -31,6 +31,9 @@ export const migrateVersion2_5_0_toVersion2_6_0: SettingsMigrator<
 				completeLegalProvision: {
 					retrievalStrategy: 'inherit',
 				},
+				completeLegalCase: {
+					retrievalStrategy: 'inherit',
+				},
 			},
 		},
 	};

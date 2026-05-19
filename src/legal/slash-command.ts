@@ -9,14 +9,18 @@ import {
 	LegalCommandDebugEntry,
 	LegalExecutorDebugStep,
 } from './debug';
+import { WebCaseExactExecutor } from './executors/web-case-exact';
 import { WebExactExecutor } from './executors/web-exact';
 import { WebFuzzyExecutor } from './executors/web-fuzzy';
+import { YuandianCaseExactExecutor } from './executors/yuandian-case-exact';
 import { YuandianExactExecutor } from './executors/yuandian-exact';
 import { YuandianSemanticExecutor } from './executors/yuandian-semantic';
 import { LegalExecutorRegistry } from './executors/registry';
+import { CaseRefJudge } from './judges/case-ref-judge';
 import { ProvisionRefJudge } from './judges/provision-ref-judge';
 import {
 	TavilyClient,
+	TavilyExactCaseProvider,
 	TavilyExactProvider,
 	TavilyFuzzyProvider,
 } from './providers/tavily-client';
@@ -32,9 +36,15 @@ export class LegalSlashCommand {
 	private insertAdapted = new InsertAdaptedApplicator();
 	private currentDebugEntry?: LegalCommandDebugEntry;
 
-	constructor(private plugin: RosyPilot) {
+	constructor(
+		private plugin: RosyPilot,
+		private commandId:
+			| 'complete-legal-provision'
+			| 'complete-legal-case' = 'complete-legal-provision',
+	) {
 		this.executors.register(new YuandianExactExecutor());
 		this.executors.register(new YuandianSemanticExecutor());
+		this.executors.register(new YuandianCaseExactExecutor());
 		const tavilyApiKey = this.plugin.settings.legal.tavilyApiKey;
 		const tavilyClient = tavilyApiKey
 			? new TavilyClient(tavilyApiKey)
@@ -49,13 +59,18 @@ export class LegalSlashCommand {
 				tavilyClient ? new TavilyFuzzyProvider(tavilyClient) : undefined,
 			),
 		);
+		this.executors.register(
+			new WebCaseExactExecutor(
+				tavilyClient ? new TavilyExactCaseProvider(tavilyClient) : undefined,
+			),
+		);
 	}
 
 	async run(prefix: string, editor: Editor): Promise<void> {
 		const startedAt = Date.now();
 		const editorView = (editor as unknown as { cm: EditorView }).cm;
 		const request: LegalCommandRequest = {
-			commandId: 'complete-legal-provision',
+			commandId: this.commandId,
 			prefix,
 			editor,
 			editorView,
@@ -64,10 +79,13 @@ export class LegalSlashCommand {
 		const view = await this.plugin.openLegalPanel();
 		view.setLoading(t('legal.panel.detecting'));
 
-		const judge = new ProvisionRefJudge(this.plugin);
+		const judge =
+			this.commandId === 'complete-legal-case'
+				? new CaseRefJudge(this.plugin)
+				: new ProvisionRefJudge(this.plugin);
 		const route = await judge.judge(prefix);
 		if (route.kind === 'none') {
-			view.setError(t('legal.panel.empty'));
+			view.setError(this.getEmptyMessage());
 			this.logLegalDebug({
 				commandId: request.commandId,
 				prefix,
@@ -82,7 +100,11 @@ export class LegalSlashCommand {
 			return;
 		}
 
-		view.setLoading(t('legal.panel.fetching'));
+		view.setLoading(
+			this.commandId === 'complete-legal-case'
+				? t('legal.panel.fetchingCase')
+				: t('legal.panel.fetching'),
+		);
 
 		const plan = new LegalExecutionPlanner(this.executors, this.plugin).plan(
 			request,
@@ -109,7 +131,7 @@ export class LegalSlashCommand {
 				durationMs: Date.now() - startedAt,
 			});
 			if (results.length === 0) {
-				view.setError(t('legal.panel.empty'));
+				view.setError(this.getEmptyMessage());
 				return;
 			}
 
@@ -216,7 +238,9 @@ export class LegalSlashCommand {
 		if (result.status === 'success') {
 			new Notice(
 				mode === 'raw'
-					? t('legal.notice.insertRaw.success')
+					? this.commandId === 'complete-legal-case'
+						? t('legal.notice.insertCaseRaw.success')
+						: t('legal.notice.insertRaw.success')
 					: t('legal.notice.insertAdapted.success'),
 			);
 			return;
@@ -234,6 +258,12 @@ export class LegalSlashCommand {
 
 		const reason = result.message ? ` ${result.message}` : '';
 		new Notice(`${t('legal.notice.insert.failed')}${reason}`);
+	}
+
+	private getEmptyMessage(): string {
+		return this.commandId === 'complete-legal-case'
+			? t('legal.panel.caseEmpty')
+			: t('legal.panel.empty');
 	}
 }
 

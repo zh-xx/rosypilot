@@ -130,6 +130,7 @@ export class LegalPanelView extends ItemView {
 						value: item.sxx,
 					},
 				].filter((row): row is LegalDisplayMetaRow => Boolean(row.value)),
+				rawInsertLabel: t('legal.panel.insert.raw'),
 			});
 		}
 	}
@@ -195,7 +196,7 @@ export class LegalPanelView extends ItemView {
 			rawGroup
 				.createSpan({
 					cls: 'rosypilot-legal-action-label',
-					text: t('legal.panel.insert.raw'),
+					text: display.rawInsertLabel,
 				})
 				.setAttribute('aria-hidden', 'true');
 			this.createRawInsertButton(rawGroup, callbacks, 'content');

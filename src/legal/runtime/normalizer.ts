@@ -1,4 +1,8 @@
-import { ArticleDetail, ArticleSearchItem } from '../yuandian-client';
+import {
+	ArticleDetail,
+	ArticleSearchItem,
+	CaseDetail,
+} from '../yuandian-client';
 import { LegalResult } from './result';
 
 export interface WebExactProvisionResultInput {
@@ -14,6 +18,17 @@ export interface WebExactProvisionResultInput {
 	effectiveDate?: string;
 	score?: number;
 	extractionKind?: 'llm-extracted' | 'web-snippet';
+	raw: unknown;
+}
+
+export interface WebExactCaseResultInput {
+	providerId: string;
+	providerName: string;
+	url?: string;
+	title: string;
+	content: string;
+	caseNo?: string;
+	score?: number;
 	raw: unknown;
 }
 
@@ -90,6 +105,60 @@ export class LegalResultNormalizer {
 			raw: input.raw,
 		};
 	}
+
+	fromYuandianCaseDetail(item: CaseDetail): LegalResult {
+		const title = cleanYuandianContent(item.title ?? item.ah ?? '案例详情');
+		const content = cleanYuandianContent(
+			item.content ||
+				[item.fxgc, item.pjjg, item.cmss, item.ajjbqk, item.ssjl]
+					.filter(Boolean)
+					.join('\n\n'),
+		);
+		const cause = Array.isArray(item.ay) ? item.ay.join('、') : item.ay;
+
+		return {
+			id: `yuandian:case:${item.id || item.ah || title}`,
+			type: 'case',
+			title,
+			content,
+			source: {
+				provider: 'yuandian',
+				name: '元典',
+				url: normalizeYuandianCaseUrl(item.url),
+			},
+			metadata: {
+				caseNo: item.ah,
+				court: item.jbdw,
+				cause,
+				caseCategory: item.ajlb || item.ajlx,
+				trialProcedure: item.spcx,
+				documentType: item.wszl,
+				judgmentDate: item.cprq,
+				caseSourceType: item.type,
+			},
+			raw: item,
+		};
+	}
+
+	fromWebExactCase(input: WebExactCaseResultInput): LegalResult {
+		return {
+			id: `web:${input.providerId}:case:${input.url ?? input.title}`,
+			type: 'web',
+			title: input.title,
+			content: input.content,
+			source: {
+				provider: input.providerId,
+				name: input.providerName,
+				url: input.url,
+			},
+			metadata: {
+				caseNo: input.caseNo,
+				score: input.score,
+				extractionKind: 'web-snippet',
+			},
+			raw: input.raw,
+		};
+	}
 }
 
 function cleanYuandianContent(content: string): string {
@@ -111,4 +180,10 @@ function formatYuandianDate(
 		return undefined;
 	}
 	return `${raw.slice(0, 4)}-${raw.slice(4, 6)}-${raw.slice(6, 8)}`;
+}
+
+function normalizeYuandianCaseUrl(url: string | undefined): string | undefined {
+	if (!url) return undefined;
+	if (/^https?:\/\//i.test(url)) return url;
+	return `https://www.chineselaw.com${url.startsWith('/') ? url : `/${url}`}`;
 }

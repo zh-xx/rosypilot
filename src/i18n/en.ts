@@ -123,6 +123,10 @@ export const en: Record<string, string> = {
 		'/Complete legal provision retrieval strategy',
 	'settings.legal.commandOverrides.completeLegalProvisionDesc':
 		'Inherits the global Legal Command strategy by default. Override only when this command needs a specific source.',
+	'settings.legal.commandOverrides.completeLegalCase':
+		'/Complete legal case retrieval strategy',
+	'settings.legal.commandOverrides.completeLegalCaseDesc':
+		'Inherits the global Legal Command strategy by default. Override only when this command needs a specific source.',
 	'settings.legal.retrievalStrategy.inherit': 'Inherit global strategy',
 	'settings.legal.retrievalStrategy.structuredFirst': 'Yuandian first',
 	'settings.legal.retrievalStrategy.webFirst': 'Web search first',
@@ -161,20 +165,24 @@ export const en: Record<string, string> = {
 
 	// Legal slash command
 	'legal.slashCommand.label': 'Complete legal provision',
+	'legal.slashCommand.caseLabel': 'Complete legal case',
 
 	// Legal panel
 	'legal.panel.title': 'Legal Provisions',
 	'legal.panel.loading': 'Searching…',
 	'legal.panel.detecting': 'Analysing context…',
 	'legal.panel.fetching': 'Fetching provision…',
+	'legal.panel.fetchingCase': 'Fetching case…',
 	'legal.panel.adapting': 'Adapting…',
 	'legal.panel.insert.raw': 'Insert provision',
+	'legal.panel.insert.caseRaw': 'Insert case',
 	'legal.panel.insert.action': 'Insert',
 	'legal.panel.insert.adapted': 'Adapted',
 	'legal.panel.insert.format.content': 'Text',
 	'legal.panel.insert.format.title-content': 'Title + text',
 	'legal.panel.insert.format.quote-block': 'Quote block',
 	'legal.panel.empty': 'No results found',
+	'legal.panel.caseEmpty': 'No cases found',
 	'legal.panel.error': 'Query failed. Check your API key.',
 	'legal.panel.detail.label': 'Exact match',
 	'legal.panel.search.label': 'Semantic results',
@@ -192,10 +200,20 @@ export const en: Record<string, string> = {
 	'legal.panel.meta.category': 'Category',
 	'legal.panel.meta.publishDate': 'Published',
 	'legal.panel.meta.effectiveDate': 'Effective',
+	'legal.panel.meta.caseNo': 'Case number',
+	'legal.panel.meta.court': 'Court',
+	'legal.panel.meta.cause': 'Cause of action',
+	'legal.panel.meta.caseCategory': 'Case category',
+	'legal.panel.meta.trialProcedure': 'Procedure',
+	'legal.panel.meta.documentType': 'Document type',
+	'legal.panel.meta.judgmentDate': 'Judgment date',
+	'legal.panel.meta.caseSourceType': 'Case type',
 	'legal.notice.noApiKey':
 		'Please set your Yuandian API Key in settings first.',
 	'legal.notice.insertRaw.success':
 		'Provision text is ready. Press Tab to insert it.',
+	'legal.notice.insertCaseRaw.success':
+		'Case text is ready. Press Tab to insert it.',
 	'legal.notice.insertAdapted.success':
 		'Context-matched provision text is ready. Press Tab to insert it.',
 	'legal.notice.insertAdapted.missingLlmConfig':

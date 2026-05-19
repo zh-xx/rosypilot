@@ -1,6 +1,10 @@
 import { requestUrl } from 'obsidian';
 import { LegalRef } from '../detector';
-import { WebExactProvisionResultInput } from '../runtime/normalizer';
+import {
+	WebExactCaseResultInput,
+	WebExactProvisionResultInput,
+} from '../runtime/normalizer';
+import { WebExactCaseSearchProvider } from '../executors/web-case-exact';
 import { WebExactSearchProvider } from '../executors/web-exact';
 import { WebFuzzySearchProvider } from '../executors/web-fuzzy';
 
@@ -94,6 +98,29 @@ export class TavilyFuzzyProvider implements WebFuzzySearchProvider {
 				url: result.url,
 				title: result.title ?? query,
 				content: result.raw_content ?? result.content ?? '',
+				score: result.score,
+				raw: result,
+			}));
+	}
+}
+
+export class TavilyExactCaseProvider implements WebExactCaseSearchProvider {
+	id = 'tavily';
+	label = 'Tavily';
+
+	constructor(private client: TavilyClient) {}
+
+	async searchExactCase(ah: string): Promise<WebExactCaseResultInput[]> {
+		const results = await this.client.search(`${ah} 裁判文书 案例 原文`);
+		return results
+			.filter((result) => result.title || result.content || result.raw_content)
+			.map((result) => ({
+				providerId: this.id,
+				providerName: this.label,
+				url: result.url,
+				title: result.title ?? ah,
+				content: result.raw_content ?? result.content ?? '',
+				caseNo: ah,
 				score: result.score,
 				raw: result,
 			}));

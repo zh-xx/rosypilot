@@ -10,5 +10,11 @@ export type LegalCommandRoute =
 			query: string;
 	  }
 	| {
+			kind: 'exact-case';
+			ref: {
+				ah: string;
+			};
+	  }
+	| {
 			kind: 'none';
 	  };

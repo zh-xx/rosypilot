@@ -26,6 +26,24 @@ const result: LegalResult = {
 	raw: {},
 };
 
+const caseResult: LegalResult = {
+	id: 'yuandian:case-1',
+	type: 'case',
+	title:
+		'交通银行股份有限公司太平洋信用卡中心北京分中心与李冬兵信用卡纠纷一审民事判决书',
+	content: '本院认为，被告与原告形成合同关系...',
+	source: {
+		provider: 'yuandian',
+		name: '元典',
+	},
+	metadata: {
+		caseNo: '（2023）京0101民初123号',
+		court: '北京市东城区人民法院',
+		judgmentDate: '2023年03月22日',
+	},
+	raw: {},
+};
+
 function createRequest(prefix: string): LegalCommandRequest {
 	return {
 		commandId: 'complete-legal-provision',
@@ -148,6 +166,41 @@ describe('InsertAdaptedApplicator', () => {
 			status: 'failed',
 			reason: 'missing-llm-config',
 		});
+	});
+
+	it('uses case prompt and context for case results', async () => {
+		mockedRequestUrl.mockResolvedValue({
+			status: 200,
+			json: {
+				choices: [
+					{
+						message: {
+							content: '该案认为，被告与原告形成合同关系。',
+						},
+					},
+				],
+			},
+		} as Awaited<ReturnType<typeof requestUrl>>);
+
+		const application = await new InsertAdaptedApplicator().apply(
+			createRequest('类似案例可参见（2023）京0101民初123号，'),
+			caseResult,
+			createPlugin('deepseek-key', 'deepseek-chat'),
+		);
+
+		const body = JSON.parse(
+			(mockedRequestUrl.mock.calls[0][0] as { body: string }).body,
+		) as {
+			messages: { role: string; content: string }[];
+		};
+
+		expect(body.messages[0].content).toContain('相关案例');
+		expect(body.messages[0].content).toContain('裁判观点');
+		expect(body.messages[0].content).not.toContain('法条最相关的原文');
+		expect(body.messages[1].content).toContain('【相关案例】');
+		expect(body.messages[1].content).toContain('（2023）京0101民初123号');
+		expect(body.messages[1].content).toContain('北京市东城区人民法院');
+		expect(application).toEqual({ status: 'success' });
 	});
 
 	it('does not inject ghost text when LLM returns empty content', async () => {

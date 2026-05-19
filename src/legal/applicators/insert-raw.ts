@@ -29,22 +29,40 @@ function formatRawInsert(
 	result: LegalResult,
 	format: RawInsertFormat,
 ): string {
-	if (format === 'content') return result.content;
+	const content = isCaseLikeResult(result)
+		? formatCaseContent(result)
+		: result.content;
+	if (format === 'content') return content;
 	if (format === 'quote-block') {
 		const linePrefix = getCurrentLinePrefix(request.prefix);
-		return `${linePrefix.trim() ? '\n' : ''}${formatQuoteBlock(result)}`;
+		return `${linePrefix.trim() ? '\n' : ''}${formatQuoteBlock(result, content)}`;
 	}
-	return `${result.title}\n${result.content}`;
+	return `${result.title}\n${content}`;
 }
 
 function getCurrentLinePrefix(prefix: string): string {
 	return prefix.slice(prefix.lastIndexOf('\n') + 1);
 }
 
-function formatQuoteBlock(result: LegalResult): string {
-	return [result.title, result.content]
+function formatQuoteBlock(result: LegalResult, content: string): string {
+	return [result.title, content]
 		.join('\n')
 		.split('\n')
 		.map((line) => `> ${line}`)
 		.join('\n');
+}
+
+function formatCaseContent(result: LegalResult): string {
+	const meta = [
+		result.metadata.caseNo,
+		result.metadata.court,
+		result.metadata.judgmentDate,
+	]
+		.filter(Boolean)
+		.join(' · ');
+	return [meta, result.content].filter(Boolean).join('\n\n');
+}
+
+function isCaseLikeResult(result: LegalResult): boolean {
+	return result.type === 'case' || Boolean(result.metadata.caseNo);
 }

@@ -47,6 +47,19 @@ export class LegalExecutionPlanner {
 		}
 
 		const strategy = this.getRetrievalStrategy(commandId);
+		if (route.kind === 'exact-case') {
+			if (strategy === 'web-first') {
+				return ['web.case.exact'];
+			}
+			if (strategy === 'auto') {
+				return ['yuandian.case.exact', 'web.case.exact'];
+			}
+			if (strategy === 'all') {
+				return ['yuandian.case.exact', 'web.case.exact'];
+			}
+			return ['yuandian.case.exact'];
+		}
+
 		if (route.kind === 'fuzzy-provision') {
 			if (strategy === 'web-first') {
 				return ['web.fuzzy'];
@@ -74,10 +87,7 @@ export class LegalExecutionPlanner {
 
 	private getRetrievalStrategy(commandId: string) {
 		const { legal } = this.plugin.settings;
-		const override =
-			commandId === 'complete-legal-provision'
-				? legal.commandOverrides?.completeLegalProvision?.retrievalStrategy
-				: undefined;
+		const override = getCommandOverride(commandId, legal.commandOverrides);
 
 		return resolveLegalRetrievalStrategy(
 			legal.defaultRetrievalStrategy,
@@ -86,4 +96,17 @@ export class LegalExecutionPlanner {
 			'structured-first',
 		);
 	}
+}
+
+function getCommandOverride(
+	commandId: string,
+	overrides: RosyPilot['settings']['legal']['commandOverrides'] | undefined,
+) {
+	if (commandId === 'complete-legal-provision') {
+		return overrides?.completeLegalProvision?.retrievalStrategy;
+	}
+	if (commandId === 'complete-legal-case') {
+		return overrides?.completeLegalCase?.retrievalStrategy;
+	}
+	return undefined;
 }

@@ -22,6 +22,14 @@ export interface LegalResult {
 		category?: string;
 		publishDate?: string;
 		effectiveDate?: string;
+		caseNo?: string;
+		court?: string;
+		cause?: string;
+		caseCategory?: string;
+		trialProcedure?: string;
+		documentType?: string;
+		judgmentDate?: string;
+		caseSourceType?: string;
 		score?: number;
 		extractionKind?: 'llm-extracted' | 'web-snippet';
 	};

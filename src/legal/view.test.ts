@@ -21,6 +21,7 @@ jest.mock('src/i18n', () => ({
 			'legal.panel.empty': '未找到相关法条',
 			'legal.panel.detail.label': '精确匹配',
 			'legal.panel.insert.raw': '插入法条',
+			'legal.panel.insert.caseRaw': '插入案例',
 			'legal.panel.insert.action': '插入',
 			'legal.panel.insert.adapted': '匹配原文',
 			'legal.panel.insert.format.content': '正文',
@@ -39,6 +40,14 @@ jest.mock('src/i18n', () => ({
 			'legal.panel.meta.category': '法规类型',
 			'legal.panel.meta.publishDate': '发布日期',
 			'legal.panel.meta.effectiveDate': '施行日期',
+			'legal.panel.meta.caseNo': '案号',
+			'legal.panel.meta.court': '法院',
+			'legal.panel.meta.cause': '案由',
+			'legal.panel.meta.caseCategory': '案件类别',
+			'legal.panel.meta.trialProcedure': '审判程序',
+			'legal.panel.meta.documentType': '文书类型',
+			'legal.panel.meta.judgmentDate': '裁判日期',
+			'legal.panel.meta.caseSourceType': '案例类型',
 			'legal.panel.title': '法条',
 		})[key] ?? key,
 }));
@@ -267,5 +276,70 @@ describe('LegalPanelView', () => {
 
 		expect(onRaw).toHaveBeenCalledWith(results[0], 'quote-block');
 		expect(onAdapted).toHaveBeenCalledWith(results[1]);
+	});
+
+	it('renders case metadata and case insert label', () => {
+		const { view, root } = createOpenedView();
+		const result: LegalResult = {
+			id: 'yuandian:case:1',
+			type: 'case',
+			title: '案例标题',
+			content: '案例正文',
+			source: {
+				provider: 'yuandian',
+				name: '元典',
+			},
+			metadata: {
+				caseNo: '（2023）京0101民初123号',
+				court: '北京市东城区人民法院',
+				cause: '信用卡纠纷',
+				caseCategory: '民事案件',
+				trialProcedure: '一审案件',
+				documentType: '判决书',
+				judgmentDate: '2023年03月22日',
+				caseSourceType: '普通案例',
+			},
+			raw: {},
+		};
+
+		view.setDetails([result], jest.fn(), jest.fn());
+		const text = root.allText();
+
+		expect(text).toContain('案例标题');
+		expect(text).toContain('插入案例');
+		expect(text).toContain('案号：');
+		expect(text).toContain('（2023）京0101民初123号');
+		expect(text).toContain('法院：');
+		expect(text).toContain('北京市东城区人民法院');
+		expect(text).toContain('案由：');
+		expect(text).toContain('信用卡纠纷');
+		expect(text).toContain('案例类型：');
+		expect(text).toContain('普通案例');
+	});
+
+	it('treats web results with case number as case-like cards', () => {
+		const { view, root } = createOpenedView();
+		const result: LegalResult = {
+			id: 'web:tavily:case:1',
+			type: 'web',
+			title: '案例网页标题',
+			content: '案例网页摘要',
+			source: {
+				provider: 'tavily',
+				name: 'Tavily',
+				url: 'https://example.com/case',
+			},
+			metadata: {
+				caseNo: '（2023）京0101民初123号',
+			},
+			raw: {},
+		};
+
+		view.setDetails([result], jest.fn(), jest.fn());
+		const text = root.allText();
+
+		expect(text).toContain('插入案例');
+		expect(text).toContain('案号：');
+		expect(text).toContain('（2023）京0101民初123号');
 	});
 });

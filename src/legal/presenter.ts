@@ -2,6 +2,7 @@ import { t } from 'src/i18n';
 import { LegalResult } from './runtime/result';
 
 const WEB_CONTENT_PREVIEW_LENGTH = 200;
+const CASE_CONTENT_PREVIEW_LENGTH = 600;
 
 export interface LegalDisplayMetaRow {
 	label: string;
@@ -17,14 +18,19 @@ export interface LegalDisplayResult {
 	collapsible: boolean;
 	sourceUrl?: string;
 	metaRows: LegalDisplayMetaRow[];
+	rawInsertLabel: string;
 }
 
 export class LegalResultPresenter {
 	present(result: LegalResult): LegalDisplayResult {
 		const isYuandian = result.source.provider === 'yuandian';
 		const isWeb = result.type === 'web';
+		const isCase = isCaseLikeResult(result);
 		const content = this.cleanContent(result.content);
-		const collapsible = isWeb && content.length > WEB_CONTENT_PREVIEW_LENGTH;
+		const previewLength = isCase
+			? CASE_CONTENT_PREVIEW_LENGTH
+			: WEB_CONTENT_PREVIEW_LENGTH;
+		const collapsible = (isWeb || isCase) && content.length > previewLength;
 
 		return {
 			badge: this.buildBadge(result),
@@ -32,11 +38,14 @@ export class LegalResultPresenter {
 			title: result.title,
 			content,
 			previewContent: collapsible
-				? content.slice(0, WEB_CONTENT_PREVIEW_LENGTH).trimEnd() + '...'
+				? content.slice(0, previewLength).trimEnd() + '...'
 				: content,
 			collapsible,
 			sourceUrl: result.source.url,
 			metaRows: this.buildMetaRows(result),
+			rawInsertLabel: isCase
+				? t('legal.panel.insert.caseRaw')
+				: t('legal.panel.insert.raw'),
 		};
 	}
 
@@ -56,6 +65,34 @@ export class LegalResultPresenter {
 	}
 
 	private buildMetaRows(result: LegalResult): LegalDisplayMetaRow[] {
+		if (isCaseLikeResult(result)) {
+			return [
+				{ label: t('legal.panel.meta.caseNo'), value: result.metadata.caseNo },
+				{ label: t('legal.panel.meta.court'), value: result.metadata.court },
+				{ label: t('legal.panel.meta.cause'), value: result.metadata.cause },
+				{
+					label: t('legal.panel.meta.caseCategory'),
+					value: result.metadata.caseCategory,
+				},
+				{
+					label: t('legal.panel.meta.trialProcedure'),
+					value: result.metadata.trialProcedure,
+				},
+				{
+					label: t('legal.panel.meta.documentType'),
+					value: result.metadata.documentType,
+				},
+				{
+					label: t('legal.panel.meta.judgmentDate'),
+					value: result.metadata.judgmentDate,
+				},
+				{
+					label: t('legal.panel.meta.caseSourceType'),
+					value: result.metadata.caseSourceType,
+				},
+			].filter((row): row is LegalDisplayMetaRow => Boolean(row.value));
+		}
+
 		return [
 			{ label: t('legal.panel.meta.lawName'), value: result.metadata.lawName },
 			{
@@ -91,4 +128,8 @@ export class LegalResultPresenter {
 			.replace(/\n{3,}/g, '\n\n')
 			.trim();
 	}
+}
+
+function isCaseLikeResult(result: LegalResult): boolean {
+	return result.type === 'case' || Boolean(result.metadata.caseNo);
 }

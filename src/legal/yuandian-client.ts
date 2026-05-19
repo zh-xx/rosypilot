@@ -27,6 +27,33 @@ export interface ArticleSearchItem {
 	score: number;
 }
 
+export type YuandianCaseDetailType = 'ptal' | 'qwal';
+
+export interface CaseDetail {
+	id: string;
+	type?: string;
+	ah?: string;
+	title?: string;
+	jbdw?: string;
+	ajlb?: string;
+	ajlx?: string;
+	spcx?: string;
+	wszl?: string;
+	ay?: string[] | string;
+	cprq?: string;
+	xzqh_p?: string;
+	xzqh_c?: string;
+	yyft?: string[] | string;
+	content?: string;
+	dsr?: string;
+	ssjl?: string;
+	ajjbqk?: string;
+	fxgc?: string;
+	pjjg?: string;
+	cmss?: string;
+	url?: string;
+}
+
 export class YuandianClient {
 	constructor(private apiKey: string) {}
 
@@ -95,5 +122,38 @@ export class YuandianClient {
 		}
 
 		return body.extra?.fatiao ?? [];
+	}
+
+	async fetchCaseDetailsByAh(
+		ah: string,
+		type: YuandianCaseDetailType,
+	): Promise<CaseDetail[]> {
+		const params = new URLSearchParams({ ah, type });
+		const res = await requestUrl({
+			url: `${BASE_URL}/open/rh_case_details?${params.toString()}`,
+			method: 'GET',
+			headers: {
+				Accept: 'application/json',
+				'X-API-Key': this.apiKey,
+			},
+			throw: false,
+		});
+
+		if (res.status !== 200 && res.status !== 201) {
+			throw new Error(`HTTP ${res.status}`);
+		}
+
+		const body = res.json as {
+			status: string;
+			code: number;
+			message: string;
+			data: CaseDetail[] | null;
+		};
+
+		if (body.code !== 200 && body.code !== 201) {
+			throw new Error(body.message);
+		}
+
+		return body.data ?? [];
 	}
 }

@@ -1,5 +1,6 @@
 import {
 	TavilyClient,
+	TavilyExactCaseProvider,
 	TavilyExactProvider,
 	TavilyFuzzyProvider,
 } from './tavily-client';
@@ -105,6 +106,47 @@ describe('TavilyFuzzyProvider', () => {
 					url: 'https://example.com/civil-code-511',
 					content: '履行地点约定不明时...',
 					score: 0.98,
+				},
+			},
+		]);
+	});
+});
+
+describe('TavilyExactCaseProvider', () => {
+	it('builds exact case query and converts Tavily results', async () => {
+		const client = {
+			search: jest.fn().mockResolvedValue([
+				{
+					title: '案例详情',
+					url: 'https://example.com/case',
+					content: '裁判文书摘要',
+					score: 0.87,
+				},
+				{},
+			]),
+		} as unknown as TavilyClient;
+
+		const results = await new TavilyExactCaseProvider(client).searchExactCase(
+			'（2023）京0101民初123号',
+		);
+
+		expect(client.search).toHaveBeenCalledWith(
+			'（2023）京0101民初123号 裁判文书 案例 原文',
+		);
+		expect(results).toEqual([
+			{
+				providerId: 'tavily',
+				providerName: 'Tavily',
+				url: 'https://example.com/case',
+				title: '案例详情',
+				content: '裁判文书摘要',
+				caseNo: '（2023）京0101民初123号',
+				score: 0.87,
+				raw: {
+					title: '案例详情',
+					url: 'https://example.com/case',
+					content: '裁判文书摘要',
+					score: 0.87,
 				},
 			},
 		]);

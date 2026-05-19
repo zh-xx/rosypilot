@@ -19,6 +19,13 @@ const fuzzyRoute: LegalCommandRoute = {
 	query: '合同违约责任的认定与赔偿',
 };
 
+const exactCaseRoute: LegalCommandRoute = {
+	kind: 'exact-case',
+	ref: {
+		ah: '（2023）京0101民初123号',
+	},
+};
+
 const request = {
 	commandId: 'complete-legal-provision',
 	prefix: '',
@@ -56,6 +63,9 @@ function createPlanner(
 				defaultRetrievalStrategy: strategy,
 				commandOverrides: {
 					completeLegalProvision: {
+						retrievalStrategy: override,
+					},
+					completeLegalCase: {
 						retrievalStrategy: override,
 					},
 				},
@@ -203,6 +213,80 @@ describe('LegalExecutionPlanner', () => {
 		expect(plan).toEqual({
 			mode: 'collect-all',
 			steps: [{ executorId: 'yuandian.semantic' }, { executorId: 'web.fuzzy' }],
+		});
+	});
+
+	it('plans yuandian case exact strategy', () => {
+		const planner = createPlanner('structured-first', [
+			createExecutor('yuandian.case.exact'),
+			createExecutor('web.case.exact'),
+		]);
+
+		const plan = planner.plan(
+			{ ...request, commandId: 'complete-legal-case' },
+			exactCaseRoute,
+		);
+
+		expect(plan).toEqual({
+			mode: 'first-success',
+			steps: [{ executorId: 'yuandian.case.exact' }],
+		});
+	});
+
+	it('plans web case exact strategy', () => {
+		const planner = createPlanner('web-first', [
+			createExecutor('yuandian.case.exact'),
+			createExecutor('web.case.exact'),
+		]);
+
+		const plan = planner.plan(
+			{ ...request, commandId: 'complete-legal-case' },
+			exactCaseRoute,
+		);
+
+		expect(plan).toEqual({
+			mode: 'first-success',
+			steps: [{ executorId: 'web.case.exact' }],
+		});
+	});
+
+	it('plans case auto strategy as yuandian-to-web fallback', () => {
+		const planner = createPlanner('auto', [
+			createExecutor('yuandian.case.exact'),
+			createExecutor('web.case.exact'),
+		]);
+
+		const plan = planner.plan(
+			{ ...request, commandId: 'complete-legal-case' },
+			exactCaseRoute,
+		);
+
+		expect(plan).toEqual({
+			mode: 'first-success',
+			steps: [
+				{ executorId: 'yuandian.case.exact' },
+				{ executorId: 'web.case.exact' },
+			],
+		});
+	});
+
+	it('plans case all strategy as collect-all', () => {
+		const planner = createPlanner('all', [
+			createExecutor('yuandian.case.exact'),
+			createExecutor('web.case.exact'),
+		]);
+
+		const plan = planner.plan(
+			{ ...request, commandId: 'complete-legal-case' },
+			exactCaseRoute,
+		);
+
+		expect(plan).toEqual({
+			mode: 'collect-all',
+			steps: [
+				{ executorId: 'yuandian.case.exact' },
+				{ executorId: 'web.case.exact' },
+			],
 		});
 	});
 });

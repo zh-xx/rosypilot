@@ -114,6 +114,9 @@ export const zh: Record<string, string> = {
 	'settings.legal.commandOverrides.completeLegalProvision': '/补全法条检索策略',
 	'settings.legal.commandOverrides.completeLegalProvisionDesc':
 		'默认继承 Legal Command 全局策略；仅在该命令需要特殊来源时单独修改。',
+	'settings.legal.commandOverrides.completeLegalCase': '/补全案例检索策略',
+	'settings.legal.commandOverrides.completeLegalCaseDesc':
+		'默认继承 Legal Command 全局策略；仅在该命令需要特殊来源时单独修改。',
 	'settings.legal.retrievalStrategy.inherit': '继承全局策略',
 	'settings.legal.retrievalStrategy.structuredFirst': '元典优先',
 	'settings.legal.retrievalStrategy.webFirst': '联网检索优先',
@@ -149,20 +152,24 @@ export const zh: Record<string, string> = {
 
 	// Legal slash command
 	'legal.slashCommand.label': '补全法条',
+	'legal.slashCommand.caseLabel': '补全案例',
 
 	// Legal panel
 	'legal.panel.title': '法条',
 	'legal.panel.loading': '查询中…',
 	'legal.panel.detecting': '正在分析上下文…',
 	'legal.panel.fetching': '正在查询法条…',
+	'legal.panel.fetchingCase': '正在查询案例…',
 	'legal.panel.adapting': '正在改写…',
 	'legal.panel.insert.raw': '插入法条',
+	'legal.panel.insert.caseRaw': '插入案例',
 	'legal.panel.insert.action': '插入',
 	'legal.panel.insert.adapted': '匹配原文',
 	'legal.panel.insert.format.content': '正文',
 	'legal.panel.insert.format.title-content': '标题+正文',
 	'legal.panel.insert.format.quote-block': '引用块',
 	'legal.panel.empty': '未找到相关法条',
+	'legal.panel.caseEmpty': '未找到相关案例',
 	'legal.panel.error': '查询失败，请检查 API 密钥',
 	'legal.panel.detail.label': '精确匹配',
 	'legal.panel.search.label': '语义相关',
@@ -180,8 +187,17 @@ export const zh: Record<string, string> = {
 	'legal.panel.meta.category': '法规类型',
 	'legal.panel.meta.publishDate': '发布日期',
 	'legal.panel.meta.effectiveDate': '施行日期',
+	'legal.panel.meta.caseNo': '案号',
+	'legal.panel.meta.court': '法院',
+	'legal.panel.meta.cause': '案由',
+	'legal.panel.meta.caseCategory': '案件类别',
+	'legal.panel.meta.trialProcedure': '审判程序',
+	'legal.panel.meta.documentType': '文书类型',
+	'legal.panel.meta.judgmentDate': '裁判日期',
+	'legal.panel.meta.caseSourceType': '案例类型',
 	'legal.notice.noApiKey': '请先在设置中填写元典 API Key',
 	'legal.notice.insertRaw.success': '已生成法条原文，按 Tab 插入。',
+	'legal.notice.insertCaseRaw.success': '已生成案例文本，按 Tab 插入。',
 	'legal.notice.insertAdapted.success':
 		'已生成匹配上下文的法条文本，按 Tab 插入。',
 	'legal.notice.insertAdapted.missingLlmConfig':
