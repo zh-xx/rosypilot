@@ -102,6 +102,9 @@ export const zh: Record<string, string> = {
 
 	// Legal database
 	'settings.legal.title': 'Legal Command 设置',
+	'settings.legal.slashCommandRequirement': '斜杠命令前置条件',
+	'settings.legal.slashCommandRequirementDesc':
+		'若输入 / 后没有弹出命令列表，请在 Obsidian 设置 → 核心插件 中开启「斜杠命令」。未开启时仍可通过命令面板 Cmd/Ctrl+P 搜索「RosyPilot: 补全法条」或「RosyPilot: 补全案例」。',
 	'settings.legal.apiKey': '元典 API Key',
 	'settings.legal.apiKeyDesc': '用于检索规范和案例等。',
 	'settings.legal.yuandianPlatform': '元典开放平台',
@@ -173,6 +176,7 @@ export const zh: Record<string, string> = {
 	'legal.panel.error': '查询失败，请检查 API 密钥',
 	'legal.panel.detail.label': '精确匹配',
 	'legal.panel.search.label': '语义相关',
+	'legal.panel.caseSearch.label': '相关案例',
 	'legal.panel.source': '来源',
 
 	'legal.panel.expand': '展开全文',
@@ -195,6 +199,7 @@ export const zh: Record<string, string> = {
 	'legal.panel.meta.documentType': '文书类型',
 	'legal.panel.meta.judgmentDate': '裁判日期',
 	'legal.panel.meta.caseSourceType': '案例类型',
+	'legal.panel.meta.caseQuery': '检索问题',
 	'legal.notice.noApiKey': '请先在设置中填写元典 API Key',
 	'legal.notice.insertRaw.success': '已生成法条原文，按 Tab 插入。',
 	'legal.notice.insertCaseRaw.success': '已生成案例文本，按 Tab 插入。',

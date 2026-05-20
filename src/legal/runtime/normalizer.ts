@@ -2,6 +2,7 @@ import {
 	ArticleDetail,
 	ArticleSearchItem,
 	CaseDetail,
+	CaseKeywordSearchItem,
 } from '../yuandian-client';
 import { LegalResult } from './result';
 
@@ -16,6 +17,7 @@ export interface WebExactProvisionResultInput {
 	effectiveStatus?: string;
 	publishDate?: string;
 	effectiveDate?: string;
+	provisionQuery?: string;
 	score?: number;
 	extractionKind?: 'llm-extracted' | 'web-snippet';
 	raw: unknown;
@@ -28,6 +30,7 @@ export interface WebExactCaseResultInput {
 	title: string;
 	content: string;
 	caseNo?: string;
+	caseQuery?: string;
 	score?: number;
 	raw: unknown;
 }
@@ -55,7 +58,10 @@ export class LegalResultNormalizer {
 		};
 	}
 
-	fromYuandianArticleSearchItem(item: ArticleSearchItem): LegalResult {
+	fromYuandianArticleSearchItem(
+		item: ArticleSearchItem,
+		query?: string,
+	): LegalResult {
 		const lawName = Array.isArray(item.fgtitle)
 			? item.fgtitle.join('')
 			: item.fgtitle;
@@ -76,6 +82,7 @@ export class LegalResultNormalizer {
 				effectiveStatus: item.sxx,
 				category: item.effect1,
 				effectiveDate: formatYuandianDate(item.start),
+				provisionQuery: query,
 				score: item.score,
 			},
 			raw: item,
@@ -99,6 +106,7 @@ export class LegalResultNormalizer {
 				effectiveStatus: input.effectiveStatus,
 				publishDate: input.publishDate,
 				effectiveDate: input.effectiveDate,
+				provisionQuery: input.provisionQuery,
 				score: input.score,
 				extractionKind: input.extractionKind ?? 'web-snippet',
 			},
@@ -140,6 +148,39 @@ export class LegalResultNormalizer {
 		};
 	}
 
+	fromYuandianCaseKeywordSearchItem(
+		item: CaseKeywordSearchItem,
+		query?: string,
+	): LegalResult {
+		const title = cleanYuandianContent(item.title ?? item.ah ?? '案例检索结果');
+		const content = cleanYuandianContent(item.content ?? '');
+		const cause = Array.isArray(item.ay) ? item.ay.join('、') : item.ay;
+
+		return {
+			id: `yuandian:case:${item.id || item.ah || title}`,
+			type: 'case',
+			title,
+			content,
+			source: {
+				provider: 'yuandian',
+				name: '元典',
+				url: normalizeYuandianCaseUrl(item.url),
+			},
+			metadata: {
+				caseNo: item.ah,
+				court: item.jbdw,
+				cause,
+				caseCategory: item.ajlb,
+				documentType: item.wszl,
+				judgmentDate: item.cprq,
+				caseSourceType: item.type,
+				caseQuery: query,
+				score: item.score,
+			},
+			raw: item,
+		};
+	}
+
 	fromWebExactCase(input: WebExactCaseResultInput): LegalResult {
 		return {
 			id: `web:${input.providerId}:case:${input.url ?? input.title}`,
@@ -153,6 +194,7 @@ export class LegalResultNormalizer {
 			},
 			metadata: {
 				caseNo: input.caseNo,
+				caseQuery: input.caseQuery,
 				score: input.score,
 				extractionKind: 'web-snippet',
 			},

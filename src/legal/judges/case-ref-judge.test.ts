@@ -52,4 +52,15 @@ describe('CaseRefJudge helpers', () => {
 		});
 		expect(parseCaseRouteResponse('null')).toEqual({ kind: 'none' });
 	});
+
+	it('parses LLM fuzzy-case JSON response', () => {
+		expect(
+			parseCaseRouteResponse(
+				'{"kind":"fuzzy-case","query":"信用卡纠纷中利息费用上限"}',
+			),
+		).toEqual({
+			kind: 'fuzzy-case',
+			query: '信用卡纠纷中利息费用上限',
+		});
+	});
 });

@@ -2,6 +2,7 @@ import {
 	TavilyClient,
 	TavilyExactCaseProvider,
 	TavilyExactProvider,
+	TavilyFuzzyCaseProvider,
 	TavilyFuzzyProvider,
 } from './tavily-client';
 
@@ -100,6 +101,7 @@ describe('TavilyFuzzyProvider', () => {
 				url: 'https://example.com/civil-code-511',
 				title: '民法典第511条',
 				content: '履行地点约定不明时...',
+				provisionQuery: '履行地点约定不明',
 				score: 0.98,
 				raw: {
 					title: '民法典第511条',
@@ -147,6 +149,47 @@ describe('TavilyExactCaseProvider', () => {
 					url: 'https://example.com/case',
 					content: '裁判文书摘要',
 					score: 0.87,
+				},
+			},
+		]);
+	});
+});
+
+describe('TavilyFuzzyCaseProvider', () => {
+	it('builds fuzzy case query and converts Tavily results', async () => {
+		const client = {
+			search: jest.fn().mockResolvedValue([
+				{
+					title: '信用卡纠纷裁判观点',
+					url: 'https://example.com/case-search',
+					content: '信用卡透支交易本质上是金融机构出借款项...',
+					score: 0.76,
+				},
+				{},
+			]),
+		} as unknown as TavilyClient;
+
+		const results = await new TavilyFuzzyCaseProvider(client).searchFuzzyCases(
+			'信用卡纠纷中利息费用上限',
+		);
+
+		expect(client.search).toHaveBeenCalledWith(
+			'信用卡纠纷中利息费用上限 类案 裁判观点 裁判文书',
+		);
+		expect(results).toEqual([
+			{
+				providerId: 'tavily',
+				providerName: 'Tavily',
+				url: 'https://example.com/case-search',
+				title: '信用卡纠纷裁判观点',
+				content: '信用卡透支交易本质上是金融机构出借款项...',
+				caseQuery: '信用卡纠纷中利息费用上限',
+				score: 0.76,
+				raw: {
+					title: '信用卡纠纷裁判观点',
+					url: 'https://example.com/case-search',
+					content: '信用卡透支交易本质上是金融机构出借款项...',
+					score: 0.76,
 				},
 			},
 		]);

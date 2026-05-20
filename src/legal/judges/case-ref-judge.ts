@@ -5,7 +5,7 @@ import { LegalJudgeDebugInfo } from '../debug';
 import { LegalCommandRoute } from '../runtime/route';
 
 const EXTRACT_SYSTEM_PROMPT =
-	'判断用户文本中距离光标最近的案例检索对象。若存在明确案号，返回单个JSON对象：{"kind":"exact-case","ah":"案号"}。若没有明确案号，返回 null。不要解释，不要根据案件标题猜测案号。';
+	'判断用户文本中距离光标最近的案例检索对象。若存在明确案号，返回单个JSON对象：{"kind":"exact-case","ah":"案号"}。若没有明确案号，但存在可检索的类案问题、案由、争议焦点、裁判观点或“类似案例/类案”表达，返回：{"kind":"fuzzy-case","query":"2到5个案例检索关键词，以空格分隔"}，例如{"kind":"fuzzy-case","query":"信用卡 利息 费用 年利率24%"}或{"kind":"fuzzy-case","query":"违约金 过高 调整"}。若不是法律案例检索问题，返回 null。不要解释，不要根据案件标题猜测案号。';
 
 const CONTEXT_WINDOW_SIZE = 800;
 const CURRENT_SEGMENT_SIZE = 240;
@@ -34,8 +34,8 @@ export function parseCaseRouteResponse(content: string): LegalCommandRoute {
 
 	try {
 		const parsed = JSON.parse(jsonText) as
-			| Partial<{ kind: string; ah: string }>
-			| Partial<{ kind: string; ah: string }>[]
+			| Partial<{ kind: string; ah: string; query: string }>
+			| Partial<{ kind: string; ah: string; query: string }>[]
 			| null;
 		const route = normalizeParsedCaseRoute(parsed);
 		if (route.kind !== 'none') return route;
@@ -48,8 +48,8 @@ export function parseCaseRouteResponse(content: string): LegalCommandRoute {
 
 function normalizeParsedCaseRoute(
 	parsed:
-		| Partial<{ kind: string; ah: string }>
-		| Partial<{ kind: string; ah: string }>[]
+		| Partial<{ kind: string; ah: string; query: string }>
+		| Partial<{ kind: string; ah: string; query: string }>[]
 		| null,
 ): LegalCommandRoute {
 	if (Array.isArray(parsed)) {
@@ -63,6 +63,15 @@ function normalizeParsedCaseRoute(
 	if (parsed && parsed.kind === 'exact-case' && typeof parsed.ah === 'string') {
 		const ah = normalizeCaseNumber(parsed.ah);
 		if (ah) return { kind: 'exact-case', ref: { ah } };
+	}
+
+	if (
+		parsed &&
+		parsed.kind === 'fuzzy-case' &&
+		typeof parsed.query === 'string'
+	) {
+		const query = normalizeFuzzyCaseQuery(parsed.query);
+		if (query) return { kind: 'fuzzy-case', query };
 	}
 
 	return { kind: 'none' };
@@ -84,14 +93,34 @@ function normalizeCaseNumber(value: string): string | null {
 	return `（${withoutOuterParens[1]}）${body}`;
 }
 
+function normalizeFuzzyCaseQuery(value: string): string | null {
+	const query = value.replace(/\s+/g, ' ').trim();
+	if (
+		query.length < 2 ||
+		query === '案例检索问题' ||
+		query === '检索问题' ||
+		query === '类似案例' ||
+		query === '类案'
+	) {
+		return null;
+	}
+	return query.slice(0, 120);
+}
+
 function parseLastEmbeddedCaseRoute(content: string): LegalCommandRoute {
-	const objectMatches = content.match(/\{[^{}]*(?:"kind"|"ah")[^{}]*\}/g);
+	const objectMatches = content.match(
+		/\{[^{}]*(?:"kind"|"ah"|"query")[^{}]*\}/g,
+	);
 	if (!objectMatches) return { kind: 'none' };
 
 	for (let i = objectMatches.length - 1; i >= 0; i--) {
 		try {
 			const route = normalizeParsedCaseRoute(
-				JSON.parse(objectMatches[i]) as Partial<{ kind: string; ah: string }>,
+				JSON.parse(objectMatches[i]) as Partial<{
+					kind: string;
+					ah: string;
+					query: string;
+				}>,
 			);
 			if (route.kind !== 'none') return route;
 		} catch {
@@ -153,7 +182,7 @@ export class CaseRefJudge {
 		return [
 			'【任务】',
 			'判断光标前文本中最近一次案例检索对象。',
-			'精准案例引用必须包含明确案号；没有案号时不要根据标题、当事人或案由猜测。',
+			'精准案例引用必须包含明确案号；非精准案例检索是没有案号但可以检索类案、案由、争议焦点或裁判观点的问题。没有案号时不要根据标题、当事人或案由猜测具体案号。',
 			'',
 			'【当前句/段】',
 			currentSegment,

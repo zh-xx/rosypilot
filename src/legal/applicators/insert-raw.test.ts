@@ -53,6 +53,23 @@ const caseResult: LegalResult = {
 	raw: {},
 };
 
+const fuzzyWebCaseResult: LegalResult = {
+	id: 'web:tavily:case:fuzzy-1',
+	type: 'web',
+	title: '违约金过高调整类案',
+	content:
+		'裁判观点认为，违约金是否过高应结合实际损失、履行情况和过错程度判断。',
+	source: {
+		provider: 'tavily',
+		name: 'Tavily',
+		url: 'https://example.com/case',
+	},
+	metadata: {
+		caseQuery: '违约金 过高 调整',
+	},
+	raw: {},
+};
+
 describe('InsertRawApplicator', () => {
 	beforeEach(() => {
 		dispatch.mockReset();
@@ -140,6 +157,23 @@ describe('InsertRawApplicator', () => {
 
 		expect(transaction.effects[0].value.completions).toBe(
 			'信用卡纠纷一审民事判决书\n（2023）京0101民初123号 · 北京市东城区人民法院 · 2023年03月22日\n\n本院认为，被告与原告形成合同关系。',
+		);
+	});
+
+	it('uses case formatting for fuzzy web case results', () => {
+		new InsertRawApplicator().apply(
+			{ ...request, commandId: 'complete-legal-case' },
+			fuzzyWebCaseResult,
+			{} as RosyPilot,
+			'title-content',
+		);
+
+		const transaction = dispatch.mock.calls[0][0] as {
+			effects: { value: { completions: string } }[];
+		};
+
+		expect(transaction.effects[0].value.completions).toBe(
+			'违约金过高调整类案\n裁判观点认为，违约金是否过高应结合实际损失、履行情况和过错程度判断。',
 		);
 	});
 });

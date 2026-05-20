@@ -90,6 +90,10 @@ export class LegalResultPresenter {
 					label: t('legal.panel.meta.caseSourceType'),
 					value: result.metadata.caseSourceType,
 				},
+				{
+					label: t('legal.panel.meta.caseQuery'),
+					value: result.metadata.caseQuery,
+				},
 			].filter((row): row is LegalDisplayMetaRow => Boolean(row.value));
 		}
 
@@ -131,5 +135,9 @@ export class LegalResultPresenter {
 }
 
 function isCaseLikeResult(result: LegalResult): boolean {
-	return result.type === 'case' || Boolean(result.metadata.caseNo);
+	return (
+		result.type === 'case' ||
+		Boolean(result.metadata.caseNo) ||
+		Boolean(result.metadata.caseQuery)
+	);
 }

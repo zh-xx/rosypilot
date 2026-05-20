@@ -426,6 +426,10 @@ export class RosyPilotSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl).setName(t('settings.legal.title')).setHeading();
 
+		new Setting(containerEl)
+			.setName(t('settings.legal.slashCommandRequirement'))
+			.setDesc(t('settings.legal.slashCommandRequirementDesc'));
+
 		let legalStrategyStatus: Setting | undefined;
 		const refreshLegalStrategyStatus = () => {
 			const status = this.getLegalStrategyAvailability();

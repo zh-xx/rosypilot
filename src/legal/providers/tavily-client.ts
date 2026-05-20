@@ -5,6 +5,7 @@ import {
 	WebExactProvisionResultInput,
 } from '../runtime/normalizer';
 import { WebExactCaseSearchProvider } from '../executors/web-case-exact';
+import { WebFuzzyCaseSearchProvider } from '../executors/web-case-fuzzy';
 import { WebExactSearchProvider } from '../executors/web-exact';
 import { WebFuzzySearchProvider } from '../executors/web-fuzzy';
 
@@ -98,6 +99,7 @@ export class TavilyFuzzyProvider implements WebFuzzySearchProvider {
 				url: result.url,
 				title: result.title ?? query,
 				content: result.raw_content ?? result.content ?? '',
+				provisionQuery: query,
 				score: result.score,
 				raw: result,
 			}));
@@ -121,6 +123,29 @@ export class TavilyExactCaseProvider implements WebExactCaseSearchProvider {
 				title: result.title ?? ah,
 				content: result.raw_content ?? result.content ?? '',
 				caseNo: ah,
+				score: result.score,
+				raw: result,
+			}));
+	}
+}
+
+export class TavilyFuzzyCaseProvider implements WebFuzzyCaseSearchProvider {
+	id = 'tavily';
+	label = 'Tavily';
+
+	constructor(private client: TavilyClient) {}
+
+	async searchFuzzyCases(query: string): Promise<WebExactCaseResultInput[]> {
+		const results = await this.client.search(`${query} 类案 裁判观点 裁判文书`);
+		return results
+			.filter((result) => result.title || result.content || result.raw_content)
+			.map((result) => ({
+				providerId: this.id,
+				providerName: this.label,
+				url: result.url,
+				title: result.title ?? query,
+				content: result.raw_content ?? result.content ?? '',
+				caseQuery: query,
 				score: result.score,
 				raw: result,
 			}));

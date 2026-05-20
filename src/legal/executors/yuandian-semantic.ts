@@ -35,7 +35,7 @@ export class YuandianSemanticExecutor implements LegalExecutor {
 		const client = new YuandianClient(key);
 		const articles = await client.searchArticles(route.query);
 		return rankYuandianSemanticArticles(articles).map((article) =>
-			this.normalizer.fromYuandianArticleSearchItem(article),
+			this.normalizer.fromYuandianArticleSearchItem(article, route.query),
 		);
 	}
 }

@@ -36,14 +36,14 @@ RosyPilot helps you write Chinese legal documents faster in Obsidian. It offers 
 
 The plugin recognises 6 Markdown context types and applies a dedicated prompting strategy for each:
 
-| Context | Behaviour |
-|---------|-----------|
-| `heading` | Completes heading text based on document outline structure |
-| `paragraph` | Anchors to the ancestor heading chain; uses a sliding context window |
-| `list-item` | Continues only the current item — never generates new list items |
-| `block-quote` | Continues the quoted text in its own voice |
-| `code-block` | Detects the language and generates matching code |
-| `math-block` | Outputs LaTeX only |
+| Context       | Behaviour                                                            |
+| ------------- | -------------------------------------------------------------------- |
+| `heading`     | Completes heading text based on document outline structure           |
+| `paragraph`   | Anchors to the ancestor heading chain; uses a sliding context window |
+| `list-item`   | Continues only the current item — never generates new list items     |
+| `block-quote` | Continues the quoted text in its own voice                           |
+| `code-block`  | Detects the language and generates matching code                     |
+| `math-block`  | Outputs LaTeX only                                                   |
 
 ### Legal Commands
 
@@ -53,6 +53,8 @@ The plugin recognises 6 Markdown context types and applies a dedicated prompting
  / → 补全法条   or   Cmd+P → Complete Provision
 ```
 
+If typing `/` does not open Obsidian's command list, enable **Settings → Core plugins → Slash commands**. Without that core plugin, RosyPilot commands can still be run from `Cmd/Ctrl+P` by searching **RosyPilot: Complete legal provision** or **RosyPilot: Complete legal case**.
+
 The plugin identifies the statute and article number, queries your configured data source, and shows the full article text in a side panel. From there:
 
 - **Insert provision** — injects the article heading and full text as ghost text
@@ -60,12 +62,12 @@ The plugin identifies the statute and article number, queries your configured da
 
 The retrieval strategy controls which sources are used:
 
-| Strategy | Behaviour |
-|----------|-----------|
-| `auto` *(default)* | Yuandian first; falls back to web search (Tavily) if no result |
-| `structured-first` | Yuandian only |
-| `web-first` | Web search (Tavily) only |
-| `all` | Both sources; all results shown in the panel |
+| Strategy           | Behaviour                                                      |
+| ------------------ | -------------------------------------------------------------- |
+| `auto` _(default)_ | Yuandian first; falls back to web search (Tavily) if no result |
+| `structured-first` | Yuandian only                                                  |
+| `web-first`        | Web search (Tavily) only                                       |
+| `all`              | Both sources; all results shown in the panel                   |
 
 ---
 
@@ -73,26 +75,26 @@ The retrieval strategy controls which sources are used:
 
 ### Inline Completions
 
-| Setting | Default | Notes |
-|---------|---------|-------|
-| Provider | DeepSeek | DeepSeek or Volcengine (Doubao) |
-| Model | `deepseek-v4-flash` | Fetched automatically after entering an API key |
-| Max tokens | 64 | Length of each suggestion |
-| Wait time | 500 ms | Delay after typing stops |
-| Context window | 512 chars | Characters captured before and after the cursor |
-| Accept key | `Tab` | Configurable |
-| Monthly token limit | 10,000,000 | Completions stop when reached |
+| Setting             | Default             | Notes                                           |
+| ------------------- | ------------------- | ----------------------------------------------- |
+| Provider            | DeepSeek            | DeepSeek or Volcengine (Doubao)                 |
+| Model               | `deepseek-v4-flash` | Fetched automatically after entering an API key |
+| Max tokens          | 64                  | Length of each suggestion                       |
+| Wait time           | 500 ms              | Delay after typing stops                        |
+| Context window      | 512 chars           | Characters captured before and after the cursor |
+| Accept key          | `Tab`               | Configurable                                    |
+| Monthly token limit | 10,000,000          | Completions stop when reached                   |
 
 **Volcengine (Doubao):** get an API key from the [Volcengine console](https://console.volcengine.com/ark), create an inference endpoint, then enter the key under **Providers → Volcengine** and choose your endpoint ID as the model.
 
 ### Legal Commands
 
-| Setting | Notes |
-|---------|-------|
-| Yuandian API Key | Structured Chinese legal database ([open.chineselaw.com](https://open.chineselaw.com/)); used for exact provision lookup |
-| Tavily API Key | Web search fallback; get a key at [tavily.com](https://tavily.com) |
-| Default retrieval strategy | `auto` / `structured-first` / `web-first` / `all` |
-| Per-command override | Override the default strategy for a specific command |
+| Setting                    | Notes                                                                                                                    |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Yuandian API Key           | Structured Chinese legal database ([open.chineselaw.com](https://open.chineselaw.com/)); used for exact provision lookup |
+| Tavily API Key             | Web search fallback; get a key at [tavily.com](https://tavily.com)                                                       |
+| Default retrieval strategy | `auto` / `structured-first` / `web-first` / `all`                                                                        |
+| Per-command override       | Override the default strategy for a specific command                                                                     |
 
 Without a Yuandian key, `/补全法条` falls back to Tavily. Without either key, the command cannot retrieve results.
 

@@ -10,9 +10,11 @@ import {
 	LegalExecutorDebugStep,
 } from './debug';
 import { WebCaseExactExecutor } from './executors/web-case-exact';
+import { WebCaseFuzzyExecutor } from './executors/web-case-fuzzy';
 import { WebExactExecutor } from './executors/web-exact';
 import { WebFuzzyExecutor } from './executors/web-fuzzy';
 import { YuandianCaseExactExecutor } from './executors/yuandian-case-exact';
+import { YuandianCaseKeywordExecutor } from './executors/yuandian-case-keyword';
 import { YuandianExactExecutor } from './executors/yuandian-exact';
 import { YuandianSemanticExecutor } from './executors/yuandian-semantic';
 import { LegalExecutorRegistry } from './executors/registry';
@@ -22,10 +24,12 @@ import {
 	TavilyClient,
 	TavilyExactCaseProvider,
 	TavilyExactProvider,
+	TavilyFuzzyCaseProvider,
 	TavilyFuzzyProvider,
 } from './providers/tavily-client';
 import { LegalExecutionPlanner } from './runtime/planner';
 import { LegalCommandRequest } from './runtime/request';
+import { LegalCommandRoute } from './runtime/route';
 import { LegalPlanRunner } from './runtime/plan-runner';
 
 import type RosyPilot from '../main';
@@ -45,6 +49,7 @@ export class LegalSlashCommand {
 		this.executors.register(new YuandianExactExecutor());
 		this.executors.register(new YuandianSemanticExecutor());
 		this.executors.register(new YuandianCaseExactExecutor());
+		this.executors.register(new YuandianCaseKeywordExecutor());
 		const tavilyApiKey = this.plugin.settings.legal.tavilyApiKey;
 		const tavilyClient = tavilyApiKey
 			? new TavilyClient(tavilyApiKey)
@@ -62,6 +67,11 @@ export class LegalSlashCommand {
 		this.executors.register(
 			new WebCaseExactExecutor(
 				tavilyClient ? new TavilyExactCaseProvider(tavilyClient) : undefined,
+			),
+		);
+		this.executors.register(
+			new WebCaseFuzzyExecutor(
+				tavilyClient ? new TavilyFuzzyCaseProvider(tavilyClient) : undefined,
 			),
 		);
 	}
@@ -182,9 +192,7 @@ export class LegalSlashCommand {
 						this.notifyApplicationResult(application, 'adapted');
 					}
 				},
-				route.kind === 'fuzzy-provision'
-					? t('legal.panel.search.label')
-					: t('legal.panel.detail.label'),
+				this.getResultLabel(route),
 			);
 		} catch (error) {
 			this.logLegalDebug({
@@ -264,6 +272,16 @@ export class LegalSlashCommand {
 		return this.commandId === 'complete-legal-case'
 			? t('legal.panel.caseEmpty')
 			: t('legal.panel.empty');
+	}
+
+	private getResultLabel(route: LegalCommandRoute): string {
+		if (route.kind === 'fuzzy-provision') {
+			return t('legal.panel.search.label');
+		}
+		if (route.kind === 'fuzzy-case') {
+			return t('legal.panel.caseSearch.label');
+		}
+		return t('legal.panel.detail.label');
 	}
 }
 

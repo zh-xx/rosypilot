@@ -30,6 +30,8 @@ export interface LegalResult {
 		documentType?: string;
 		judgmentDate?: string;
 		caseSourceType?: string;
+		provisionQuery?: string;
+		caseQuery?: string;
 		score?: number;
 		extractionKind?: 'llm-extracted' | 'web-snippet';
 	};

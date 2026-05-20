@@ -44,6 +44,38 @@ const caseResult: LegalResult = {
 	raw: {},
 };
 
+const fuzzyWebCaseResult: LegalResult = {
+	id: 'web:tavily:case:fuzzy-1',
+	type: 'web',
+	title: '违约金过高调整类案',
+	content:
+		'裁判观点认为，违约金是否过高应结合实际损失、履行情况和过错程度判断。',
+	source: {
+		provider: 'tavily',
+		name: 'Tavily',
+		url: 'https://example.com/case',
+	},
+	metadata: {
+		caseQuery: '违约金 过高 调整',
+	},
+	raw: {},
+};
+
+const fuzzyProvisionResult: LegalResult = {
+	id: 'yuandian:fuzzy-provision-1',
+	type: 'statute',
+	title: '最高人民法院知识产权法庭裁判要旨摘要（2021）第54点',
+	content: '裁判要旨：争议标的是指当事人诉讼请求所指向的具体合同义务。',
+	source: {
+		provider: 'yuandian',
+		name: '元典',
+	},
+	metadata: {
+		provisionQuery: '履行地点约定不明',
+	},
+	raw: {},
+};
+
 function createRequest(prefix: string): LegalCommandRequest {
 	return {
 		commandId: 'complete-legal-provision',
@@ -201,6 +233,76 @@ describe('InsertAdaptedApplicator', () => {
 		expect(body.messages[1].content).toContain('（2023）京0101民初123号');
 		expect(body.messages[1].content).toContain('北京市东城区人民法院');
 		expect(application).toEqual({ status: 'success' });
+	});
+
+	it('uses case prompt for fuzzy web case results', async () => {
+		mockedRequestUrl.mockResolvedValue({
+			status: 200,
+			json: {
+				choices: [
+					{
+						message: {
+							content: '相关类案认为，应结合实际损失判断违约金是否过高。',
+						},
+					},
+				],
+			},
+		} as Awaited<ReturnType<typeof requestUrl>>);
+
+		await new InsertAdaptedApplicator().apply(
+			createRequest('类似案例中，'),
+			fuzzyWebCaseResult,
+			createPlugin('deepseek-key', 'deepseek-chat'),
+		);
+
+		const body = JSON.parse(
+			(mockedRequestUrl.mock.calls[0][0] as { body: string }).body,
+		) as {
+			messages: { role: string; content: string }[];
+		};
+
+		expect(body.messages[0].content).toContain('相关案例');
+		expect(body.messages[0].content).toContain('观点来源');
+		expect(body.messages[0].content).not.toContain('法条最相关的原文');
+		expect(body.messages[1].content).toContain('【相关案例】');
+		expect(body.messages[1].content).toContain('违约金过高调整类案');
+	});
+
+	it('uses fuzzy provision prompt with source attribution for semantic provision results', async () => {
+		mockedRequestUrl.mockResolvedValue({
+			status: 200,
+			json: {
+				choices: [
+					{
+						message: {
+							content:
+								'相关裁判观点认为，应以诉讼请求所指向的具体合同义务判断争议标的。',
+						},
+					},
+				],
+			},
+		} as Awaited<ReturnType<typeof requestUrl>>);
+
+		await new InsertAdaptedApplicator().apply(
+			createRequest('关于履行地点约定不明的问题，'),
+			fuzzyProvisionResult,
+			createPlugin('deepseek-key', 'deepseek-chat'),
+		);
+
+		const body = JSON.parse(
+			(mockedRequestUrl.mock.calls[0][0] as { body: string }).body,
+		) as {
+			messages: { role: string; content: string }[];
+		};
+
+		expect(body.messages[0].content).toContain('观点来源');
+		expect(body.messages[0].content).toContain('不要把案例材料说成法条规定');
+		expect(body.messages[1].content).toContain('【检索问题】');
+		expect(body.messages[1].content).toContain('履行地点约定不明');
+		expect(body.messages[1].content).toContain('【相关法律材料】');
+		expect(body.messages[1].content).toContain(
+			'最高人民法院知识产权法庭裁判要旨摘要',
+		);
 	});
 
 	it('does not inject ghost text when LLM returns empty content', async () => {

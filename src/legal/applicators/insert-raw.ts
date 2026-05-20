@@ -64,5 +64,9 @@ function formatCaseContent(result: LegalResult): string {
 }
 
 function isCaseLikeResult(result: LegalResult): boolean {
-	return result.type === 'case' || Boolean(result.metadata.caseNo);
+	return (
+		result.type === 'case' ||
+		Boolean(result.metadata.caseNo) ||
+		Boolean(result.metadata.caseQuery)
+	);
 }

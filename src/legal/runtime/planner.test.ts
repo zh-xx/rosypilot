@@ -26,6 +26,11 @@ const exactCaseRoute: LegalCommandRoute = {
 	},
 };
 
+const fuzzyCaseRoute: LegalCommandRoute = {
+	kind: 'fuzzy-case',
+	query: '信用卡纠纷中利息费用上限',
+};
+
 const request = {
 	commandId: 'complete-legal-provision',
 	prefix: '',
@@ -286,6 +291,80 @@ describe('LegalExecutionPlanner', () => {
 			steps: [
 				{ executorId: 'yuandian.case.exact' },
 				{ executorId: 'web.case.exact' },
+			],
+		});
+	});
+
+	it('plans yuandian case keyword strategy for fuzzy cases', () => {
+		const planner = createPlanner('structured-first', [
+			createExecutor('yuandian.case.keyword'),
+			createExecutor('web.case.fuzzy'),
+		]);
+
+		const plan = planner.plan(
+			{ ...request, commandId: 'complete-legal-case' },
+			fuzzyCaseRoute,
+		);
+
+		expect(plan).toEqual({
+			mode: 'first-success',
+			steps: [{ executorId: 'yuandian.case.keyword' }],
+		});
+	});
+
+	it('plans web case fuzzy strategy', () => {
+		const planner = createPlanner('web-first', [
+			createExecutor('yuandian.case.keyword'),
+			createExecutor('web.case.fuzzy'),
+		]);
+
+		const plan = planner.plan(
+			{ ...request, commandId: 'complete-legal-case' },
+			fuzzyCaseRoute,
+		);
+
+		expect(plan).toEqual({
+			mode: 'first-success',
+			steps: [{ executorId: 'web.case.fuzzy' }],
+		});
+	});
+
+	it('plans fuzzy case auto strategy as yuandian-to-web fallback', () => {
+		const planner = createPlanner('auto', [
+			createExecutor('yuandian.case.keyword'),
+			createExecutor('web.case.fuzzy'),
+		]);
+
+		const plan = planner.plan(
+			{ ...request, commandId: 'complete-legal-case' },
+			fuzzyCaseRoute,
+		);
+
+		expect(plan).toEqual({
+			mode: 'first-success',
+			steps: [
+				{ executorId: 'yuandian.case.keyword' },
+				{ executorId: 'web.case.fuzzy' },
+			],
+		});
+	});
+
+	it('plans fuzzy case all strategy as collect-all', () => {
+		const planner = createPlanner('all', [
+			createExecutor('yuandian.case.keyword'),
+			createExecutor('web.case.fuzzy'),
+		]);
+
+		const plan = planner.plan(
+			{ ...request, commandId: 'complete-legal-case' },
+			fuzzyCaseRoute,
+		);
+
+		expect(plan).toEqual({
+			mode: 'collect-all',
+			steps: [
+				{ executorId: 'yuandian.case.keyword' },
+				{ executorId: 'web.case.fuzzy' },
 			],
 		});
 	});

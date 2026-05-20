@@ -2,6 +2,27 @@
 
 All notable changes to RosyPilot will be documented in this file.
 
+## [0.4.0] - 2026-05-20
+
+### 新增 / 改进
+
+- 新增 `/补全案例` 命令，支持按明确案号精准补全案例
+- `/补全案例` 新增非精准类案检索分支，可根据争议焦点、案由或裁判观点检索相关案例
+- 接入元典案例详情接口，精准案例同时查询权威案例与普通案例，并按权威案例优先展示
+- 接入元典权威案例/普通案例关键词检索接口，非精准案例优先返回权威/典型/参考案例，必要时补充普通案例
+- 接入 Tavily 案例检索 fallback，复用 Legal Command 的 structured-first、web-first、auto、all 四种检索策略
+- 案例结果复用 Legal Panel，新增案号、法院、案由、案件类别、审判程序、文书类型、裁判日期、案例类型、检索问题等元信息
+- 案例结果支持“插入案例”和案例口径“匹配原文”
+- 非精准法条/案例的“匹配原文”现在会同时表述观点内容和来源，避免把裁判要旨或案例材料误写成法条规定
+- 设置页和说明文档新增斜杠命令提示，引导用户启用 Obsidian 核心插件“斜杠命令”，或通过命令面板搜索 `RosyPilot: 补全法条` / `RosyPilot: 补全案例`
+
+### 内部
+
+- 扩展 Legal Command 路由模型，新增 `exact-case` 与 `fuzzy-case`
+- 新增 `CaseRefJudge`、`YuandianCaseExactExecutor`、`YuandianCaseKeywordExecutor`、`WebCaseExactExecutor`、`WebCaseFuzzyExecutor`
+- 扩展 `LegalResultNormalizer` 与应用层 case-like 判定，保持法条与案例共用同一工程化管线
+- 增加案例补全、非精准案例检索和非精准匹配原文相关单元测试
+
 ## [0.3.6] - 2026-05-19
 
 ### 新增 / 改进

@@ -60,6 +60,19 @@ export class LegalExecutionPlanner {
 			return ['yuandian.case.exact'];
 		}
 
+		if (route.kind === 'fuzzy-case') {
+			if (strategy === 'web-first') {
+				return ['web.case.fuzzy'];
+			}
+			if (strategy === 'auto') {
+				return ['yuandian.case.keyword', 'web.case.fuzzy'];
+			}
+			if (strategy === 'all') {
+				return ['yuandian.case.keyword', 'web.case.fuzzy'];
+			}
+			return ['yuandian.case.keyword'];
+		}
+
 		if (route.kind === 'fuzzy-provision') {
 			if (strategy === 'web-first') {
 				return ['web.fuzzy'];

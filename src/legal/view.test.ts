@@ -48,6 +48,7 @@ jest.mock('src/i18n', () => ({
 			'legal.panel.meta.documentType': '文书类型',
 			'legal.panel.meta.judgmentDate': '裁判日期',
 			'legal.panel.meta.caseSourceType': '案例类型',
+			'legal.panel.meta.caseQuery': '检索问题',
 			'legal.panel.title': '法条',
 		})[key] ?? key,
 }));
@@ -341,5 +342,31 @@ describe('LegalPanelView', () => {
 		expect(text).toContain('插入案例');
 		expect(text).toContain('案号：');
 		expect(text).toContain('（2023）京0101民初123号');
+	});
+
+	it('treats fuzzy web case results as case-like cards', () => {
+		const { view, root } = createOpenedView();
+		const result: LegalResult = {
+			id: 'web:tavily:case:fuzzy:1',
+			type: 'web',
+			title: '类案网页标题',
+			content: '类案网页摘要',
+			source: {
+				provider: 'tavily',
+				name: 'Tavily',
+				url: 'https://example.com/fuzzy-case',
+			},
+			metadata: {
+				caseQuery: '违约金 过高 调整',
+			},
+			raw: {},
+		};
+
+		view.setDetails([result], jest.fn(), jest.fn());
+		const text = root.allText();
+
+		expect(text).toContain('插入案例');
+		expect(text).toContain('检索问题：');
+		expect(text).toContain('违约金 过高 调整');
 	});
 });

@@ -28,6 +28,7 @@ export interface ArticleSearchItem {
 }
 
 export type YuandianCaseDetailType = 'ptal' | 'qwal';
+export type YuandianCaseKeywordType = 'ptal' | 'qwal';
 
 export interface CaseDetail {
 	id: string;
@@ -52,6 +53,23 @@ export interface CaseDetail {
 	pjjg?: string;
 	cmss?: string;
 	url?: string;
+}
+
+export interface CaseKeywordSearchItem {
+	id: string;
+	type?: string;
+	ah?: string;
+	title?: string;
+	ay?: string[] | string;
+	jbdw?: string;
+	ajlb?: string;
+	xzqh_p?: string;
+	wszl?: string;
+	cprq?: string;
+	content?: string;
+	llm_content?: string;
+	url?: string;
+	score?: number;
 }
 
 export class YuandianClient {
@@ -155,5 +173,47 @@ export class YuandianClient {
 		}
 
 		return body.data ?? [];
+	}
+
+	async searchCasesByKeyword(
+		query: string,
+		type: YuandianCaseKeywordType,
+		topK = 5,
+	): Promise<CaseKeywordSearchItem[]> {
+		const endpoint = type === 'qwal' ? 'rh_qwal_search' : 'rh_ptal_search';
+		const requestBody = {
+			qw: query,
+			search_mode: 'and',
+			top_k: topK,
+			...(type === 'ptal' ? { wszl: ['判决书', '裁定书'] } : {}),
+		};
+		const res = await requestUrl({
+			url: `${BASE_URL}/open/${endpoint}`,
+			method: 'POST',
+			headers: {
+				Accept: 'application/json',
+				'Content-Type': 'application/json; charset=utf-8',
+				'X-API-Key': this.apiKey,
+			},
+			body: JSON.stringify(requestBody),
+			throw: false,
+		});
+
+		if (res.status !== 200 && res.status !== 201) {
+			throw new Error(`HTTP ${res.status}`);
+		}
+
+		const body = res.json as {
+			status: string;
+			code: number;
+			message: string;
+			data: { lst?: CaseKeywordSearchItem[] } | null;
+		};
+
+		if (body.code !== 200 && body.code !== 201) {
+			throw new Error(body.message);
+		}
+
+		return body.data?.lst ?? [];
 	}
 }

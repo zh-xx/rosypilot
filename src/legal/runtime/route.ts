@@ -16,5 +16,9 @@ export type LegalCommandRoute =
 			};
 	  }
 	| {
+			kind: 'fuzzy-case';
+			query: string;
+	  }
+	| {
 			kind: 'none';
 	  };

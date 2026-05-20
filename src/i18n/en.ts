@@ -107,6 +107,9 @@ export const en: Record<string, string> = {
 
 	// Legal database
 	'settings.legal.title': 'Legal Command Settings',
+	'settings.legal.slashCommandRequirement': 'Slash commands requirement',
+	'settings.legal.slashCommandRequirementDesc':
+		'If typing / does not open the command list, enable Obsidian Settings → Core plugins → Slash commands. You can still run commands from Cmd/Ctrl+P by searching RosyPilot: Complete legal provision or RosyPilot: Complete legal case.',
 	'settings.legal.apiKey': 'Yuandian API Key',
 	'settings.legal.apiKeyDesc':
 		'Used to search statutes, cases, and other legal materials.',
@@ -186,6 +189,7 @@ export const en: Record<string, string> = {
 	'legal.panel.error': 'Query failed. Check your API key.',
 	'legal.panel.detail.label': 'Exact match',
 	'legal.panel.search.label': 'Semantic results',
+	'legal.panel.caseSearch.label': 'Related cases',
 	'legal.panel.source': 'Source',
 
 	'legal.panel.expand': 'Expand',
@@ -208,6 +212,7 @@ export const en: Record<string, string> = {
 	'legal.panel.meta.documentType': 'Document type',
 	'legal.panel.meta.judgmentDate': 'Judgment date',
 	'legal.panel.meta.caseSourceType': 'Case type',
+	'legal.panel.meta.caseQuery': 'Query',
 	'legal.notice.noApiKey':
 		'Please set your Yuandian API Key in settings first.',
 	'legal.notice.insertRaw.success':
