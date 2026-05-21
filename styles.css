@@ -483,3 +483,134 @@
 @keyframes rosypilot-spin {
   to { transform: rotate(360deg); }
 }
+
+/************************************************************/
+/*               Hallucination verdict badges               */
+/************************************************************/
+
+.rosypilot-legal-verdict-consistent {
+  color: var(--color-green);
+  border-color: var(--color-green);
+  background: var(--background-primary);
+}
+
+.rosypilot-legal-verdict-inconsistent {
+  color: var(--color-red);
+  border-color: var(--color-red);
+  background: var(--background-primary);
+}
+
+.rosypilot-legal-verdict-unknown {
+  color: var(--text-muted);
+  border-color: var(--background-modifier-border);
+  background: var(--background-primary);
+}
+
+/************************************************************/
+/*            Hallucination card enhancements               */
+/************************************************************/
+
+.rosypilot-hallucination-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 2px;
+}
+
+.rosypilot-hallucination-type {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  line-height: 1.5;
+  border: 1px solid transparent;
+  font-weight: 500;
+}
+
+.rosypilot-hallucination-type-fabricated {
+  color: var(--color-red);
+  border-color: var(--color-red);
+  background: var(--background-primary);
+}
+
+.rosypilot-hallucination-type-clause-missing {
+  color: var(--color-orange);
+  border-color: var(--color-orange);
+  background: var(--background-primary);
+}
+
+.rosypilot-hallucination-type-severe {
+  color: var(--color-red);
+  border-color: var(--color-red);
+  background: var(--background-primary);
+}
+
+.rosypilot-hallucination-type-misunderstanding {
+  color: var(--color-yellow);
+  border-color: var(--color-yellow);
+  background: var(--background-primary);
+}
+
+.rosypilot-hallucination-type-consistent {
+  color: var(--color-green);
+  border-color: var(--color-green);
+  background: var(--background-primary);
+}
+
+.rosypilot-hallucination-type-unknown {
+  color: var(--text-muted);
+  border-color: var(--background-modifier-border);
+  background: var(--background-primary);
+}
+
+.rosypilot-legal-section-label {
+  font-size: 0.72em;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 8px 0 3px;
+}
+
+.rosypilot-legal-key-points {
+  margin: 0 0 6px 0;
+  padding-left: 16px;
+  font-size: 0.82em;
+  line-height: 1.6;
+}
+
+.rosypilot-legal-key-points li {
+  margin-bottom: 2px;
+}
+
+.rosypilot-legal-analysis-section {
+  margin-top: 6px;
+}
+
+.rosypilot-legal-analysis-text {
+  font-size: 0.85em;
+  line-height: 1.65;
+  color: var(--text-normal);
+  background: var(--background-primary);
+  border-left: 2px solid var(--interactive-accent);
+  padding: 6px 10px;
+  border-radius: 0 4px 4px 0;
+  white-space: pre-wrap;
+}
+
+.rosypilot-legal-analysis-error {
+  border-left-color: var(--color-red);
+  color: var(--color-red);
+}
+
+/************************************************************/
+/*          Hallucination editor highlight mark             */
+/************************************************************/
+
+.rosypilot-hallucination-highlight {
+  background: rgba(255, 193, 7, 0.28);
+  border-radius: 2px;
+  outline: 1.5px solid rgba(255, 193, 7, 0.55);
+  outline-offset: -1px;
+}

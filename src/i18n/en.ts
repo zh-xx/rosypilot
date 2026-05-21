@@ -169,6 +169,7 @@ export const en: Record<string, string> = {
 	// Legal slash command
 	'legal.slashCommand.label': 'Complete legal provision',
 	'legal.slashCommand.caseLabel': 'Complete legal case',
+	'legal.slashCommand.hallucinationLabel': 'Verify legal references',
 
 	// Legal panel
 	'legal.panel.title': 'Legal Provisions',
@@ -213,6 +214,36 @@ export const en: Record<string, string> = {
 	'legal.panel.meta.judgmentDate': 'Judgment date',
 	'legal.panel.meta.caseSourceType': 'Case type',
 	'legal.panel.meta.caseQuery': 'Query',
+	'legal.panel.hallucination.detecting': 'Verifying legal references...',
+	'legal.panel.hallucination.empty': 'No legal references found',
+	'legal.panel.hallucination.noApiKey':
+		'Please configure Yuandian API Key in settings first.',
+	'legal.panel.hallucination.label': 'Hallucination Verify Report',
+	'legal.panel.hallucination.verdict.consistent': 'Consistent',
+	'legal.panel.hallucination.verdict.inconsistent': 'Inconsistent',
+	'legal.panel.hallucination.verdict.unknown': 'Unknown',
+	'legal.panel.hallucination.verdict.skipped': 'Skipped',
+	'legal.panel.hallucination.case.found': 'Found',
+	'legal.panel.hallucination.case.notFound': 'Not Found',
+	'legal.panel.hallucination.meta.validityStatus': 'Validity',
+	'legal.panel.hallucination.meta.publishDate': 'Published',
+	'legal.panel.hallucination.meta.implementDate': 'Effective',
+	'legal.panel.hallucination.type.fabricated': 'Law does not exist',
+	'legal.panel.hallucination.type.clauseMissing': 'Clause not found',
+	'legal.panel.hallucination.type.severeError': 'Content severely incorrect',
+	'legal.panel.hallucination.type.misunderstanding': 'Misapplication',
+	'legal.panel.hallucination.type.consistent': 'Content consistent',
+	'legal.panel.hallucination.type.unknown': 'Unverifiable',
+	'legal.panel.hallucination.authoritative': 'Authoritative text',
+	'legal.panel.hallucination.explanation': 'Comparison note',
+	'legal.panel.hallucination.keyPoints': 'Key comparison points',
+	'legal.panel.hallucination.locate': 'Locate',
+	'legal.panel.hallucination.locate.notFound': 'Text not found in document',
+	'legal.panel.hallucination.analyze': 'AI Commentary',
+	'legal.panel.hallucination.reanalyze': 'Re-analyze',
+	'legal.panel.hallucination.analyzeLabel': 'AI Commentary',
+	'legal.panel.hallucination.analyze.noLlm':
+		'Please configure LLM API Key and model in settings first',
 	'legal.notice.noApiKey':
 		'Please set your Yuandian API Key in settings first.',
 	'legal.notice.insertRaw.success':

@@ -2,6 +2,59 @@ import { requestUrl } from 'obsidian';
 
 const BASE_URL = 'https://open.chineselaw.com';
 
+export interface SemanticCompare {
+	结论: string;
+	语义相似度: number | null;
+	说明: string;
+	要点: string[];
+	skipped?: boolean;
+	skip_reason?: string;
+	skip_message?: string;
+}
+
+export interface HallucinationRegulation {
+	name: string;
+	clause: string;
+	content: string;
+	extract_reg_id: string;
+	url: string;
+	think_tank_content: string;
+	source_no_specific_clause?: boolean;
+	law_exists?: boolean;
+	think_tank_clause_missing?: boolean;
+	publish_date: string;
+	implement_date: string;
+	validity_status: string;
+	document_number: string;
+	semantic_compare: SemanticCompare;
+}
+
+export interface HallucinationCase {
+	name: string;
+	case_number: string;
+	content: string;
+	url: string;
+	think_tank_content: string;
+	case_type: string;
+	court: string;
+	judgment_date: string;
+	basic_facts: string;
+	judgment_key_points: string;
+	judgment_result: string;
+	judgment_analysis: string;
+	typical_significance: string;
+	case_commentary: string;
+}
+
+export interface HallucinationDetectResponse {
+	regulations: HallucinationRegulation[];
+	cases: HallucinationCase[];
+	highlighted_text: string;
+	chat_model: string;
+	request_id: string;
+	semantic_compare_error?: string;
+}
+
 export interface ArticleDetail {
 	id: string;
 	fgmc: string;
@@ -215,5 +268,38 @@ export class YuandianClient {
 		}
 
 		return body.data?.lst ?? [];
+	}
+
+	async detectHallucination(
+		text: string,
+	): Promise<HallucinationDetectResponse> {
+		const res = await requestUrl({
+			url: `${BASE_URL}/open/hall_detect`,
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-API-Key': this.apiKey,
+			},
+			body: JSON.stringify({ text }),
+			throw: false,
+		});
+
+		if (res.status !== 200 && res.status !== 201) {
+			const body = res.json as
+				| { success?: boolean; message?: string }
+				| undefined;
+			const msg = body?.message;
+			throw new Error(
+				msg ? `HTTP ${res.status}: ${msg}` : `HTTP ${res.status}`,
+			);
+		}
+
+		const body = res.json as
+			| HallucinationDetectResponse
+			| { success: false; message: string };
+		if ('success' in body && !(body as { success: boolean }).success) {
+			throw new Error((body as { message: string }).message);
+		}
+		return body as HallucinationDetectResponse;
 	}
 }

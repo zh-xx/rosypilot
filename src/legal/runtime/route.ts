@@ -20,5 +20,8 @@ export type LegalCommandRoute =
 			query: string;
 	  }
 	| {
+			kind: 'hallucination-detect';
+	  }
+	| {
 			kind: 'none';
 	  };

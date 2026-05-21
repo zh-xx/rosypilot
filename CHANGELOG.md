@@ -2,6 +2,23 @@
 
 All notable changes to RosyPilot will be documented in this file.
 
+## [0.5.0] - 2026-05-21
+
+### 新增 / 改进
+
+- 新增 `/幻觉校验` 命令，自动从全文（或选区）中抽取所有法条与案例引用，与元典权威来源比对，输出幻觉类型判定（法规不存在 / 条文号不存在 / 内容严重错误 / 理解偏差 / 内容吻合 / 无法核实）及权威原文
+- 法条引用按时效状态、发布日期、施行日期展示；案例引用按命中/未命中展示并附法院、裁判日期信息
+- 支持右键菜单触发：有选区时对选区校验，无选区时对全文校验
+- 校验报告卡片新增「定位」按钮：点击后正文跳转至对应引用位置并高亮显示
+- 校验报告卡片新增「AI 评述」按钮：调用当前 LLM provider 对校验结果给出精炼评述
+
+### 内部
+
+- 新增 `HallucinationSlashCommand`，直接调用元典 `hall_detect` API，跳过 judge/planner/runner 链
+- 新增 CodeMirror 6 编辑器高亮扩展（`hallucinationHighlightField`），通过 `StateEffect` 驱动定位高亮
+- 新增路由类型 `hallucination-detect`，`LegalPanelView` 新增 `setHallucinationReport()` 渲染方法
+- 新增幻觉校验完整自动化测试（客户端层 7 个用例 + 展示层 15 个用例）
+
 ## [0.4.0] - 2026-05-20
 
 ### 新增 / 改进

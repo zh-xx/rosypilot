@@ -9,11 +9,13 @@ import { MemoryCacheProxy } from './api/proxies/memory-cache';
 import { UsageMonitorProxy } from './api/proxies/usage-monitor';
 import { DEBUG_VIEW_TYPE, DebugEntry, DebugView } from './debug/view';
 import { inlineCompletionsExtension } from './editor/extension';
+import { hallucinationHighlightField } from './legal/editor-highlight';
 import { LegalCommandDebugEntry } from './legal/debug';
 import {
 	LEGAL_DEBUG_VIEW_TYPE,
 	LegalCommandDebugView,
 } from './legal/debug-view';
+import { HallucinationSlashCommand } from './legal/hallucination-slash-command';
 import { LegalSlashCommand } from './legal/slash-command';
 import { LEGAL_PANEL_VIEW_TYPE, LegalPanelView } from './legal/view';
 import { t } from './i18n';
@@ -48,6 +50,7 @@ export default class RosyPilot extends Plugin {
 
 		this.extensions = this.createEditorExtension();
 		this.registerEditorExtension(this.extensions);
+		this.registerEditorExtension(hallucinationHighlightField);
 
 		this.registerView(DEBUG_VIEW_TYPE, (leaf) => {
 			const view = new DebugView(leaf);
@@ -70,6 +73,7 @@ export default class RosyPilot extends Plugin {
 		this.registerCustomIcons(); // Must be called before `registerRibbonActions()`.
 		this.registerRibbonActions();
 		this.registerCommands();
+		this.registerEditorMenus();
 	}
 
 	registerCustomIcons() {
@@ -106,6 +110,38 @@ export default class RosyPilot extends Plugin {
 		this.registerLegalCommand(
 			'complete-legal-case',
 			t('legal.slashCommand.caseLabel'),
+		);
+		this.addCommand({
+			id: 'hallucination-detect',
+			name: t('legal.slashCommand.hallucinationLabel'),
+			editorCallback: (editor) => {
+				const cursor = editor.getCursor();
+				const lineText = editor.getLine(cursor.line);
+				if (cursor.ch > 0 && lineText[cursor.ch - 1] === ' ') {
+					editor.replaceRange(
+						'',
+						{ line: cursor.line, ch: cursor.ch - 1 },
+						cursor,
+					);
+				}
+				const prefix = editor.getRange({ line: 0, ch: 0 }, editor.getCursor());
+				void new HallucinationSlashCommand(this).run(prefix, editor);
+			},
+		});
+	}
+
+	registerEditorMenus() {
+		this.registerEvent(
+			this.app.workspace.on('editor-menu', (menu, editor) => {
+				menu.addItem((item) => {
+					item
+						.setTitle(t('legal.slashCommand.hallucinationLabel'))
+						.setIcon('scale')
+						.onClick(() => {
+							void new HallucinationSlashCommand(this).run('', editor);
+						});
+				});
+			}),
 		);
 	}
 
