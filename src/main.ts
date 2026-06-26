@@ -4,6 +4,7 @@ import { APIClient } from './api';
 import { OpenAICompatibleAPIClient } from './api/clients/openai-compatible';
 import { PromptGenerator } from './api/prompts/generator';
 import { Provider, PROVIDERS } from './api/providers';
+import { FALLBACK_MODELS } from './api/providers/models';
 import { TokenTracker } from './api/providers/tokens';
 import { MemoryCacheProxy } from './api/proxies/memory-cache';
 import { UsageMonitorProxy } from './api/proxies/usage-monitor';
@@ -327,6 +328,16 @@ export default class RosyPilot extends Plugin {
 				DEFAULT_SETTINGS.providers[p],
 				this.settings.providers[p] ?? {},
 			);
+			// 兜底：用户尚未「获取模型列表」或拉取失败时，用预设候选填充，
+			// 避免模型下拉因 fetchedModels 为空而被禁用卡死。
+			// 用户成功 fetch 后，真实列表会覆盖这些值。
+			const fallback = FALLBACK_MODELS[p];
+			if (
+				(this.settings.providers[p].fetchedModels ?? []).length === 0 &&
+				fallback !== undefined
+			) {
+				this.settings.providers[p].fetchedModels = [...fallback];
+			}
 		}
 		this.settings.completions = Object.assign(
 			{},
