@@ -64,8 +64,11 @@ export class OpenAICompatibleAPIClient implements APIClient {
 			const requestParams: DeepSeekCompletionParams = {
 				...baseParams,
 				messages: prompt,
-				// DeepSeek-specific: disable chain-of-thought to keep responses clean
-				thinking: { type: 'disabled' },
+				// DeepSeek 专有：关闭思维链以保持补全干净；
+				// 其他 provider（火山引擎 / GLM）不识别该参数，发送可能被网关拒绝
+				...(settings.completions.provider === 'deepseek'
+					? { thinking: { type: 'disabled' as const } }
+					: {}),
 			};
 
 			const completions = (await this.openai.chat.completions.create(

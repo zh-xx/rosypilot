@@ -25,6 +25,17 @@ export const zh: Record<string, string> = {
 	'providers.volcengine.fetchModels.fail.noKey': '请先输入 API Key。',
 	'providers.volcengine.fetchModels.fail.invalid':
 		'API Key 无效或网络错误，请检查后重试。',
+	'providers.glm.apiKey': '智谱 GLM API 密钥',
+	'providers.glm.apiKey.desc': '输入你的智谱 GLM API 密钥。',
+	'providers.glm.platform': '智谱开放平台',
+	'providers.glm.fetchModels': '获取模型列表',
+	'providers.glm.fetchModels.desc':
+		'输入 API 密钥后点击获取，自动拉取当前账号可用的模型列表。',
+	'providers.glm.fetchModels.btn': '获取模型',
+	'providers.glm.fetchModels.success': '模型列表已更新。',
+	'providers.glm.fetchModels.fail.noKey': '请先输入 API Key。',
+	'providers.glm.fetchModels.fail.invalid':
+		'API Key 无效或网络错误，请检查后重试。',
 
 	// Inline completions
 	'completions.heading': '补全设置',

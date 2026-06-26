@@ -27,6 +27,18 @@ export const en: Record<string, string> = {
 		'Please enter your API key first.',
 	'providers.volcengine.fetchModels.fail.invalid':
 		'Invalid API key or network error. Please check and try again.',
+	'providers.glm.apiKey': 'Zhipu GLM API key',
+	'providers.glm.apiKey.desc': 'Enter your Zhipu GLM API key.',
+	'providers.glm.platform': 'Zhipu BigModel Open Platform',
+	'providers.glm.fetchModels': 'Fetch model list',
+	'providers.glm.fetchModels.desc':
+		'After entering your API key, click to fetch the available models for your account.',
+	'providers.glm.fetchModels.btn': 'Fetch models',
+	'providers.glm.fetchModels.success': 'Model list updated.',
+	'providers.glm.fetchModels.fail.noKey':
+		'Please enter your API key first.',
+	'providers.glm.fetchModels.fail.invalid':
+		'Invalid API key or network error. Please check and try again.',
 
 	// Inline completions
 	'completions.heading': 'Completion Settings',

@@ -23,6 +23,10 @@ export const migrateVersion2_1_0_toVersion2_2_0: SettingsMigrator<
 				apiKey: undefined,
 				fetchedModels: [],
 			},
+			glm: {
+				apiKey: undefined,
+				fetchedModels: [],
+			},
 		},
 		completions: {
 			enabled: settings.completions.enabled,
