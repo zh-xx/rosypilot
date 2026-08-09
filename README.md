@@ -1,3 +1,5 @@
+
+
 # RosyPilot
 
 为 Obsidian 法律写作场景打造的 AI 辅助插件。
@@ -36,12 +38,12 @@ RosyPilot helps you write Chinese legal documents faster in Obsidian. It offers 
 
 1. 前往 [DeepSeek 开放平台](https://platform.deepseek.com/) 获取 API Key。
 2. 打开 **设置 → RosyPilot → 服务商 → DeepSeek**，填入 Key，点击**获取模型列表**。
-3. 在**行内补全**中，服务商选 **DeepSeek**，模型选 `deepseek-v4-flash`。
+3. 在**行内补全**中，服务商选 **DeepSeek**，模型选 `deepseek-chat`。
 4. 开始写作，幽灵文字出现后按 `Tab` 接受，`Esc` 忽略。
 
 1. Get an API key from [DeepSeek Open Platform](https://platform.deepseek.com/).
 2. Open **Settings → RosyPilot → Providers → DeepSeek**, paste your key, and click **Fetch Models**.
-3. Under **Inline completions**, set Provider to **DeepSeek** and Model to `deepseek-v4-flash`.
+3. Under **Inline completions**, set Provider to **DeepSeek** and Model to `deepseek-chat`.
 4. Start writing — ghost text appears after a short pause. Press `Tab` to accept, `Esc` to dismiss.
 
 ---
@@ -124,7 +126,7 @@ The retrieval strategy controls which sources are used for `/补全法条` and `
 | 设置项 / Setting | 默认值 / Default | 说明 / Notes |
 | --- | --- | --- |
 | 服务商 / Provider | DeepSeek | 支持 DeepSeek、火山引擎（豆包）/ DeepSeek or Volcengine (Doubao) |
-| 模型 / Model | `deepseek-v4-flash` | 填入 API Key 后自动拉取 / Fetched automatically after entering an API key |
+| 模型 / Model | `deepseek-chat` | 填入 API Key 后自动拉取 / Fetched automatically after entering an API key |
 | 最大 Token 数 / Max tokens | 64 | 每次补全的最大长度 / Length of each suggestion |
 | 等待时间 / Wait time | 500 ms | 停止输入后触发补全的延迟 / Delay after typing stops |
 | 上下文窗口 / Context window | 512 chars | 光标前后截取的字符数 / Characters captured before and after the cursor |
